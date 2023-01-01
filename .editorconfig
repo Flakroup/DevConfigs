@@ -1,5 +1,8 @@
 ﻿[*.cs]
 
+# GlobalUsingsAnalyzer: Using should be in global file
+dotnet_diagnostic.GlobalUsingsAnalyzer.severity = none
+
 # RCS1090: Call 'ConfigureAwait(false)'.
 dotnet_diagnostic.RCS1090.severity = none
 
