@@ -7,6 +7,7 @@
 		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<RepositoryType>git</RepositoryType>
+		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 	</PropertyGroup>
 
 	<ItemGroup>
