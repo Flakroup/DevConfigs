@@ -13,18 +13,22 @@
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0'">
 		<DefineConstants>NET</DefineConstants>
 		<EFCoreVersion>7.0.9</EFCoreVersion>
+		<BulkExtensionsVersion>7.1.5</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
 		<DefineConstants>NETSTANDARD</DefineConstants>
 		<EFCoreVersion>[3.1.32]</EFCoreVersion>
+		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0-windows'">
 		<DefineConstants>NETWINDOWS</DefineConstants>
 		<EFCoreVersion>7.0.9</EFCoreVersion>
+		<BulkExtensionsVersion>7.1.5</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'net481'">
 		<DefineConstants>NETFULL</DefineConstants>
 		<EFCoreVersion>[3.1.32]</EFCoreVersion>
+		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
