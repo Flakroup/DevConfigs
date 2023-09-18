@@ -419,17 +419,6 @@
         &lt;Access /&gt;&#xD;
       &lt;/Entry.SortBy&gt;&#xD;
     &lt;/Entry&gt;&#xD;
-    &lt;Entry DisplayName="Static Methods" Priority="100"&gt;&#xD;
-      &lt;Entry.Match&gt;&#xD;
-        &lt;And&gt;&#xD;
-          &lt;Kind Is="Method" /&gt;&#xD;
-          &lt;Static /&gt;&#xD;
-        &lt;/And&gt;&#xD;
-      &lt;/Entry.Match&gt;&#xD;
-      &lt;Entry.SortBy&gt;&#xD;
-        &lt;Access /&gt;&#xD;
-      &lt;/Entry.SortBy&gt;&#xD;
-    &lt;/Entry&gt;&#xD;
     &lt;Entry DisplayName="Consts"&gt;&#xD;
       &lt;Entry.Match&gt;&#xD;
         &lt;Kind Is="Constant" /&gt;&#xD;
@@ -509,7 +498,7 @@
         &lt;Override /&gt;&#xD;
       &lt;/Entry.SortBy&gt;&#xD;
     &lt;/Entry&gt;&#xD;
-    &lt;Region Name="IDisposable"&gt;&#xD;
+    &lt;Region Name="IDisposable" Priority="150"&gt;&#xD;
       &lt;Entry DisplayName="IDisposable implementation"&gt;&#xD;
         &lt;Entry.Match&gt;&#xD;
           &lt;And&gt;&#xD;
