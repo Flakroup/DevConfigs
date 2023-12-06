@@ -1,6 +1,8 @@
 <Project>
 
 	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
+		<Deterministic>true</Deterministic>
 		<Authors>Flakroup</Authors>
 		<Company>Flakroup</Company>
 		<Copyright>Copyright © Flakroup 2023</Copyright>
@@ -10,20 +12,20 @@
 		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0'">
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0'">
 		<DefineConstants>NET</DefineConstants>
-		<EFCoreVersion>7.0.11</EFCoreVersion>
-		<BulkExtensionsVersion>7.1.6</BulkExtensionsVersion>
+		<EFCoreVersion>8.0.0</EFCoreVersion>
+		<BulkExtensionsVersion>8.0.0</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
 		<DefineConstants>NETSTANDARD</DefineConstants>
 		<EFCoreVersion>[3.1.32]</EFCoreVersion>
 		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
 	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0-windows'">
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0-windows'">
 		<DefineConstants>NETWINDOWS</DefineConstants>
-		<EFCoreVersion>7.0.11</EFCoreVersion>
-		<BulkExtensionsVersion>7.1.6</BulkExtensionsVersion>
+		<EFCoreVersion>8.0.0</EFCoreVersion>
+		<BulkExtensionsVersion>8.0.0</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'net481'">
 		<DefineConstants>NETFULL</DefineConstants>
@@ -40,7 +42,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
+		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.8.14">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
