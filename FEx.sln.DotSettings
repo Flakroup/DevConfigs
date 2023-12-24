@@ -264,6 +264,9 @@
 	
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/WRAP_PARAMETERS_STYLE/@EntryValue">CHOP_IF_LONG</s:String>
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/WRAP_TERNARY_EXPR_STYLE/@EntryValue">CHOP_ALWAYS</s:String>
+	<s:String x:Key="/Default/CodeStyle/CodeFormatting/XmlDocFormatter/IndentSubtags/@EntryValue">DoNotTouch</s:String>
+	<s:String x:Key="/Default/CodeStyle/CodeFormatting/XmlDocFormatter/IndentTagContent/@EntryValue">DoNotTouch</s:String>
+	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/XmlDocFormatter/USE_INDENT_FROM_VS/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/XmlFormatter/BlankLineAfterProcessingInstructions/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/CodeStyle/CSharpFileLayoutPatterns/Pattern/@EntryValue">&lt;?xml version="1.0" encoding="utf-16"?&gt;&#xD;
 &lt;Patterns xmlns="urn:schemas-jetbrains-com:member-reordering-patterns"&gt;&#xD;
