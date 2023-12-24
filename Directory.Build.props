@@ -12,6 +12,7 @@
 		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
+		<WarningsAsErrors>$(WarningsAsErrors);CS0660</WarningsAsErrors>
 		<TargetFrameworkId>net8.0</TargetFrameworkId>
 		<StandardTargetFrameworkId>netstandard2.0</StandardTargetFrameworkId>
 		<FullTargetFrameworkId>net481</FullTargetFrameworkId>
@@ -42,6 +43,17 @@
 		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$(IsPackable)' == 'True' ">
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		<EmbedAllSources>true</EmbedAllSources>
+		<DeterministicSourcePaths>true</DeterministicSourcePaths>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EnableSourceLink>true</EnableSourceLink>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<None Include="$(MSBuildThisFileDirectory)\.editorconfig" Link=".editorconfig"/>
 	</ItemGroup>
@@ -52,6 +64,13 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.8.14">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(Configuration)' == 'Release' And '$(IsPackable)' == 'True' ">
+		<PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
