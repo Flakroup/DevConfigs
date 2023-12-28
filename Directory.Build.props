@@ -13,6 +13,7 @@
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<WarningsAsErrors>$(WarningsAsErrors);CS0660</WarningsAsErrors>
+		<NoWarn>$(NoWarn);CA2254</NoWarn>
 		<TargetFrameworkId>net8.0</TargetFrameworkId>
 		<StandardTargetFrameworkId>netstandard2.0</StandardTargetFrameworkId>
 		<FullTargetFrameworkId>net481</FullTargetFrameworkId>
