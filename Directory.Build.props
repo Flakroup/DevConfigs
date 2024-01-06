@@ -5,7 +5,7 @@
 		<Deterministic>true</Deterministic>
 		<Authors>Flakroup</Authors>
 		<Company>Flakroup</Company>
-		<Copyright>Copyright © Flakroup 2023</Copyright>
+		<Copyright>Copyright © Flakroup 2024</Copyright>
 		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<RepositoryType>git</RepositoryType>
@@ -21,6 +21,7 @@
 		<StandardTargetFrameworkIds>$(TargetFrameworkId);$(StandardTargetFrameworkId)</StandardTargetFrameworkIds>
 		<FullTargetFrameworkIds>$(FullTargetFrameworkId);$(TargetFrameworkId)</FullTargetFrameworkIds>
 		<WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(TargetFrameworkId)-windows</WindowsTargetFrameworkIds>
+		<WarningLevel>7</WarningLevel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)' == '$(TargetFrameworkId)'">
