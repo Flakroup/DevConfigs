@@ -22,6 +22,7 @@
 		<FullTargetFrameworkIds>$(FullTargetFrameworkId);$(TargetFrameworkId)</FullTargetFrameworkIds>
 		<WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(TargetFrameworkId)-windows</WindowsTargetFrameworkIds>
 		<WarningLevel>7</WarningLevel>
+		<WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)' == '$(TargetFrameworkId)'">
