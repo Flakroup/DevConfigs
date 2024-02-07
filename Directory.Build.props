@@ -12,7 +12,7 @@
 		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
-		<WarningsAsErrors>$(WarningsAsErrors);CS0660</WarningsAsErrors>
+		<WarningsAsErrors>$(WarningsAsErrors);CS0660;CA1068</WarningsAsErrors>
 		<NoWarn>$(NoWarn);CA2254</NoWarn>
 		<TargetFrameworkId>net8.0</TargetFrameworkId>
 		<StandardTargetFrameworkId>netstandard2.0</StandardTargetFrameworkId>
