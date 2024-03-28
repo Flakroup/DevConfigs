@@ -583,6 +583,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=STA/@EntryIndexedValue">STA</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=SX/@EntryIndexedValue">SX</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=SY/@EntryIndexedValue">SY</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UC/@EntryIndexedValue">UC</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=URL/@EntryIndexedValue">URL</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UTF/@EntryIndexedValue">UTF</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=VM/@EntryIndexedValue">VM</s:String>
@@ -631,6 +632,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/WebNaming/UserRules/=ASP_005FHTML_005FCONTROL/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/WebNaming/UserRules/=ASP_005FTAG_005FNAME/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/WebNaming/UserRules/=ASP_005FTAG_005FPREFIX/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=UC/@EntryIndexedValue">UC</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/UserRules/=NAMESPACE_005FALIAS/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/UserRules/=XAML_005FFIELD/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/UserRules/=XAML_005FRESOURCE/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
