@@ -44,3 +44,6 @@ dotnet_diagnostic.CS1717.severity = error
 
 # IDE0290: Use primary constructor
 dotnet_diagnostic.IDE0290.severity = suggestion
+
+# IDE0028: Simplify collection initialization
+dotnet_diagnostic.IDE0028.severity = none
