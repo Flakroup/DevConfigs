@@ -1,82 +1,34 @@
 <Project>
 
 	<PropertyGroup>
-		<LangVersion>latest</LangVersion>
+		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<Deterministic>true</Deterministic>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<NoWarn>$(NoWarn);CA2254</NoWarn>
+		<Nullable>disable</Nullable>
+		<WarningLevel>7</WarningLevel>
+		<WarningsAsErrors>$(WarningsAsErrors);CS0660;CA1068</WarningsAsErrors>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<TargetFrameworkId>net8.0</TargetFrameworkId>
+		<FullTargetFrameworkId>net481</FullTargetFrameworkId>
+		<StandardTargetFrameworkId>netstandard2.0</StandardTargetFrameworkId>
+		<FullTargetFrameworkIds>$(FullTargetFrameworkId);$(TargetFrameworkId)</FullTargetFrameworkIds>
+		<StandardTargetFrameworkIds>$(TargetFrameworkId);$(StandardTargetFrameworkId)</StandardTargetFrameworkIds>
+		<WindowsTargetFrameworkId>$(TargetFrameworkId)-windows</WindowsTargetFrameworkId>
+		<WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(TargetFrameworkId)-windows</WindowsTargetFrameworkIds>
+	</PropertyGroup>
+
+	<PropertyGroup>
 		<Authors>Flakroup</Authors>
 		<Company>Flakroup</Company>
 		<Copyright>Copyright © Flakroup 2024</Copyright>
-		<GenerateDocumentationFile>false</GenerateDocumentationFile>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<RepositoryType>git</RepositoryType>
-		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
-		<Nullable>disable</Nullable>
-		<ImplicitUsings>disable</ImplicitUsings>
-		<WarningsAsErrors>$(WarningsAsErrors);CS0660;CA1068</WarningsAsErrors>
-		<NoWarn>$(NoWarn);CA2254</NoWarn>
-		<TargetFrameworkId>net8.0</TargetFrameworkId>
-		<StandardTargetFrameworkId>netstandard2.0</StandardTargetFrameworkId>
-		<FullTargetFrameworkId>net481</FullTargetFrameworkId>
-		<WindowsTargetFrameworkId>$(TargetFrameworkId)-windows</WindowsTargetFrameworkId>
-		<StandardTargetFrameworkIds>$(TargetFrameworkId);$(StandardTargetFrameworkId)</StandardTargetFrameworkIds>
-		<FullTargetFrameworkIds>$(FullTargetFrameworkId);$(TargetFrameworkId)</FullTargetFrameworkIds>
-		<WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(TargetFrameworkId)-windows</WindowsTargetFrameworkIds>
-		<WarningLevel>7</WarningLevel>
 		<WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(TargetFramework)' == '$(TargetFrameworkId)'">
-		<DefineConstants>$(DefineConstants);ISNET</DefineConstants>
-		<EFCoreVersion>8.0.3</EFCoreVersion>
-		<BulkExtensionsVersion>8.0.2</BulkExtensionsVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFramework)' == '$(StandardTargetFrameworkId)'">
-		<DefineConstants>$(DefineConstants);ISNETSTANDARD</DefineConstants>
-		<EFCoreVersion>[3.1.32]</EFCoreVersion>
-		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFramework)' == '$(WindowsTargetFrameworkId)'">
-		<DefineConstants>$(DefineConstants);ISNETWINDOWS</DefineConstants>
-		<EFCoreVersion>8.0.3</EFCoreVersion>
-		<BulkExtensionsVersion>8.0.2</BulkExtensionsVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFramework)' == '$(FullTargetFrameworkId)'">
-		<DefineConstants>$(DefineConstants);ISNETFULL</DefineConstants>
-		<EFCoreVersion>[3.1.32]</EFCoreVersion>
-		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
-	</PropertyGroup>
-
-	<PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$(IsPackable)' == 'True' ">
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-		<EmbedAllSources>true</EmbedAllSources>
-		<DeterministicSourcePaths>true</DeterministicSourcePaths>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<EnableSourceLink>true</EnableSourceLink>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<None Include="$(MSBuildThisFileDirectory)\.editorconfig" Link=".editorconfig"/>
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="IDisposableAnalyzers" Version="*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
-
-	<ItemGroup Condition=" '$(Configuration)' == 'Release' And '$(IsPackable)' == 'True' ">
-		<PackageReference Include="Microsoft.SourceLink.GitLab" Version="*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
 
 </Project>
