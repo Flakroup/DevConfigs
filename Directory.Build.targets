@@ -1,0 +1,64 @@
+<Project>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$(IsPackable)' == 'true' ">
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		<DeterministicSourcePaths>True</DeterministicSourcePaths>
+		<EmbedAllSources>True</EmbedAllSources>
+		<EnableSourceLink>True</EnableSourceLink>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<IncludeSymbols>True</IncludeSymbols>
+		<NoWarn>$(NoWarn);CS1591</NoWarn>
+		<!-- CS1591: Missing XML comment for publicly visible type or member - https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs1591 -->
+		<PublishRepositoryUrl>True</PublishRepositoryUrl>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' == '$(TargetFrameworkId)'">
+		<DefineConstants>$(DefineConstants);ISNET</DefineConstants>
+		<EFCoreVersion>8.0.7</EFCoreVersion>
+		<BulkExtensionsVersion>8.0.2</BulkExtensionsVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(TargetFramework)' == '$(StandardTargetFrameworkId)'">
+		<DefineConstants>$(DefineConstants);ISNETSTANDARD</DefineConstants>
+		<EFCoreVersion>[3.1.32]</EFCoreVersion>
+		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(TargetFramework)' == '$(WindowsTargetFrameworkId)'">
+		<DefineConstants>$(DefineConstants);ISNETWINDOWS</DefineConstants>
+		<EFCoreVersion>8.0.7</EFCoreVersion>
+		<BulkExtensionsVersion>8.0.2</BulkExtensionsVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(TargetFramework)' == '$(FullTargetFrameworkId)'">
+		<DefineConstants>$(DefineConstants);ISNETFULL</DefineConstants>
+		<EFCoreVersion>[3.1.32]</EFCoreVersion>
+		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="$(MSBuildThisFileDirectory).editorconfig" Link=".editorconfig"/>
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(Configuration)' == 'Release' And '$(IsPackable)' == 'true' ">
+		<PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="*">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(EnableAnalyzers)' == 'True' ">
+		<PackageReference Include="IDisposableAnalyzers" Version="*">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="*">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="ReflectionAnalyzers" Version="*">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,39 @@
+<Project>
+
+	<PropertyGroup Condition=" $(MSBuildProjectName.EndsWith('.Tests')) ">
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<NoWarn>$(NoWarn);VSTHRD200</NoWarn>
+		<!-- VSTHRD200: Use Async suffix for async methods - https://github.com/microsoft/vs-threading/blob/main/doc/analyzers/VSTHRD200.md -->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="coverlet.collector" Version="*">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="coverlet.msbuild" Version="*">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="FluentAssertions" Version="*" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="*"/>
+		<PackageReference Include="NSubstitute" Version="*"/>
+		<PackageReference Include="NSubstitute.Analyzers.CSharp" Version="*">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="xunit" Version="*"/>
+		<PackageReference Include="xunit.analyzers" Version="*"/>
+		<PackageReference Include="xunit.runner.console" Version="*">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="xunit.runner.visualstudio" Version="*">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,10 @@
+<Project>
+
+    <ItemGroup>
+        <None Remove="coverage.cobertura.xml"/>
+        <Compile Remove="TestResults\**" />
+        <EmbeddedResource Remove="TestResults\**" />
+        <None Remove="TestResults\**" />
+    </ItemGroup>
+
+</Project>
