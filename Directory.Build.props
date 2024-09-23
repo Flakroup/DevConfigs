@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
 		<Deterministic>true</Deterministic>
 		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 		<ImplicitUsings>disable</ImplicitUsings>
