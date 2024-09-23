@@ -3,6 +3,9 @@ insert_final_newline = false
 
 [*.cs]
 
+# IDE0290: Use primary constructor
+dotnet_diagnostic.IDE0290.severity = none
+
 # GlobalUsingsAnalyzer: Using should be in global file
 dotnet_diagnostic.GlobalUsingsAnalyzer.severity = none
 
