@@ -16,7 +16,7 @@
 
 	<PropertyGroup Condition="'$(TargetFramework)' == '$(TargetFrameworkId)'">
 		<DefineConstants>$(DefineConstants);ISNET</DefineConstants>
-		<EFCoreVersion>8.0.8</EFCoreVersion>
+		<EFCoreVersion>9.0.0</EFCoreVersion>
 		<BulkExtensionsVersion>8.1.1</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == '$(StandardTargetFrameworkId)'">
@@ -26,7 +26,7 @@
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == '$(WindowsTargetFrameworkId)'">
 		<DefineConstants>$(DefineConstants);ISNETWINDOWS</DefineConstants>
-		<EFCoreVersion>8.0.8</EFCoreVersion>
+		<EFCoreVersion>9.0.0</EFCoreVersion>
 		<BulkExtensionsVersion>8.1.1</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == '$(FullTargetFrameworkId)'">

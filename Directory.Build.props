@@ -14,7 +14,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFrameworkId>net8.0</TargetFrameworkId>
+		<TargetFrameworkId>net9.0</TargetFrameworkId>
 		<FullTargetFrameworkId>net481</FullTargetFrameworkId>
 		<StandardTargetFrameworkId>netstandard2.0</StandardTargetFrameworkId>
 		<FullTargetFrameworkIds>$(FullTargetFrameworkId);$(TargetFrameworkId)</FullTargetFrameworkIds>
@@ -26,7 +26,7 @@
 	<PropertyGroup>
 		<Authors>Flakroup</Authors>
 		<Company>Flakroup</Company>
-		<Copyright>Copyright © Flakroup 2024</Copyright>
+		<Copyright>Copyright © Flakroup 2025</Copyright>
 		<RepositoryType>git</RepositoryType>
 		<WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
 	</PropertyGroup>
