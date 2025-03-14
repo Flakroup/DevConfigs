@@ -1,36 +1,39 @@
-﻿<Project>
+<Project>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">
-		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-		<DeterministicSourcePaths>True</DeterministicSourcePaths>
-		<EmbedAllSources>True</EmbedAllSources>
-		<EnableSourceLink>True</EnableSourceLink>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<IncludeSymbols>True</IncludeSymbols>
+		<DeterministicSourcePaths>true</DeterministicSourcePaths>
+		<EmbedAllSources>true</EmbedAllSources>
+		<EnableSourceLink>true</EnableSourceLink>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
 		<NoWarn>$(NoWarn);CS1591</NoWarn>
 		<!-- CS1591: Missing XML comment for publicly visible type or member - https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs1591 -->
-		<PublishRepositoryUrl>True</PublishRepositoryUrl>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)' == '$(TargetFrameworkId)'">
-		<DefineConstants>$(DefineConstants);ISNET</DefineConstants>
-		<EFCoreVersion>9.0.2</EFCoreVersion>
-		<BulkExtensionsVersion>8.1.1</BulkExtensionsVersion>
+		<EFCoreVersion>$(DotNetNugetsVersion)</EFCoreVersion>
+		<BulkExtensionsVersion>[8.1.1]</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == '$(StandardTargetFrameworkId)'">
-		<DefineConstants>$(DefineConstants);ISNETSTANDARD</DefineConstants>
+		<EFCoreVersion>[3.1.32]</EFCoreVersion>
+		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == '$(LatestStandardTargetFrameworkId)'">
 		<EFCoreVersion>[3.1.32]</EFCoreVersion>
 		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == '$(WindowsTargetFrameworkId)'">
-		<DefineConstants>$(DefineConstants);ISNETWINDOWS</DefineConstants>
-		<EFCoreVersion>9.0.2</EFCoreVersion>
-		<BulkExtensionsVersion>8.1.1</BulkExtensionsVersion>
+		<EFCoreVersion>$(DotNetNugetsVersion)</EFCoreVersion>
+		<BulkExtensionsVersion>[8.1.1]</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == '$(FullTargetFrameworkId)'">
-		<DefineConstants>$(DefineConstants);ISNETFULL</DefineConstants>
+		<DefineConstants>$(DefineConstants)</DefineConstants>
 		<EFCoreVersion>[3.1.32]</EFCoreVersion>
 		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
 	</PropertyGroup>
@@ -46,7 +49,7 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(EnableAnalyzers)' == 'True' ">
+	<ItemGroup>
 		<PackageReference Include="IDisposableAnalyzers" Version="*">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -59,6 +62,13 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup Condition=" $(MSBuildProjectName.EndsWith('.Tests')) " >
+		<None Remove="coverage.cobertura.xml"/>
+		<Compile Remove="TestResults\**" />
+		<EmbeddedResource Remove="TestResults\**" />
+		<None Remove="TestResults\**" />
 	</ItemGroup>
 
 </Project>
