@@ -843,6 +843,9 @@ System.Threading.Tasks.Task.ConfigureAwait`1</s:String>
 	<s:Boolean x:Key="/Default/Housekeeping/TreeModelBrowserPanelPersistence/IsPreviewVisible/=ContinuousTestingSessionDescriptor/@EntryIndexedValue">False</s:Boolean>
 	<s:Double x:Key="/Default/Housekeeping/TreeModelBrowserPanelPersistence/PreviewSplitterVerticalProportion/=ContinuousTestingSessionDescriptor/@EntryIndexedValue">1</s:Double>
 	<s:Boolean x:Key="/Default/Housekeeping/UpgradeFromExceptionReport/UpgradePerformed/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Housekeeping/VsHighlighting/DisableVsLightBulbActionsFiltering/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Housekeeping/VsHighlighting/ImportVsSquiggles/@EntryValue">False</s:Boolean>
+	<s:String x:Key="/Default/Housekeeping/VsHighlighting/VsLightBulbDisplayMode/@EntryValue">MergeVsActionsIntoResharperMenu</s:String>
 	<s:Boolean x:Key="/Default/ReSpeller/ReSpellerEnabled/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/SnapshotsStore/CurrentStore/@EntryValue">C:\Users\JanPaweł\AppData\Local\JetBrains\Shared\vAny\Sessions</s:String>
 	
