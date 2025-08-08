@@ -55,7 +55,7 @@
 		<StandardTargetFrameworkIds>$(TargetFrameworkId);$(LatestStandardTargetFrameworkId);$(StandardTargetFrameworkId)</StandardTargetFrameworkIds>
 		<WindowsTargetFrameworkId>$(TargetFrameworkId)-windows</WindowsTargetFrameworkId>
 		<WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(WindowsTargetFrameworkId)</WindowsTargetFrameworkIds>
-		<DotNetNugetsVersion>[9.0.3]</DotNetNugetsVersion>
+		<DotNetNugetsVersion>[9.0.8]</DotNetNugetsVersion>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" '$([System.String]::Copy($(IsTestProject)).ToLower())' == 'true' ">
