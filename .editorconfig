@@ -53,3 +53,6 @@ dotnet_diagnostic.IDE0028.severity = none
 
 # IDE0028: Simplify collection initialization
 dotnet_style_collection_initializer = false
+
+# CA1200: Avoid using cref tags with a prefix
+dotnet_diagnostic.CA1200.severity = warning
