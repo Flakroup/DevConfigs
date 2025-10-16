@@ -33,7 +33,6 @@
 		<BulkExtensionsVersion>[9.0.1]</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == '$(FullTargetFrameworkId)'">
-		<DefineConstants>$(DefineConstants)</DefineConstants>
 		<EFCoreVersion>[3.1.32]</EFCoreVersion>
 		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
 	</PropertyGroup>
