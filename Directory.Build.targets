@@ -18,7 +18,7 @@
 
 	<PropertyGroup Condition="'$(TargetFramework)' == '$(TargetFrameworkId)'">
 		<EFCoreVersion>$(DotNetNugetsVersion)</EFCoreVersion>
-		<BulkExtensionsVersion>[9.0.1]</BulkExtensionsVersion>
+		<BulkExtensionsVersion>[9.0.2]</BulkExtensionsVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == '$(StandardTargetFrameworkId)'">
 		<EFCoreVersion>[3.1.32]</EFCoreVersion>
