@@ -4,84 +4,84 @@
  -->
 <Project>
 
-	<PropertyGroup>
-		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
-		<AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
-		<Authors>Flakroup</Authors>
-		<Company>Flakroup</Company>
-		<ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
-		<Copyright>Copyright © Flakroup 2025</Copyright>
-		<GenerateDocumentationFile>false</GenerateDocumentationFile>
-		<ImplicitUsings>disable</ImplicitUsings>
-		<LangVersion>latest</LangVersion>
-		<NoWarn>$(NoWarn);CA2254</NoWarn>
-		<NuGetAuditMode>all</NuGetAuditMode>
-		<Nullable>disable</Nullable>
-		<ProduceReferenceAssembly>true</ProduceReferenceAssembly>
-		<RepositoryType>git</RepositoryType>
-		<RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
-		<WarningLevel>7</WarningLevel>
-		<WarningsAsErrors>$(WarningsAsErrors);CS0660;CA1068;SI2100</WarningsAsErrors>
-		<!-- SI2100: No source for instance of Type used in optional parameter -->
-		<WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
-	</PropertyGroup>
+    <PropertyGroup>
+        <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+        <Authors>Flakroup</Authors>
+        <Company>Flakroup</Company>
+        <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
+        <Copyright>Copyright © Flakroup 2025</Copyright>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
+        <NoWarn>$(NoWarn);CA2254</NoWarn>
+        <NuGetAuditMode>all</NuGetAuditMode>
+        <Nullable>disable</Nullable>
+        <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+        <RepositoryType>git</RepositoryType>
+        <RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
+        <WarningLevel>7</WarningLevel>
+        <WarningsAsErrors>$(WarningsAsErrors);CS0660;CA1068;SI2100</WarningsAsErrors>
+        <!-- SI2100: No source for instance of Type used in optional parameter -->
+        <WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
+    </PropertyGroup>
 
-	<PropertyGroup Condition=" $(MSBuildProjectName.EndsWith('.Tests')) ">
-		<IsPackable>false</IsPackable>
-		<IsTestProject>true</IsTestProject>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<NoWarn>$(NoWarn);VSTHRD200</NoWarn>
-		<!-- VSTHRD200: Use Async suffix for async methods - https://github.com/microsoft/vs-threading/blob/main/doc/analyzers/VSTHRD200.md -->
-		<WarningsAsErrors>$(WarningsAsErrors),NS2002</WarningsAsErrors>
-		<!-- NS2002: Constructor parameters count mismatch - https://github.com/nsubstitute/NSubstitute.Analyzers/blob/master/documentation/rules/NS2002.md -->
-	</PropertyGroup>
+    <PropertyGroup Condition=" $(MSBuildProjectName.EndsWith('.Tests')) ">
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <NoWarn>$(NoWarn);VSTHRD200</NoWarn>
+        <!-- VSTHRD200: Use Async suffix for async methods - https://github.com/microsoft/vs-threading/blob/main/doc/analyzers/VSTHRD200.md -->
+        <WarningsAsErrors>$(WarningsAsErrors),NS2002</WarningsAsErrors>
+        <!-- NS2002: Constructor parameters count mismatch - https://github.com/nsubstitute/NSubstitute.Analyzers/blob/master/documentation/rules/NS2002.md -->
+    </PropertyGroup>
 
-	<PropertyGroup Condition=" '$([System.String]::Copy($(IsTestProject)).ToLower())' == 'false' ">
-		<IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', '$(TargetFrameworkId)'))">true</IsAotCompatible>
-	</PropertyGroup>
+    <PropertyGroup Condition=" '$([System.String]::Copy($(IsTestProject)).ToLower())' == 'false' ">
+        <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', '$(TargetFrameworkId)'))">true</IsAotCompatible>
+    </PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)' == 'Release' Or '$(TF_BUILD)' == 'true' ">
-		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-		<Deterministic>true</Deterministic>
-	</PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' Or '$(TF_BUILD)' == 'true' ">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+        <Deterministic>true</Deterministic>
+    </PropertyGroup>
 
-	<!-- Custom properties-->
-	<PropertyGroup>
-		<TargetFrameworkId>net10.0</TargetFrameworkId>
-		<FullTargetFrameworkId>net481</FullTargetFrameworkId>
-		<StandardTargetFrameworkId>netstandard2.0</StandardTargetFrameworkId>
-		<LatestStandardTargetFrameworkId>netstandard2.1</LatestStandardTargetFrameworkId>
-		<FullTargetFrameworkIds>$(FullTargetFrameworkId);$(LatestStandardTargetFrameworkId);$(TargetFrameworkId)</FullTargetFrameworkIds>
-		<StandardTargetFrameworkIds>$(TargetFrameworkId);$(LatestStandardTargetFrameworkId);$(StandardTargetFrameworkId)</StandardTargetFrameworkIds>
-		<WindowsTargetFrameworkId>$(TargetFrameworkId)-windows</WindowsTargetFrameworkId>
-		<WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(WindowsTargetFrameworkId)</WindowsTargetFrameworkIds>
-		<DotNetNugetsVersion>[9.0.10]</DotNetNugetsVersion>
+    <!-- Custom properties-->
+    <PropertyGroup>
+        <TargetFrameworkId>net10.0</TargetFrameworkId>
+        <FullTargetFrameworkId>net481</FullTargetFrameworkId>
+        <StandardTargetFrameworkId>netstandard2.0</StandardTargetFrameworkId>
+        <LatestStandardTargetFrameworkId>netstandard2.1</LatestStandardTargetFrameworkId>
+        <FullTargetFrameworkIds>$(FullTargetFrameworkId);$(LatestStandardTargetFrameworkId);$(TargetFrameworkId)</FullTargetFrameworkIds>
+        <StandardTargetFrameworkIds>$(TargetFrameworkId);$(LatestStandardTargetFrameworkId);$(StandardTargetFrameworkId)</StandardTargetFrameworkIds>
+        <WindowsTargetFrameworkId>$(TargetFrameworkId)-windows</WindowsTargetFrameworkId>
+        <WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(WindowsTargetFrameworkId)</WindowsTargetFrameworkIds>
+        <DotNetNugetsVersion>[10.0.3]</DotNetNugetsVersion>
         <AvaloniaVersion>11.3.8</AvaloniaVersion>
-	</PropertyGroup>
+    </PropertyGroup>
 
-	<ItemGroup Condition=" '$([System.String]::Copy($(IsTestProject)).ToLower())' == 'true' ">
-		<PackageReference Include="coverlet.collector" Version="*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="coverlet.msbuild" Version="*"/>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="*"/>
-		<PackageReference Include="NSubstitute" Version="*"/>
-		<PackageReference Include="NSubstitute.Analyzers.CSharp" Version="*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Shouldly" Version="*"/>
-		<PackageReference Include="xunit.v3" Version="*"/>
-		<PackageReference Include="xunit.analyzers" Version="*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="xunit.v3.runner.console" Version="*"/>
-		<PackageReference Include="xunit.runner.visualstudio" Version="*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
+    <ItemGroup Condition=" '$([System.String]::Copy($(IsTestProject)).ToLower())' == 'true' ">
+        <PackageReference Include="coverlet.collector" Version="*">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.msbuild" Version="*"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*"/>
+        <PackageReference Include="NSubstitute" Version="*"/>
+        <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="*">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Shouldly" Version="*"/>
+        <PackageReference Include="xunit.v3" Version="*"/>
+        <PackageReference Include="xunit.analyzers" Version="*">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="xunit.v3.runner.console" Version="*"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="*">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
 </Project>
