@@ -10,7 +10,7 @@
         <Authors>Flakroup</Authors>
         <Company>Flakroup</Company>
         <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
-        <Copyright>Copyright © Flakroup 2025</Copyright>
+        <Copyright>Copyright © Flakroup 2025-2026</Copyright>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <ImplicitUsings>disable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
