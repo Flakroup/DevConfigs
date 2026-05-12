@@ -55,8 +55,8 @@
         <StandardTargetFrameworkIds>$(TargetFrameworkId);$(LatestStandardTargetFrameworkId);$(StandardTargetFrameworkId)</StandardTargetFrameworkIds>
         <WindowsTargetFrameworkId>$(TargetFrameworkId)-windows</WindowsTargetFrameworkId>
         <WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(WindowsTargetFrameworkId)</WindowsTargetFrameworkIds>
-        <DotNetNugetsVersion>[10.0.3]</DotNetNugetsVersion>
-        <AvaloniaVersion>11.3.8</AvaloniaVersion>
+        <DotNetNugetsVersion>[10.0.8]</DotNetNugetsVersion>
+        <AvaloniaVersion>12.0.3</AvaloniaVersion>
     </PropertyGroup>
 
     <ItemGroup Condition=" '$([System.String]::Copy($(IsTestProject)).ToLower())' == 'true' ">
