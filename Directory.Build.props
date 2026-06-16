@@ -55,7 +55,7 @@
         <StandardTargetFrameworkIds>$(TargetFrameworkId);$(LatestStandardTargetFrameworkId);$(StandardTargetFrameworkId)</StandardTargetFrameworkIds>
         <WindowsTargetFrameworkId>$(TargetFrameworkId)-windows</WindowsTargetFrameworkId>
         <WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(WindowsTargetFrameworkId)</WindowsTargetFrameworkIds>
-        <DotNetNugetsVersion>[10.0.8]</DotNetNugetsVersion>
+        <DotNetNugetsVersion>[10.0.9]</DotNetNugetsVersion>
         <AvaloniaVersion>12.0.3</AvaloniaVersion>
     </PropertyGroup>
 
