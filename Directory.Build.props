@@ -30,6 +30,11 @@
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <!-- Microsoft.Testing.Platform (MTP) runner instead of the VSTest adapter: tests build as an Exe
+             and `dotnet test` drives the native runner (same path as running the test Exe directly). -->
+        <OutputType>Exe</OutputType>
+        <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
         <NoWarn>$(NoWarn);VSTHRD200</NoWarn>
         <!-- VSTHRD200: Use Async suffix for async methods - https://github.com/microsoft/vs-threading/blob/main/doc/analyzers/VSTHRD200.md -->
         <WarningsAsErrors>$(WarningsAsErrors),NS2002</WarningsAsErrors>
@@ -60,27 +65,19 @@
     </PropertyGroup>
 
     <ItemGroup Condition=" '$([System.String]::Copy($(IsTestProject)).ToLower())' == 'true' ">
-        <PackageReference Include="coverlet.collector" Version="*">
+        <!-- MTP test stack - pinned (floating '*' drifts Testing.Platform versions and breaks the runner). -->
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1"/>
+        <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.4.1"/>
+        <PackageReference Include="NSubstitute" Version="5.3.0"/>
+        <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="coverlet.msbuild" Version="*"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*"/>
-        <PackageReference Include="NSubstitute" Version="*"/>
-        <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="*">
+        <PackageReference Include="Shouldly" Version="4.3.0"/>
+        <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.2"/>
+        <PackageReference Include="xunit.analyzers" Version="1.27.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Shouldly" Version="*"/>
-        <PackageReference Include="xunit.v3" Version="*"/>
-        <PackageReference Include="xunit.analyzers" Version="*">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="xunit.v3.runner.console" Version="*"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="*">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 
