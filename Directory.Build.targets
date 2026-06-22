@@ -1,73 +1,73 @@
 <Project>
 
-	<PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">
-		<DeterministicSourcePaths>true</DeterministicSourcePaths>
-		<EmbedAllSources>true</EmbedAllSources>
-		<EnableSourceLink>true</EnableSourceLink>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<IncludeSymbols>true</IncludeSymbols>
-		<NoWarn>$(NoWarn);CS1591</NoWarn>
-		<!-- CS1591: Missing XML comment for publicly visible type or member - https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs1591 -->
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-	</PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">
+        <DeterministicSourcePaths>true</DeterministicSourcePaths>
+        <EmbedAllSources>true</EmbedAllSources>
+        <EnableSourceLink>true</EnableSourceLink>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IncludeSymbols>true</IncludeSymbols>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+        <!-- CS1591: Missing XML comment for publicly visible type or member - https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs1591 -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)' == '$(TargetFrameworkId)'">
-		<EFCoreVersion>$(DotNetNugetsVersion)</EFCoreVersion>
-		<BulkExtensionsVersion>[10.0.1]</BulkExtensionsVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFramework)' == '$(StandardTargetFrameworkId)'">
-		<EFCoreVersion>[3.1.32]</EFCoreVersion>
-		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(TargetFramework)' == '$(LatestStandardTargetFrameworkId)'">
-		<EFCoreVersion>[3.1.32]</EFCoreVersion>
-		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFramework)' == '$(WindowsTargetFrameworkId)'">
-		<EFCoreVersion>$(DotNetNugetsVersion)</EFCoreVersion>
-		<BulkExtensionsVersion>[10.0.1]</BulkExtensionsVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFramework)' == '$(FullTargetFrameworkId)'">
-		<EFCoreVersion>[3.1.32]</EFCoreVersion>
-		<BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == '$(TargetFrameworkId)'">
+        <EFCoreVersion>$(DotNetNugetsVersion)</EFCoreVersion>
+        <BulkExtensionsVersion>[10.0.1]</BulkExtensionsVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(TargetFramework)' == '$(StandardTargetFrameworkId)'">
+        <EFCoreVersion>[3.1.32]</EFCoreVersion>
+        <BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == '$(LatestStandardTargetFrameworkId)'">
+        <EFCoreVersion>[3.1.32]</EFCoreVersion>
+        <BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(TargetFramework)' == '$(WindowsTargetFrameworkId)'">
+        <EFCoreVersion>$(DotNetNugetsVersion)</EFCoreVersion>
+        <BulkExtensionsVersion>[10.0.1]</BulkExtensionsVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(TargetFramework)' == '$(FullTargetFrameworkId)'">
+        <EFCoreVersion>[3.1.32]</EFCoreVersion>
+        <BulkExtensionsVersion>[3.6.6]</BulkExtensionsVersion>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<None Include="$(MSBuildThisFileDirectory).editorconfig" Link=".editorconfig"/>
-	</ItemGroup>
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory).editorconfig" Link=".editorconfig"/>
+    </ItemGroup>
 
-	<ItemGroup Condition=" '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">
-		<PackageReference Include="Microsoft.SourceLink.GitLab" Version="*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
+    <ItemGroup Condition=" '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="IDisposableAnalyzers" Version="*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="ReflectionAnalyzers" Version="*">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="IDisposableAnalyzers" Version="4.0.8">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.14.15">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="ReflectionAnalyzers" Version="0.3.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
-	<ItemGroup Condition=" $(MSBuildProjectName.EndsWith('.Tests')) " >
-		<None Remove="coverage.cobertura.xml"/>
-		<Compile Remove="TestResults\**" />
-		<EmbeddedResource Remove="TestResults\**" />
-		<None Remove="TestResults\**" />
-	</ItemGroup>
+    <ItemGroup Condition=" $(MSBuildProjectName.EndsWith('.Tests')) " >
+        <None Remove="coverage.cobertura.xml"/>
+        <Compile Remove="TestResults\**" />
+        <EmbeddedResource Remove="TestResults\**" />
+        <None Remove="TestResults\**" />
+    </ItemGroup>
 
 </Project>
