@@ -16,7 +16,7 @@
         <LangVersion>latest</LangVersion>
         <NoWarn>$(NoWarn);CA2254</NoWarn>
         <NuGetAuditMode>all</NuGetAuditMode>
-        <Nullable>disable</Nullable>
+        <Nullable>enable</Nullable>
         <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
         <RepositoryType>git</RepositoryType>
         <RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
