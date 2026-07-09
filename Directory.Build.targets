@@ -61,6 +61,14 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <!-- Polyfills System.Diagnostics.CodeAnalysis nullable attributes (NotNullWhen, NotNull,
+             MaybeNull, MemberNotNull, ...) on down-level targets (netstandard2.0, net481, and
+             MemberNotNull* on netstandard2.1) so nullable annotations compile on every TFM.
+             Source generator only, PrivateAssets=all -> no runtime, not exposed to consumers. -->
+        <PackageReference Include="PolySharp" Version="1.16.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup Condition=" $(MSBuildProjectName.EndsWith('.Tests')) " >
