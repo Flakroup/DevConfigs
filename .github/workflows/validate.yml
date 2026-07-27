@@ -1,0 +1,23 @@
+name: validate
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  dotsettings:
+    name: Validate shared ReSharper layers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Self-test the validator
+        run: python tools/test_validate_dotsettings.py
+
+      - name: Validate *.DotSettings
+        run: python tools/validate_dotsettings.py
