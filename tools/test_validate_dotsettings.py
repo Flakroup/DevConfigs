@@ -72,8 +72,8 @@ CASES = [
     (
         '\t<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied'
         '/=SomeMigration/@EntryIndexedValue">True</s:Boolean>',
-        "personal ReSharper state",
-        "a settings-migration marker is rejected",
+        None,
+        "a settings-migration marker is tolerated - ReSharper re-adds it on every load",
     ),
     (
         '\t<s:String x:Key="/Default/Housekeeping/OptionsDialog/SelectedPageId/@EntryValue">'

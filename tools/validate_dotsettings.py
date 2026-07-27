@@ -27,13 +27,17 @@ ABSOLUTE_PATH = re.compile(r"[A-Za-z]:[\\/]|(?:^|[\s\"'>])/(?:home|Users)/")
 
 # Keys ReSharper writes to whichever layer is selected for saving. None of them is configuration:
 # they are one-shot markers, window geometry, telemetry consent or per-install bookkeeping.
+#
+# Deliberately NOT listed: /Default/Environment/SettingsMigration/IsMigratorApplied/. ReSharper writes
+# those markers back into any layer it loads that is missing them - `jb inspectcode --settings=<this file>`
+# re-adds a dozen of them, along with a UTF-8 BOM. Flagging them would fail CI for something the tool does
+# by design, so they are tolerated; the churn they cause in diffs is the price.
 PERSONAL_KEY_PREFIXES = (
     "/Default/Connection/XmlConnectionList",
     "/Default/Environment/ExternalSources/FirstTimeFormShown",
     "/Default/Environment/Feedback/",
     "/Default/Environment/Hierarchy/",
     "/Default/Environment/MemoryUsageIndicator/",
-    "/Default/Environment/SettingsMigration/",
     "/Default/Environment/UpdatesManger/",
     "/Default/Housekeeping/GlobalSettingsUpgraded/",
     "/Default/Housekeeping/IntellisenseHousekeeping/",
