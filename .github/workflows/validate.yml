@@ -21,3 +21,19 @@ jobs:
 
       - name: Validate *.DotSettings
         run: python tools/validate_dotsettings.py
+
+  build-props:
+    name: Validate the shared NuGet audit pin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Self-test the validator
+        run: python tools/test_validate_build_props.py
+
+      - name: Validate Directory.Build.props
+        run: python tools/validate_build_props.py
