@@ -35,5 +35,5 @@ jobs:
       - name: Self-test the validator
         run: python tools/test_validate_build_props.py
 
-      - name: Validate Directory.Build.props
+      - name: Validate Directory.Build.props and .targets
         run: python tools/validate_build_props.py
