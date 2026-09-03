@@ -18,10 +18,21 @@ from validate_build_props import (  # noqa: E402
 
 PINS = "        <NuGetAudit>true</NuGetAudit>\n        <NuGetAuditMode>all</NuGetAuditMode>"
 
+# The attribute the props file has to carry, as the fixtures spell it by default. A case that is
+# about the attribute passes its own value, or None to build a Project element without one.
+LOCAL = 'TreatAsLocalProperty="NuGetAudit;NuGetAuditMode"'
 
-def wrap(properties: str) -> str:
+
+def opening(local: str | None) -> str:
+    """Build the opening Project tag, with the given attribute text or without any."""
+    return f"<Project {local}>" if local else "<Project>"
+
+
+def wrap(properties: str, local: str | None = LOCAL) -> str:
     """Wrap property assignments in the surrounding Project/PropertyGroup skeleton."""
-    return f"<Project>\n\n    <PropertyGroup>\n{properties}\n    </PropertyGroup>\n\n</Project>"
+    return (
+        f"{opening(local)}\n\n    <PropertyGroup>\n{properties}\n    </PropertyGroup>\n\n</Project>"
+    )
 
 
 def group(properties: str, condition: str = "") -> str:
@@ -30,10 +41,10 @@ def group(properties: str, condition: str = "") -> str:
     return f"    <PropertyGroup{attribute}>\n{properties}\n    </PropertyGroup>"
 
 
-def project(*groups: str) -> str:
+def project(*groups: str, local: str | None = LOCAL) -> str:
     """Build a Project holding the given groups verbatim, in order."""
     body = "\n".join(groups)
-    return f"<Project>\n{body}\n</Project>"
+    return f"{opening(local)}\n{body}\n</Project>"
 
 
 def check(content: str | None, expected: str | None, label: str, *, targets: bool = False) -> bool:
@@ -178,7 +189,7 @@ PROPS_CASES = [
         "an unrelated NoWarn entry is left alone",
     ),
     (
-        "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n"
+        f"<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" {LOCAL}>\n"
         f"    <PropertyGroup>\n{PINS}\n    </PropertyGroup>\n</Project>",
         None,
         "the legacy MSBuild namespace is understood",
@@ -187,6 +198,86 @@ PROPS_CASES = [
         f"<PropertyGroup>\n{PINS}\n</PropertyGroup>",
         "expected an MSBuild Project",
         "a file whose root is not Project is rejected",
+    ),
+    (
+        wrap(PINS, local=None),
+        "TreatAsLocalProperty is not declared",
+        "pins without the attribute are rejected - a command line would still beat them",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="NuGetAudit"'),
+        "TreatAsLocalProperty does not cover NuGetAuditMode -",
+        "the attribute naming only the audit is rejected",
+    ),
+    (
+        # The trailing dash is load-bearing: "NuGetAudit" is a prefix of "NuGetAuditMode", so
+        # without it this case would also accept a report naming the wrong property of the two.
+        wrap(PINS, local='TreatAsLocalProperty="NuGetAuditMode"'),
+        "TreatAsLocalProperty does not cover NuGetAudit -",
+        "the attribute naming only the mode is rejected",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty=""'),
+        "TreatAsLocalProperty is not declared",
+        "an empty attribute value counts as no declaration",
+    ),
+    (
+        wrap(
+            f'        <!-- <Project {LOCAL}> -->\n{PINS}',
+            local=None,
+        ),
+        "TreatAsLocalProperty is not declared",
+        "the attribute only inside an XML comment is rejected",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="NuGetAudit,NuGetAuditMode"'),
+        "which MSBuild rejects with MSB5016",
+        "a comma-separated value is rejected - MSBuild splits on semicolons only",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="NuGetAudit;&#10;    NuGetAuditMode"'),
+        None,
+        "a value wrapped across lines after the semicolon passes - MSBuild trims each entry",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty=" nugetaudit ; NUGETAUDITMODE "'),
+        None,
+        "the attribute is matched case-insensitively and padding is ignored, as MSBuild does",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="Version;NuGetAudit;;NuGetAuditMode"'),
+        None,
+        "unrelated names and empty entries alongside the two guarded ones are fine",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="Foo Bar;NuGetAudit;NuGetAuditMode"'),
+        "which MSBuild rejects with MSB5016",
+        "a third name MSBuild cannot parse is rejected - it would fail every consumer's build",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="Build.Fast;NuGetAudit;NuGetAuditMode"'),
+        "which MSBuild rejects with MSB5016",
+        "a dot in a name is rejected, as MSBuild rejects it",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="1Fast;NuGetAudit;NuGetAuditMode"'),
+        "which MSBuild rejects with MSB5016",
+        "a name starting with a digit is rejected, as MSBuild rejects it",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="_Build-Fast;NuGetAudit;NuGetAuditMode"'),
+        None,
+        "a leading underscore and an inner hyphen are legal MSBuild names and pass",
+    ),
+    (
+        wrap(f"{PINS}\n        <MSBuildWarningsAsMessages>NU1903</MSBuildWarningsAsMessages>"),
+        "MSBuildWarningsAsMessages suppresses NU1903",
+        "demoting an audit warning to a message is rejected, exactly like NoWarn",
+    ),
+    (
+        wrap(f"{PINS}\n        <MSBuildWarningsAsMessages>CS1591</MSBuildWarningsAsMessages>"),
+        None,
+        "an unrelated MSBuildWarningsAsMessages entry is left alone",
     ),
 ]
 
@@ -217,9 +308,19 @@ TARGETS_CASES = [
         "the targets file restating the policy verbatim is harmless",
     ),
     (
+        project(group("        <IsPackable>true</IsPackable>"), local=None),
+        None,
+        "the targets file needs no TreatAsLocalProperty of its own - the props file carries it",
+    ),
+    (
         project(group("        <NoWarn>$(NoWarn);NU1902</NoWarn>")),
         "NoWarn suppresses NU1902",
         "the targets file suppressing an audit warning is rejected",
+    ),
+    (
+        project(group("        <MSBuildWarningsAsMessages>NU1901</MSBuildWarningsAsMessages>")),
+        "MSBuildWarningsAsMessages suppresses NU1901",
+        "the targets file demoting an audit warning to a message is rejected",
     ),
 ]
 

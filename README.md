@@ -69,11 +69,21 @@ SDK, so the assignment is a pin rather than a behaviour change - what it buys is
 a property assigned in a project file beats an environment variable of the same name, which
 closes the `NuGetAudit=false` route that leaves no file behind for any scan to read.
 
-It does **not** beat a command line. `-p:NuGetAudit=false` is a global property and still wins
-over a plain assignment, so a consuming repository that invokes MSBuild from a script has to
-guard that script itself. A `TreatAsLocalProperty` attribute on the `Project` element would
-close that route as well; this repository has not taken that decision, because it would also
-take the override away from every consumer that has a legitimate use for it.
+A plain assignment does **not** beat a command line: `-p:NuGetAudit=false` is a global property
+and wins over one. So the `Project` element also carries
+`TreatAsLocalProperty="NuGetAudit;NuGetAuditMode"`, which demotes a global value of either to a
+local one the assignment then overwrites - closing the command-line route too. The trade is
+deliberate and it is not free: **no consuming repository can override these two properties from a
+command line any more**, whatever its reason. A repository that needs the audit off assigns it
+after its own import of this file, which still wins - it just cannot be done per invocation.
+
+That is a statement about those two properties, not about the audit as a whole:
+`-p:NuGetAuditLevel=critical` is neither pinned nor local here, and still hides everything below
+critical severity.
+
+MSBuild splits that attribute on semicolons and nothing else - a comma or a bare line break
+between two names lands inside one name and fails evaluation with `MSB5016`. Whitespace around
+each name is trimmed, so wrapping the value across lines after a semicolon is fine.
 
 Audit findings are warnings (NU1901-NU1904), not errors. Nothing here promotes them, so a
 consumer that wants a vulnerable package to fail its build opts into that itself.
@@ -87,9 +97,24 @@ python tools/validate_build_props.py
 It reads both `Directory.Build.props` and `Directory.Build.targets` - the targets file is
 evaluated after the project body, so a property set there would beat the pin. It parses them as
 XML rather than scanning text, matches property names case-insensitively as MSBuild does, and
-rejects a commented-out or conditional assignment, a `NoWarn` covering the audit's own warning
-codes, and a missing `Directory.Build.props`.
+rejects a commented-out or conditional assignment, a `NoWarn` or `MSBuildWarningsAsMessages`
+covering the audit's own warning codes, and a missing `Directory.Build.props`. In
+`Directory.Build.props` only, it also rejects a `TreatAsLocalProperty` that is absent, does not name
+both properties, or names anything MSBuild would refuse with `MSB5016` - the targets file needs no
+attribute of its own.
 
-What it cannot see, so do not read a green run as more than it is: an `Import` in either file
-(reported rather than followed), anything a consuming repository assigns after its own import
-of these files, and the workflow being edited away in the same commit.
+What it cannot see, so do not read a green run as more than it is:
+
+- An `Import` in either file - reported rather than followed.
+- Anything a consuming repository assigns after its own import of these files, in its own
+  `Directory.Build.props`/`.targets` or a project file. That route is open by design.
+- `NuGetAuditLevel`, which hides everything below its value, and `NuGetAuditSuppress` items, which
+  drop a named advisory. Neither is pinned or checked.
+- A consumer's `nuget.config`: an `auditSources` block pointed somewhere without vulnerability data
+  turns findings into a single NU1905.
+- A consumer that never bumps its submodule pointer. It keeps whatever this file said when it was
+  pinned, and nothing here can tell.
+- `dotnet restore` on its own: with `RestoreUseStaticGraphEvaluation` (set to `true` above) the
+  audit warnings do not reach the console summary. A subsequent build replays them from the assets
+  file, so a pipeline whose only audit signal is a standalone restore step reads zero.
+- The workflow being edited away in the same commit.

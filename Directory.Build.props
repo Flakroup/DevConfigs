@@ -2,7 +2,7 @@
 - MSBuild boolean values are written as 'true' or 'false' (lowercase)
 - Custom boolean values are written as 'True' or 'False' (uppercase)
  -->
-<Project>
+<Project TreatAsLocalProperty="NuGetAudit;NuGetAuditMode">
 
     <PropertyGroup>
         <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
