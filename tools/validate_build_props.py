@@ -13,6 +13,12 @@ the props file carries it for both properties, so a global value of either is de
 the assignment below then overwrites. The cost is deliberate: no consumer of this submodule can
 override these two from a command line any more.
 
+Read that as being about those two properties, not about the audit as a whole. Measured routes that
+still silence a real advisory while every check below reports OK: ``-p:NuGetAuditLevel=critical``
+(that property is neither pinned nor local here), a consuming repository assigning either property
+after its own import, ``NuGetAuditSuppress`` items, and an ``auditSources`` block in a consumer's
+``nuget.config``, which turns the finding into NU1905.
+
 What this validator covers, and why each part is here rather than assumed:
 
 * ``Directory.Build.props`` must carry the pin unconditionally. Absence is a failure - a missing
@@ -28,8 +34,8 @@ What this validator covers, and why each part is here rather than assumed:
   ``<nugetaudit>false</nugetaudit>`` disables the audit exactly as the capitalised spelling does.
 * An ``Import`` in either file is reported. Its contents are evaluated but not parsed here, so the
   guard cannot honestly speak for a file it has not read.
-* ``NoWarn`` carrying NU1901-NU1904 is reported. That silences the audit's entire output while both
-  properties still read as policy-compliant.
+* ``NoWarn`` or ``MSBuildWarningsAsMessages`` carrying NU1901-NU1904 is reported. Either silences
+  the audit's entire output while both properties still read as policy-compliant.
 * Values are compared verbatim rather than trimmed. MSBuild stores the whitespace around a property
   value, so a padded value is a real divergence between what this check reports and what the build
   holds.
@@ -58,6 +64,12 @@ POLICY = {
 
 # The warnings the audit raises. Suppressing them leaves the audit running and its findings unread.
 AUDIT_WARNING_CODES = ("NU1901", "NU1902", "NU1903", "NU1904")
+
+# The two properties that silence a warning code. NoWarn drops the warning, and
+# MSBuildWarningsAsMessages demotes it to a message no console summary counts. Measured: either of
+# them carrying the codes above turns a High-severity advisory into no output at all, with both
+# pins still reading as policy-compliant.
+WARNING_SUPPRESSING_PROPERTIES = ("nowarn", "msbuildwarningsasmessages")
 
 # The attribute that demotes a global property to a local one, so the assignment above wins over
 # `-p:NuGetAudit=false`. MSBuild splits its value on semicolons and nothing else: a comma or a bare
@@ -140,15 +152,32 @@ def _policy_problems(assignments: list[Assignment], require_pin: bool) -> list[s
 def _local_property_problems(root: ElementTree.Element) -> list[str]:
     """Report whether the Project element demotes both guarded properties to local ones.
 
-    Split the way MSBuild splits, so a value this accepts is a value MSBuild also reads as two
+    Split the way MSBuild splits, so a value this accepts is a value MSBuild also reads as a list of
     names. Anything it does not - a comma-separated list, names run together across a line break -
     leaves at least one name unmatched and is reported here rather than failing the next build.
+
+    Every entry is checked, not only the two guarded ones. MSBuild refuses to evaluate the whole
+    file when any name in the list is malformed, and nothing in this repository's CI evaluates
+    MSBuild, so a third name with a typo in it would merge green and then break every consumer that
+    bumps the submodule.
     """
-    declared = {
-        name.strip().casefold()
+    entries = [
+        name.strip()
         for name in (root.get("TreatAsLocalProperty") or "").split(LOCAL_PROPERTY_SEPARATOR)
         if name.strip()
-    }
+    ]
+
+    # MSBuild accepts a letter or underscore first, then letters, digits, underscores and hyphens;
+    # a dot, a plus, a colon or a space fails evaluation with MSB5016. Mapping the hyphen onto an
+    # underscore turns that into exactly Python's own identifier rule, non-ASCII letters included.
+    malformed = [entry for entry in entries if not entry.replace("-", "_").isidentifier()]
+    if malformed:
+        return [
+            f"TreatAsLocalProperty names {', '.join(repr(entry) for entry in malformed)}, which "
+            "MSBuild rejects with MSB5016 - the whole file would fail to evaluate"
+        ]
+
+    declared = {entry.casefold() for entry in entries}
     if not declared:
         return [
             "TreatAsLocalProperty is not declared on the Project element - a command line passing "
@@ -174,13 +203,13 @@ def _blind_spots(root: ElementTree.Element) -> list[str]:
                 f"Import of {element.get('Project', '?')!r} - this guard does not read imported "
                 "files, so it cannot vouch for what they assign"
             )
-        elif name == "nowarn":
+        elif name in WARNING_SUPPRESSING_PROPERTIES:
             value = (element.text or "").upper()
             suppressed = [code for code in AUDIT_WARNING_CODES if code in value]
             if suppressed:
                 problems.append(
-                    f"NoWarn suppresses {', '.join(suppressed)} - the audit would run and report "
-                    "nothing"
+                    f"{_local_name(element.tag)} suppresses {', '.join(suppressed)} - the audit "
+                    "would run and report nothing"
                 )
     return problems
 
@@ -209,7 +238,8 @@ def _validate(path: Path, require_pin: bool) -> list[str]:
 def validate(path: Path) -> list[str]:
     """Return one message per problem in ``Directory.Build.props``.
 
-    Empty means the pin is in place and no command line can override it.
+    Empty means these two properties are pinned and no command line overrides THEM. It does not mean
+    the audit is guaranteed to report - see the limits listed at the top of this module.
     """
     return _validate(path, require_pin=True)
 

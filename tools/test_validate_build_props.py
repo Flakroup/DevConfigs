@@ -206,12 +206,14 @@ PROPS_CASES = [
     ),
     (
         wrap(PINS, local='TreatAsLocalProperty="NuGetAudit"'),
-        "TreatAsLocalProperty does not cover NuGetAuditMode",
+        "TreatAsLocalProperty does not cover NuGetAuditMode -",
         "the attribute naming only the audit is rejected",
     ),
     (
+        # The trailing dash is load-bearing: "NuGetAudit" is a prefix of "NuGetAuditMode", so
+        # without it this case would also accept a report naming the wrong property of the two.
         wrap(PINS, local='TreatAsLocalProperty="NuGetAuditMode"'),
-        "TreatAsLocalProperty does not cover NuGetAudit",
+        "TreatAsLocalProperty does not cover NuGetAudit -",
         "the attribute naming only the mode is rejected",
     ),
     (
@@ -229,7 +231,7 @@ PROPS_CASES = [
     ),
     (
         wrap(PINS, local='TreatAsLocalProperty="NuGetAudit,NuGetAuditMode"'),
-        "TreatAsLocalProperty does not cover NuGetAudit, NuGetAuditMode",
+        "which MSBuild rejects with MSB5016",
         "a comma-separated value is rejected - MSBuild splits on semicolons only",
     ),
     (
@@ -246,6 +248,36 @@ PROPS_CASES = [
         wrap(PINS, local='TreatAsLocalProperty="Version;NuGetAudit;;NuGetAuditMode"'),
         None,
         "unrelated names and empty entries alongside the two guarded ones are fine",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="Foo Bar;NuGetAudit;NuGetAuditMode"'),
+        "which MSBuild rejects with MSB5016",
+        "a third name MSBuild cannot parse is rejected - it would fail every consumer's build",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="Build.Fast;NuGetAudit;NuGetAuditMode"'),
+        "which MSBuild rejects with MSB5016",
+        "a dot in a name is rejected, as MSBuild rejects it",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="1Fast;NuGetAudit;NuGetAuditMode"'),
+        "which MSBuild rejects with MSB5016",
+        "a name starting with a digit is rejected, as MSBuild rejects it",
+    ),
+    (
+        wrap(PINS, local='TreatAsLocalProperty="_Build-Fast;NuGetAudit;NuGetAuditMode"'),
+        None,
+        "a leading underscore and an inner hyphen are legal MSBuild names and pass",
+    ),
+    (
+        wrap(f"{PINS}\n        <MSBuildWarningsAsMessages>NU1903</MSBuildWarningsAsMessages>"),
+        "MSBuildWarningsAsMessages suppresses NU1903",
+        "demoting an audit warning to a message is rejected, exactly like NoWarn",
+    ),
+    (
+        wrap(f"{PINS}\n        <MSBuildWarningsAsMessages>CS1591</MSBuildWarningsAsMessages>"),
+        None,
+        "an unrelated MSBuildWarningsAsMessages entry is left alone",
     ),
 ]
 
@@ -284,6 +316,11 @@ TARGETS_CASES = [
         project(group("        <NoWarn>$(NoWarn);NU1902</NoWarn>")),
         "NoWarn suppresses NU1902",
         "the targets file suppressing an audit warning is rejected",
+    ),
+    (
+        project(group("        <MSBuildWarningsAsMessages>NU1901</MSBuildWarningsAsMessages>")),
+        "MSBuildWarningsAsMessages suppresses NU1901",
+        "the targets file demoting an audit warning to a message is rejected",
     ),
 ]
 
