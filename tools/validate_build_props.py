@@ -7,15 +7,19 @@ property assigned in a project file beats an *environment* variable of the same 
 ``NuGetAudit=false`` in the environment - which leaves no file for any scan to read - stops working
 once the property is assigned here.
 
-It does not beat a command line: ``-p:NuGetAudit=false`` is a global property and still wins over a
-plain assignment. (An MSBuild ``TreatAsLocalProperty`` attribute would close that too; this
-repository has not taken that decision, so the route stays open and a consuming repository that
-invokes MSBuild from a script has to guard its own script.)
+A plain assignment does not beat a command line: ``-p:NuGetAudit=false`` is a global property and
+wins over one. ``TreatAsLocalProperty`` on the ``Project`` element is what closes that route, and
+the props file carries it for both properties, so a global value of either is demoted to a local one
+the assignment below then overwrites. The cost is deliberate: no consumer of this submodule can
+override these two from a command line any more.
 
 What this validator covers, and why each part is here rather than assumed:
 
 * ``Directory.Build.props`` must carry the pin unconditionally. Absence is a failure - a missing
   property, or a missing file altogether - so deleting what the guard protects cannot turn it green.
+* ``Directory.Build.props`` must also declare both properties in ``TreatAsLocalProperty``. Only the
+  props file is required to: that is where the pin lives, and that is where the attribute was
+  measured to demote a global value. The targets file needs none of its own.
 * ``Directory.Build.targets`` is checked too. This repository ships it, MSBuild evaluates it AFTER
   the project body, and a property set there beats the props file. A guard that reads only the props
   file names itself after a policy it cannot see half of. Its absence is not a failure: deleting that
@@ -31,7 +35,8 @@ What this validator covers, and why each part is here rather than assumed:
   holds.
 
 Both files are parsed as XML, never scanned as text - ``<!-- <NuGetAudit>true</NuGetAudit> -->`` does
-not satisfy the check, and a comment merely mentioning a property is not mistaken for it.
+not satisfy the check, a commented-out ``Project`` element does not supply the attribute, and a
+comment merely mentioning a property is not mistaken for it.
 """
 
 from __future__ import annotations
@@ -53,6 +58,14 @@ POLICY = {
 
 # The warnings the audit raises. Suppressing them leaves the audit running and its findings unread.
 AUDIT_WARNING_CODES = ("NU1901", "NU1902", "NU1903", "NU1904")
+
+# The attribute that demotes a global property to a local one, so the assignment above wins over
+# `-p:NuGetAudit=false`. MSBuild splits its value on semicolons and nothing else: a comma or a bare
+# newline between two names does not separate them, it lands inside one name and fails evaluation
+# with MSB5016 ("contains invalid character"). Whitespace around an entry is trimmed, so a value
+# wrapped across lines after a semicolon is accepted, and empty entries are ignored. Names resolve
+# case-insensitively, like every other MSBuild property name.
+LOCAL_PROPERTY_SEPARATOR = ";"
 
 
 class Assignment(NamedTuple):
@@ -124,6 +137,33 @@ def _policy_problems(assignments: list[Assignment], require_pin: bool) -> list[s
     return problems
 
 
+def _local_property_problems(root: ElementTree.Element) -> list[str]:
+    """Report whether the Project element demotes both guarded properties to local ones.
+
+    Split the way MSBuild splits, so a value this accepts is a value MSBuild also reads as two
+    names. Anything it does not - a comma-separated list, names run together across a line break -
+    leaves at least one name unmatched and is reported here rather than failing the next build.
+    """
+    declared = {
+        name.strip().casefold()
+        for name in (root.get("TreatAsLocalProperty") or "").split(LOCAL_PROPERTY_SEPARATOR)
+        if name.strip()
+    }
+    if not declared:
+        return [
+            "TreatAsLocalProperty is not declared on the Project element - a command line passing "
+            "-p:NuGetAudit=false would still beat the pin"
+        ]
+
+    missing = [name for key, (name, _) in POLICY.items() if key not in declared]
+    if missing:
+        return [
+            f"TreatAsLocalProperty does not cover {', '.join(missing)} - a command line passing "
+            f"-p:{missing[0]}=... would still beat the pin"
+        ]
+    return []
+
+
 def _blind_spots(root: ElementTree.Element) -> list[str]:
     """Report the constructs that would let a guarded file pass while the policy does not hold."""
     problems: list[str] = []
@@ -160,11 +200,17 @@ def _validate(path: Path, require_pin: bool) -> list[str]:
     if _local_name(root.tag) != "Project":
         return [f"root element is {root.tag}, expected an MSBuild Project"]
 
-    return _policy_problems(_collect(root), require_pin) + _blind_spots(root)
+    problems = _policy_problems(_collect(root), require_pin)
+    if require_pin:
+        problems += _local_property_problems(root)
+    return problems + _blind_spots(root)
 
 
 def validate(path: Path) -> list[str]:
-    """Return one message per problem in ``Directory.Build.props``; empty means the pin is in place."""
+    """Return one message per problem in ``Directory.Build.props``.
+
+    Empty means the pin is in place and no command line can override it.
+    """
     return _validate(path, require_pin=True)
 
 

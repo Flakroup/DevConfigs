@@ -69,11 +69,17 @@ SDK, so the assignment is a pin rather than a behaviour change - what it buys is
 a property assigned in a project file beats an environment variable of the same name, which
 closes the `NuGetAudit=false` route that leaves no file behind for any scan to read.
 
-It does **not** beat a command line. `-p:NuGetAudit=false` is a global property and still wins
-over a plain assignment, so a consuming repository that invokes MSBuild from a script has to
-guard that script itself. A `TreatAsLocalProperty` attribute on the `Project` element would
-close that route as well; this repository has not taken that decision, because it would also
-take the override away from every consumer that has a legitimate use for it.
+A plain assignment does **not** beat a command line: `-p:NuGetAudit=false` is a global property
+and wins over one. So the `Project` element also carries
+`TreatAsLocalProperty="NuGetAudit;NuGetAuditMode"`, which demotes a global value of either to a
+local one the assignment then overwrites - closing the command-line route too. The trade is
+deliberate and it is not free: **no consuming repository can override these two properties from a
+command line any more**, whatever its reason. Turning the audit off for one build now means
+editing this file.
+
+MSBuild splits that attribute on semicolons and nothing else - a comma or a bare line break
+between two names lands inside one name and fails evaluation with `MSB5016`. Whitespace around
+each name is trimmed, so wrapping the value across lines after a semicolon is fine.
 
 Audit findings are warnings (NU1901-NU1904), not errors. Nothing here promotes them, so a
 consumer that wants a vulnerable package to fail its build opts into that itself.
@@ -87,8 +93,9 @@ python tools/validate_build_props.py
 It reads both `Directory.Build.props` and `Directory.Build.targets` - the targets file is
 evaluated after the project body, so a property set there would beat the pin. It parses them as
 XML rather than scanning text, matches property names case-insensitively as MSBuild does, and
-rejects a commented-out or conditional assignment, a `NoWarn` covering the audit's own warning
-codes, and a missing `Directory.Build.props`.
+rejects a commented-out or conditional assignment, a `TreatAsLocalProperty` that is absent or does
+not name both properties, a `NoWarn` covering the audit's own warning codes, and a missing
+`Directory.Build.props`.
 
 What it cannot see, so do not read a green run as more than it is: an `Import` in either file
 (reported rather than followed), anything a consuming repository assigns after its own import
