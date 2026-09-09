@@ -42,7 +42,9 @@
     </ItemGroup>
 
     <ItemGroup Condition=" '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300">
+        <!-- 10.0.303 is the first release whose Microsoft.Build.Tasks.Git clears GHSA-23fw-v26w-5fgq
+             (moderate, information disclosure); 10.0.300 and 10.0.301 both carry it. Do not pin below it. -->
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.303">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
