@@ -61,22 +61,22 @@
         <StandardTargetFrameworkIds>$(TargetFrameworkId);$(LatestStandardTargetFrameworkId);$(StandardTargetFrameworkId)</StandardTargetFrameworkIds>
         <WindowsTargetFrameworkId>$(TargetFrameworkId)-windows</WindowsTargetFrameworkId>
         <WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(WindowsTargetFrameworkId)</WindowsTargetFrameworkIds>
-        <DotNetNugetsVersion>[10.0.9]</DotNetNugetsVersion>
+        <DotNetNugetsVersion>[10.0.12]</DotNetNugetsVersion>
         <AvaloniaVersion>12.0.4</AvaloniaVersion>
     </PropertyGroup>
 
     <ItemGroup Condition=" '$([System.String]::Copy($(IsTestProject)).ToLower())' == 'true' ">
         <!-- MTP test stack - pinned (floating '*' drifts Testing.Platform versions and breaks the runner). -->
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0"/>
-        <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.8.0"/>
-        <PackageReference Include="NSubstitute" Version="5.3.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1"/>
+        <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.11.2"/>
+        <PackageReference Include="NSubstitute" Version="6.2.0"/>
         <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Shouldly" Version="4.3.0"/>
-        <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.2"/>
-        <PackageReference Include="xunit.analyzers" Version="1.27.0">
+        <PackageReference Include="xunit.v3.mtp-v2" Version="4.0.1"/>
+        <PackageReference Include="xunit.analyzers" Version="2.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
