@@ -63,12 +63,16 @@
         <WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(WindowsTargetFrameworkId)</WindowsTargetFrameworkIds>
         <DotNetNugetsVersion>[10.0.12]</DotNetNugetsVersion>
         <AvaloniaVersion>12.0.4</AvaloniaVersion>
+        <!-- Microsoft.Testing.Platform and the HangDump extension, which is bound to the platform's internals, on one number. The other MTP packages (Telemetry, MSBuild, TrxReport) arrive transitively through xunit and the coverage extension at whatever they ask for: raising this means checking those resolve to it too. -->
+        <MtpVersion>2.4.0</MtpVersion>
     </PropertyGroup>
 
     <ItemGroup Condition=" '$([System.String]::Copy($(IsTestProject)).ToLower())' == 'true' ">
         <!-- MTP test stack - pinned (floating '*' drifts Testing.Platform versions and breaks the runner). -->
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1"/>
         <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.11.2"/>
+        <PackageReference Include="Microsoft.Testing.Extensions.HangDump" Version="$(MtpVersion)"/>
+        <PackageReference Include="Microsoft.Testing.Platform" Version="$(MtpVersion)"/>
         <PackageReference Include="NSubstitute" Version="6.2.0"/>
         <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
             <PrivateAssets>all</PrivateAssets>
