@@ -63,7 +63,7 @@
         <WindowsTargetFrameworkIds>$(FullTargetFrameworkId);$(WindowsTargetFrameworkId)</WindowsTargetFrameworkIds>
         <DotNetNugetsVersion>[10.0.12]</DotNetNugetsVersion>
         <AvaloniaVersion>12.0.4</AvaloniaVersion>
-        <!-- One number for the Testing Platform and its extensions: a HangDump older or newer than the platform it plugs into is a runner that fails at start. -->
+        <!-- Microsoft.Testing.Platform and the HangDump extension, which is bound to the platform's internals, on one number. The other MTP packages (Telemetry, MSBuild, TrxReport) arrive transitively through xunit and the coverage extension at whatever they ask for: raising this means checking those resolve to it too. -->
         <MtpVersion>2.4.0</MtpVersion>
     </PropertyGroup>
 
