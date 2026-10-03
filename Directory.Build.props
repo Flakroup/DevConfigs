@@ -11,7 +11,6 @@
         <Company>Flakroup</Company>
         <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
         <Copyright>Copyright © Flakroup 2025-2026</Copyright>
-        <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <ImplicitUsings>disable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
         <NuGetAudit>true</NuGetAudit>
@@ -27,6 +26,14 @@
              The other doc diagnostics (CS1572, CS1573, CS1574, CS1584, CS1658, ...) stay errors there on purpose. -->
         <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591</WarningsNotAsErrors>
         <WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
+    </PropertyGroup>
+
+    <!-- XML docs default, only for a repository that opted in with DevConfigsPackageDefaults=true (set before the import
+         of this file). Left empty otherwise, so the SDK default (false) stands. A project's own value wins over this one,
+         explicit false included; the marker lets Directory.Build.targets take the default back from what is not a package. -->
+    <PropertyGroup Condition=" '$(DevConfigsPackageDefaults)' == 'true' And '$(Configuration)' == 'Release' And '$(GenerateDocumentationFile)' == '' ">
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DevConfigsDocDefault>true</DevConfigsDocDefault>
     </PropertyGroup>
 
     <PropertyGroup Condition=" $(MSBuildProjectName.EndsWith('.Tests')) ">

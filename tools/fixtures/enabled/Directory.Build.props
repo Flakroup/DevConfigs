@@ -1,0 +1,9 @@
+<Project>
+    <!-- A library repository that opted in, with warnings as errors on like FEx. The switch has to be set before the
+         shared configuration under test is imported. -->
+    <PropertyGroup>
+        <DevConfigsPackageDefaults>true</DevConfigsPackageDefaults>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+    <Import Project="$(MSBuildThisFileDirectory)../../../Directory.Build.props"/>
+</Project>

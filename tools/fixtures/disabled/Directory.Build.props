@@ -1,0 +1,7 @@
+<Project>
+    <!-- A consumer that did not opt in: an application and its internal library. -->
+    <PropertyGroup>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+    <Import Project="$(MSBuildThisFileDirectory)../../../Directory.Build.props"/>
+</Project>

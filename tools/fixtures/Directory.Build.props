@@ -1,7 +1,0 @@
-<Project>
-    <!-- A consumer-like root: warnings as errors on, like FEx. The shared configuration under test is imported below. -->
-    <PropertyGroup>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    </PropertyGroup>
-    <Import Project="$(MSBuildThisFileDirectory)../../Directory.Build.props"/>
-</Project>
