@@ -7,12 +7,13 @@ Shared build and editor configuration for Flakroup .NET repositories. Consumed a
 
 | File | Purpose |
 |---|---|
-| `Directory.Build.props` | Common MSBuild properties: target-framework ids (`TargetFrameworkId`, `StandardTargetFrameworkIds`, `WindowsTargetFrameworkIds`, ...), `Nullable`, `LangVersion`, warning levels and warnings-as-errors, authors/company/copyright, centrally pinned package versions, and the `*.Tests` block (MTP runner, xUnit v3, NSubstitute, Shouldly, coverage, hang dump). |
-| `Directory.Build.targets` | Packaging defaults for packable projects in Release (SourceLink, symbols, XML docs, deterministic build) and the shared analyzer set (IDisposableAnalyzers, VS Threading, ReflectionAnalyzers, PolySharp). |
+| `Directory.Build.props` | Common MSBuild properties: target-framework ids (`TargetFrameworkId`, `StandardTargetFrameworkIds`, `WindowsTargetFrameworkIds`, ...), `Nullable`, `LangVersion`, warning levels and warnings-as-errors (`CS1591` is kept a warning via `WarningsNotAsErrors`, so a consumer's `TreatWarningsAsErrors` does not break on missing docs), authors/company/copyright, centrally pinned package versions, and the `*.Tests` block (MTP runner, xUnit v3, NSubstitute, Shouldly, coverage, hang dump). |
+| `Directory.Build.targets` | Packaging defaults for packable projects in Release (SourceLink, symbols, XML docs, deterministic build), decided here because only this file sees an explicit `IsPackable=false` (it is tested as "not false": `IsPackable` is still empty for projects relying on the SDK default). Projects with `IsPackable=false` (tests, samples, test mocks) get none of it. Also holds the shared analyzer set (IDisposableAnalyzers, VS Threading, ReflectionAnalyzers, PolySharp). |
 | `.editorconfig` | Formatting and code-style rules, linked into every project. |
 | `FEx.sln.DotSettings` | ReSharper settings, including the inspection severities promoted to ERROR that gate commits. |
 | `Settings.XamlStyler` | XAML Styler configuration. |
 | `tools/validate_dotsettings.py` | Guard for the shared ReSharper layers - see [Editing the ReSharper layer](#editing-the-resharper-layer). |
+| `tools/validate_packaging.py` | Guard for the packaging defaults above: no `IsPackable == 'true'` conditions, the packable group keeps docs/symbols/SourceLink properties, `CS1591` stays out of warnings-as-errors. |
 | `tools/validate_build_props.py` | Guard for the NuGet audit policy in `Directory.Build.props`/`.targets` - see [The NuGet audit pin](#the-nuget-audit-pin). |
 
 ## Usage

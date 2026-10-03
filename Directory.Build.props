@@ -22,16 +22,10 @@
         <RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
         <WarningLevel>7</WarningLevel>
         <WarningsAsErrors>$(WarningsAsErrors);CS0660;CA1068;SI2100</WarningsAsErrors>
+        <!-- CS1591 (missing XML comment) stays a warning even when a consumer sets TreatWarningsAsErrors=true. -->
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591</WarningsNotAsErrors>
         <!-- SI2100: No source for instance of Type used in optional parameter -->
         <WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
-    </PropertyGroup>
-
-    <!-- XML docs are generated for every Release build except test projects. This has to be decided here: IsPackable
-         is still empty when Directory.Build.targets is evaluated, and the SDK derives DocumentationFile (and the copy
-         of the .xml to the output folder that pack reads) from GenerateDocumentationFile before that file is imported.
-         IsPackable only gates packing. CS1591 is not touched and stays a plain warning. -->
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And !$(MSBuildProjectName.EndsWith('.Tests')) ">
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup Condition=" $(MSBuildProjectName.EndsWith('.Tests')) ">

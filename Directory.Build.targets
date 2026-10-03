@@ -1,9 +1,13 @@
 <Project>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">
+    <!-- Packaging defaults for packable projects. IsPackable has no value yet while this file is evaluated for a
+         project that relies on the SDK default (the pack targets set it to true later), so "packable" is tested as
+         "not explicitly false". Test them as '== true' and the whole block is silently dead. -->
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' != 'false' ">
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
         <EmbedAllSources>true</EmbedAllSources>
         <EnableSourceLink>true</EnableSourceLink>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <IncludeSymbols>true</IncludeSymbols>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -11,6 +15,14 @@
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+
+    <!-- The SDK derives these from GenerateDocumentationFile before this file is imported, so setting that property
+         above is not enough: without them nothing is written, or the .xml never reaches the output folder that
+         pack reads (NU5026). _DocumentationFileProduced is the SDK's private switch for that copy. -->
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' != 'false' And '$(DocumentationFile)' == '' ">
+        <DocumentationFile>$(IntermediateOutputPath)$(AssemblyName).xml</DocumentationFile>
+        <_DocumentationFileProduced>true</_DocumentationFileProduced>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(TargetFramework)' == '$(TargetFrameworkId)'">
@@ -38,7 +50,7 @@
         <None Include="$(MSBuildThisFileDirectory).editorconfig" Link=".editorconfig"/>
     </ItemGroup>
 
-    <ItemGroup Condition=" '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">
+    <ItemGroup Condition=" '$([System.String]::Copy($(IsPackable)).ToLower())' != 'false' ">
         <!-- 10.0.303 is the first release whose Microsoft.Build.Tasks.Git clears GHSA-23fw-v26w-5fgq
              (moderate, information disclosure); 10.0.300 and 10.0.301 both carry it. Do not pin below it. -->
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401">
