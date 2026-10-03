@@ -7,8 +7,6 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <IncludeSymbols>true</IncludeSymbols>
-        <NoWarn>$(NoWarn);CS1591</NoWarn>
-        <!-- CS1591: Missing XML comment for publicly visible type or member - https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs1591 -->
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
