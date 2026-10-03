@@ -37,3 +37,20 @@ jobs:
 
       - name: Validate Directory.Build.props and .targets
         run: python tools/validate_build_props.py
+
+  packaging:
+    name: Build the packaging fixtures
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build and pack tools/fixtures in Release and assert the outputs
+        run: python tools/test_fixtures.py

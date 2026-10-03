@@ -1,0 +1,3 @@
+# Stops the compiler picking up the repository .editorconfig (CS1591 = none, DevConfigs#14), which would hide the
+# warning the fixtures assert on. In a consumer that file sits in the DevConfigs folder and does not apply to its code.
+root = true

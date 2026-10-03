@@ -1,0 +1,9 @@
+<Project>
+    <!-- A repository that opted in and wants XML docs for everything, applications included. -->
+    <PropertyGroup>
+        <DevConfigsPackageDefaults>true</DevConfigsPackageDefaults>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+    <Import Project="$(MSBuildThisFileDirectory)../../../Directory.Build.props"/>
+</Project>

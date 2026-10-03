@@ -11,7 +11,6 @@
         <Company>Flakroup</Company>
         <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
         <Copyright>Copyright © Flakroup 2025-2026</Copyright>
-        <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <ImplicitUsings>disable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
         <NuGetAudit>true</NuGetAudit>
@@ -23,7 +22,26 @@
         <WarningLevel>7</WarningLevel>
         <WarningsAsErrors>$(WarningsAsErrors);CS0660;CA1068;SI2100</WarningsAsErrors>
         <!-- SI2100: No source for instance of Type used in optional parameter -->
+        <!-- CS1591 (missing XML comment) stays a warning even when a consumer sets TreatWarningsAsErrors=true.
+             The other doc diagnostics (CS1572, CS1573, CS1574, CS1584, CS1658, ...) stay errors there on purpose. -->
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591</WarningsNotAsErrors>
         <WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
+    </PropertyGroup>
+
+    <!-- XML docs default, only for a repository that opted in with DevConfigsPackageDefaults=true (set before the import
+         of this file; the private marker lets Directory.Build.targets notice a switch set too late). A project's own value
+         wins over the default, explicit false included; the DevConfigsDocDefault marker lets Directory.Build.targets take
+         the default back from what is not a package. Without the switch the property stays false, as it always was, which
+         also keeps a project that sets only DocumentationFile from compiling docs. -->
+    <PropertyGroup Condition=" '$(DevConfigsPackageDefaults)' == 'true' ">
+        <_DevConfigsSwitchSeenByProps>true</_DevConfigsSwitchSeenByProps>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(DevConfigsPackageDefaults)' != 'true' ">
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(DevConfigsPackageDefaults)' == 'true' And '$(Configuration)' == 'Release' And '$(GenerateDocumentationFile)' == '' ">
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DevConfigsDocDefault>true</DevConfigsDocDefault>
     </PropertyGroup>
 
     <PropertyGroup Condition=" $(MSBuildProjectName.EndsWith('.Tests')) ">
