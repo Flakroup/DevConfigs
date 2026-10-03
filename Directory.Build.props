@@ -14,7 +14,6 @@
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <ImplicitUsings>disable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
-        <NoWarn>$(NoWarn);CA2254</NoWarn>
         <NuGetAudit>true</NuGetAudit>
         <NuGetAuditMode>all</NuGetAuditMode>
         <Nullable>enable</Nullable>
