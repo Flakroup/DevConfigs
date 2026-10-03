@@ -4,7 +4,6 @@
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
         <EmbedAllSources>true</EmbedAllSources>
         <EnableSourceLink>true</EnableSourceLink>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <IncludeSymbols>true</IncludeSymbols>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
