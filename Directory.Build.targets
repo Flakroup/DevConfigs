@@ -1,20 +1,25 @@
 <Project>
 
-    <!-- Package defaults are opt-in per repository: a library repo sets DevConfigsPackageDefaults=true in its root
-         Directory.Build.props, BEFORE importing DevConfigs/Directory.Build.props (that file needs it to default the XML
-         docs). Without the switch nothing below applies, because "a library" is also every internal library of a
-         consumer application, and embedding its sources in a pdb that ships with the app leaks them.
-         With the switch, the scope is a Release build of a library (OutputType Library, or empty = the SDK default)
-         that is not explicitly IsPackable=false. Executables and test projects (IsPackable=false, set in the props
-         file) get none of it. IsPackable has no value yet while this file is evaluated for a project that relies on the
-         SDK default (the pack targets set it later), so "packable" is tested as "not explicitly false"; testing it as
-         '== true' leaves everything below silently dead. -->
-    <PropertyGroup Condition=" '$(DevConfigsPackageDefaults)' == 'true' And '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' != 'false' And ('$(OutputType)' == '' Or '$(OutputType)' == 'Library') ">
+    <!-- Packaging defaults. Two ways in, both for Release builds only:
+         - a project that sets IsPackable=true itself (a dotnet tool, say) always gets them, with or without the switch and
+           whatever its OutputType. That is what this file always did for such a project;
+         - a repository that sets DevConfigsPackageDefaults=true in its root Directory.Build.props, BEFORE importing
+           DevConfigs/Directory.Build.props, gets them for every library (OutputType Library, not a test project, not
+           IsPackable=false). It is a switch and not something inferred, because "a library" is also every internal library
+           of an application, and embedding its sources in a pdb that ships with the app leaks them.
+         IsPackable has no value yet while this file is evaluated for a project that relies on the SDK default (the pack
+         targets set it later), which is why the default case needs the switch and why "packable" is tested as
+         "not explicitly false" there; testing it as '== true' leaves the library case silently dead.
+         Executables and test projects (IsPackable=false, set in the props file) get none of it. -->
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">
+        <DevConfigsExplicitlyPackable>true</DevConfigsExplicitlyPackable>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(DevConfigsPackageDefaults)' == 'true' And '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' != 'false' And '$([System.String]::Copy($(IsTestProject)).ToLower())' != 'true' And '$(OutputType)' == 'Library' ">
         <DevConfigsPackableLibrary>true</DevConfigsPackableLibrary>
     </PropertyGroup>
 
     <!-- A project keeps what it sets itself: every default is only applied while the property is still empty. -->
-    <PropertyGroup Condition=" '$(DevConfigsPackableLibrary)' == 'true' ">
+    <PropertyGroup Condition=" '$(DevConfigsExplicitlyPackable)' == 'true' Or '$(DevConfigsPackableLibrary)' == 'true' ">
         <DeterministicSourcePaths Condition=" '$(DeterministicSourcePaths)' == '' ">true</DeterministicSourcePaths>
         <EnableSourceLink Condition=" '$(EnableSourceLink)' == '' ">true</EnableSourceLink>
         <PublishRepositoryUrl Condition=" '$(PublishRepositoryUrl)' == '' ">true</PublishRepositoryUrl>
@@ -28,18 +33,31 @@
         <SymbolPackageFormat Condition=" '$(IncludeSymbols)' == 'true' And ('$(SymbolPackageFormat)' == '' Or '$(SymbolPackageFormat)' == 'symbols.nupkg') ">snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
+    <!-- Only for a project that sets IsPackable=true itself, as before: pack on every Release build. The default (library)
+         case does not get it, it would pack every library on each build and again in a consumer's own pack step. -->
+    <PropertyGroup Condition=" '$(DevConfigsExplicitlyPackable)' == 'true' ">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
     <!-- XML docs: Directory.Build.props defaults GenerateDocumentationFile to true in Release when the switch is on and
          marks it with DevConfigsDocDefault, so the SDK derives DocumentationFile and the output copy itself, and a
          project's own explicit value (false included) wins. What is left to do here is to take the default back from
          everything that is not a packable library (executables, test projects, IsPackable=false), after the SDK has
-         already derived the doc-file properties from it. _DocumentationFileProduced is the SDK's private switch for the
-         copy of the .xml into the output folder. An explicit GenerateDocumentationFile=true on such a project cannot be
-         told from the default and is taken back as well. -->
+         already derived DocumentationFile from it; a cleared DocumentationFile leaves nothing to compile or copy. An
+         explicit GenerateDocumentationFile=true, or a DocumentationFile path, on such a project cannot be told from the
+         default and is taken back as well. -->
     <PropertyGroup Condition=" '$(DevConfigsDocDefault)' == 'true' And '$(DevConfigsPackableLibrary)' != 'true' ">
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <DocumentationFile></DocumentationFile>
-        <_DocumentationFileProduced>false</_DocumentationFileProduced>
     </PropertyGroup>
+
+    <!-- The switch only works when it is set before the props import: the docs default is decided there. Set afterwards,
+         the symbols, embedded sources and SourceLink would apply but the docs would not, and a package that went out
+         that way cannot be replaced. -->
+    <Target Name="DevConfigsCheckPackageDefaultsSwitch" BeforeTargets="BeforeBuild;BeforeResolveReferences">
+        <Error Condition=" '$(DevConfigsPackageDefaults)' == 'true' And '$(_DevConfigsSwitchSeenByProps)' != 'true' "
+               Text="DevConfigsPackageDefaults is set, but it was set after DevConfigs/Directory.Build.props was imported (or that file was not imported), so the XML docs default is not applied. Set DevConfigsPackageDefaults before importing DevConfigs/Directory.Build.props."/>
+    </Target>
 
     <PropertyGroup Condition="'$(TargetFramework)' == '$(TargetFrameworkId)'">
         <EFCoreVersion>$(DotNetNugetsVersion)</EFCoreVersion>

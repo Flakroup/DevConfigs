@@ -4,7 +4,7 @@
 Reading the XML cannot tell whether a pack actually contains the docs, symbols and SourceLink, so this builds
 ``tools/fixtures`` in Release the way a consumer with ``TreatWarningsAsErrors=true`` would, and asserts what comes out.
 
-Two repository roots mirror the two kinds of consumer:
+Four repository roots mirror the kinds of consumer (``enabled``, ``disabled``, ``explicit-docs``, ``late-switch``):
 
 * ``enabled`` sets ``DevConfigsPackageDefaults=true`` (a library repository). ``Lib`` gets an ``.xml`` per TFM, a ``.nupkg``
   and a ``.snupkg`` whose pdbs carry SourceLink and the embedded sources, a ``<repository>`` in the nuspec, and CS1591 stays a
@@ -197,13 +197,14 @@ def main() -> int:
     check(code == 0 and "Microsoft.SourceLink.GitHub" in items, "Lib: the pinned SourceLink reference stays in a Debug build too", items[-500:])
 
     # --- Things that must get nothing -----------------------------------------------------------
-    for name, label in (("NonPackableLib", "IsPackable=false library"), ("Tests", "*.Tests project"), ("App", "Exe application")):
+    for name, label in (("NonPackableLib", "IsPackable=false library"), ("Tests", "*.Tests project"),
+                        ("LibTest", "library-type test project not named *.Tests"), ("App", "Exe application")):
         code, log = build("enabled", name)
         check(code == 0, f"{label}: Release build succeeds", log[-1500:])
         check(not produced("enabled", name, "*.xml") and not produced("enabled", name, "*.nupkg"), f"{label}: no XML docs and no package")
         values = properties("enabled", name, *names)
         check(values == nothing, f"{label}: no docs, no embedded sources, no symbols, no license default", str(values))
-        pdbs = [pdb for pdb in produced("enabled", name, f"Fixture.{name}.pdb")]
+        pdbs = produced("enabled", name, f"Fixture.{name}.pdb")
         rows = scan(scanner, pdbs)
         check(bool(rows) and all(not row[2] for row in rows), f"{label}: its pdb embeds none of the project's own source (generated files aside)", str(rows))
 
@@ -257,6 +258,35 @@ def main() -> int:
           "disabled: no pdb in the publish folder (the internal library's included) embeds the project's own source", str(rows))
     values = properties("disabled", "InternalLib", *names)
     check(values == nothing, "disabled: the internal library gets no package defaults", str(values))
+
+    # --- disabled: base behaviour for a project that sets IsPackable=true itself, switch or not ----
+    values = properties("disabled", "Tool", "OutputType", "PackageLicenseExpression", "IncludeSymbols", "SymbolPackageFormat",
+                        "EmbedAllSources", "GeneratePackageOnBuild", "PublishRepositoryUrl", "GenerateDocumentationFile")
+    check(values == {"OutputType": "Exe", "PackageLicenseExpression": "MIT", "IncludeSymbols": "true", "SymbolPackageFormat": "snupkg",
+                     "EmbedAllSources": "true", "GeneratePackageOnBuild": "true", "PublishRepositoryUrl": "true",
+                     "GenerateDocumentationFile": "false"},
+          "disabled: an Exe with an explicit IsPackable=true (a dotnet tool) keeps the base packaging properties, without docs", str(values))
+    values = properties("enabled", "NonPackableLib", "GeneratePackageOnBuild")
+    check(values == {"GeneratePackageOnBuild": "false"}, "enabled: IsPackable=false stays without GeneratePackageOnBuild", str(values))
+
+    # --- disabled: no switch, docs exactly as before ---------------------------------------------
+    code, log = build("disabled", "ExplicitDocs")
+    check(code == 0 and produced("disabled", "ExplicitDocs", "Fixture.ExplicitDocs.xml"),
+          "disabled: a project's own GenerateDocumentationFile=true still produces docs", log[-1500:])
+    values = properties("disabled", "DocPath", "GenerateDocumentationFile", "DocumentationFile")
+    check(values == {"GenerateDocumentationFile": "false", "DocumentationFile": ""},
+          "disabled: a project that sets only DocumentationFile still compiles no docs", str(values))
+
+    # --- explicit-docs: an opted-in repo that sets GenerateDocumentationFile itself ---------------
+    for name in ("Lib", "App"):
+        code, log = build("explicit-docs", name)
+        check(code == 0 and produced("explicit-docs", name, f"Fixture.{name}.xml"),
+              f"explicit-docs: {name} keeps the docs the repository asked for", log[-1500:])
+
+    # --- late-switch: the switch set after the props import is reported ---------------------------
+    code, log = build("late-switch", "Lib")
+    check(code != 0 and "Set DevConfigsPackageDefaults before importing DevConfigs/Directory.Build.props" in log,
+          "late-switch: a switch set after the props import fails the build with the fix named", log[-800:])
 
     shutil.rmtree(out, ignore_errors=True)
     print("OK" if not failures else f"{len(failures)} failed")

@@ -1,0 +1,7 @@
+<Project>
+    <!-- The natural-looking mistake: the switch is set after the import, so the docs default is never applied. -->
+    <Import Project="$(MSBuildThisFileDirectory)../../../Directory.Build.props"/>
+    <PropertyGroup>
+        <DevConfigsPackageDefaults>true</DevConfigsPackageDefaults>
+    </PropertyGroup>
+</Project>
