@@ -22,9 +22,10 @@
         <RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
         <WarningLevel>7</WarningLevel>
         <WarningsAsErrors>$(WarningsAsErrors);CS0660;CA1068;SI2100</WarningsAsErrors>
-        <!-- CS1591 (missing XML comment) stays a warning even when a consumer sets TreatWarningsAsErrors=true. -->
-        <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591</WarningsNotAsErrors>
         <!-- SI2100: No source for instance of Type used in optional parameter -->
+        <!-- CS1591 (missing XML comment) stays a warning even when a consumer sets TreatWarningsAsErrors=true.
+             The other doc diagnostics (CS1572, CS1573, CS1574, CS1584, CS1658, ...) stay errors there on purpose. -->
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591</WarningsNotAsErrors>
         <WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
     </PropertyGroup>
 

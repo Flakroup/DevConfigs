@@ -7,13 +7,13 @@ Shared build and editor configuration for Flakroup .NET repositories. Consumed a
 
 | File | Purpose |
 |---|---|
-| `Directory.Build.props` | Common MSBuild properties: target-framework ids (`TargetFrameworkId`, `StandardTargetFrameworkIds`, `WindowsTargetFrameworkIds`, ...), `Nullable`, `LangVersion`, warning levels and warnings-as-errors (`CS1591` is kept a warning via `WarningsNotAsErrors`, so a consumer's `TreatWarningsAsErrors` does not break on missing docs), authors/company/copyright, centrally pinned package versions, and the `*.Tests` block (MTP runner, xUnit v3, NSubstitute, Shouldly, coverage, hang dump). |
-| `Directory.Build.targets` | Packaging defaults for packable projects in Release (SourceLink, symbols, XML docs, deterministic build), decided here because only this file sees an explicit `IsPackable=false` (it is tested as "not false": `IsPackable` is still empty for projects relying on the SDK default). Projects with `IsPackable=false` (tests, samples, test mocks) get none of it. Also holds the shared analyzer set (IDisposableAnalyzers, VS Threading, ReflectionAnalyzers, PolySharp). |
+| `Directory.Build.props` | Common MSBuild properties: target-framework ids (`TargetFrameworkId`, `StandardTargetFrameworkIds`, `WindowsTargetFrameworkIds`, ...), `Nullable`, `LangVersion`, warning levels and warnings-as-errors (`CS1591` is kept out of it via `WarningsNotAsErrors`), authors/company/copyright, centrally pinned package versions, and the `*.Tests` block (MTP runner, xUnit v3, NSubstitute, Shouldly, coverage, hang dump). |
+| `Directory.Build.targets` | Packaging defaults, applied only to **libraries** (`OutputType` Library or unset) that are not `IsPackable=false` and not test projects, in Release: XML docs, `snupkg` symbols, embedded sources, SourceLink, deterministic paths, MIT license. Applications get none of it. See [Packaging defaults](#packaging-defaults). Also holds the shared analyzer set (IDisposableAnalyzers, VS Threading, ReflectionAnalyzers, PolySharp). |
 | `.editorconfig` | Formatting and code-style rules, linked into every project. |
 | `FEx.sln.DotSettings` | ReSharper settings, including the inspection severities promoted to ERROR that gate commits. |
 | `Settings.XamlStyler` | XAML Styler configuration. |
 | `tools/validate_dotsettings.py` | Guard for the shared ReSharper layers - see [Editing the ReSharper layer](#editing-the-resharper-layer). |
-| `tools/validate_packaging.py` | Guard for the packaging defaults above: no `IsPackable == 'true'` conditions, the packable group keeps docs/symbols/SourceLink properties, `CS1591` stays out of warnings-as-errors. |
+| `tools/test_fixtures.py` | Behavioural guard for the packaging defaults: builds and packs the projects in `tools/fixtures` in Release (needs the .NET 10 SDK) and asserts what comes out - see [Packaging defaults](#packaging-defaults). |
 | `tools/validate_build_props.py` | Guard for the NuGet audit policy in `Directory.Build.props`/`.targets` - see [The NuGet audit pin](#the-nuget-audit-pin). |
 
 ## Usage
@@ -38,6 +38,33 @@ git submodule update --init
 
 The consuming repo keeps its own repo-specific settings (package metadata, URLs, icon) in its root
 `Directory.Build.props`/`.targets` alongside the import.
+
+## Packaging defaults
+
+`Directory.Build.targets` decides these, not the props file: `IsPackable` is still empty while the targets file is
+evaluated for a project that relies on the SDK default (the pack targets set it later), so "packable" is tested as
+"not explicitly `false`". A condition written as `IsPackable == 'true'` is never true and leaves the whole block dead -
+that is how packages used to ship without docs, symbols and SourceLink.
+
+- **Scope.** Release builds of libraries only: `OutputType` is `Library` or unset, `IsPackable` is not `false`, and the
+  project is not a test project. Executables and `*.Tests` get no docs, no embedded sources and no package.
+- **Applied:** an XML doc file per target framework, `snupkg` symbols (skipped when `DebugType=embedded`, which has no
+  standalone pdb to put in one), `EmbedAllSources`, SourceLink, deterministic paths, `PublishRepositoryUrl`, and
+  `PackageLicenseExpression=MIT`.
+- **A project keeps what it sets itself.** Every default above is applied only while the property is still empty
+  (the license is skipped when `PackageLicenseFile` or `PackageLicense` is set). The one exception is documentation:
+  the SDK has already turned `GenerateDocumentationFile` into `false` before the targets file is imported, so an explicit
+  `false` cannot be told from the default. Opt out with `<DevConfigsSkipDocumentationFile>true</DevConfigsSkipDocumentationFile>`.
+- **`GeneratePackageOnBuild` is not set.** It was dead until now; switching it on would pack every library on every
+  Release build and again in a consumer's own pack step. A consumer that wants it sets it in its csproj.
+- **Doc diagnostics.** `CS1591` (missing XML comment) stays a warning, also under `TreatWarningsAsErrors`. Malformed
+  doc comments (`CS1572`, `CS1573`, `CS1574`, `CS1584`, `CS1658`, ...) stay errors there on purpose: they are real
+  defects that were never compiled before, and each consumer fixes them in the PR that bumps the submodule pin. Expect
+  a lot of `CS1591` warnings until the documentation backlog is done.
+- **The guard.** `tools/test_fixtures.py` (run by the `packaging` job in `validate.yml`) builds and packs the projects
+  in `tools/fixtures` with `TreatWarningsAsErrors=true` and checks the produced packages. It also pins the reliance on
+  the SDK's private `_DocumentationFileProduced`, which decides whether the `.xml` reaches the folder pack reads. The
+  fixtures stop at their own `.editorconfig` so the repository's `CS1591 = none` does not hide the warning they assert on.
 
 ## Changing it
 

@@ -1,26 +1,35 @@
 <Project>
 
-    <!-- Packaging defaults for packable projects. IsPackable has no value yet while this file is evaluated for a
-         project that relies on the SDK default (the pack targets set it to true later), so "packable" is tested as
-         "not explicitly false". Test them as '== true' and the whole block is silently dead. -->
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' != 'false' ">
-        <DeterministicSourcePaths>true</DeterministicSourcePaths>
-        <EmbedAllSources>true</EmbedAllSources>
-        <EnableSourceLink>true</EnableSourceLink>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <IncludeSymbols>true</IncludeSymbols>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <!-- Packaging defaults. Scope: a Release build of a library (OutputType Library, or empty = the SDK default) that is
+         not explicitly IsPackable=false and not a test project. Executables get none of it: no docs, no embedded
+         sources, no packages. IsPackable has no value yet while this file is evaluated for a project that relies on the
+         SDK default (the pack targets set it to true later), so "packable" is tested as "not explicitly false";
+         testing it as '== true' leaves everything below silently dead. -->
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' != 'false' And '$([System.String]::Copy($(IsTestProject)).ToLower())' != 'true' And ('$(OutputType)' == '' Or '$(OutputType)' == 'Library') ">
+        <DevConfigsPackableLibrary>true</DevConfigsPackableLibrary>
     </PropertyGroup>
 
-    <!-- The SDK derives these from GenerateDocumentationFile before this file is imported, so setting that property
-         above is not enough: without them nothing is written, or the .xml never reaches the output folder that
-         pack reads (NU5026). _DocumentationFileProduced is the SDK's private switch for that copy. -->
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$([System.String]::Copy($(IsPackable)).ToLower())' != 'false' And '$(DocumentationFile)' == '' ">
+    <!-- A project keeps what it sets itself: every default below is only applied while the property is still empty. -->
+    <PropertyGroup Condition=" '$(DevConfigsPackableLibrary)' == 'true' ">
+        <DeterministicSourcePaths Condition=" '$(DeterministicSourcePaths)' == '' ">true</DeterministicSourcePaths>
+        <EmbedAllSources Condition=" '$(EmbedAllSources)' == '' ">true</EmbedAllSources>
+        <EnableSourceLink Condition=" '$(EnableSourceLink)' == '' ">true</EnableSourceLink>
+        <PublishRepositoryUrl Condition=" '$(PublishRepositoryUrl)' == '' ">true</PublishRepositoryUrl>
+        <PackageRequireLicenseAcceptance Condition=" '$(PackageRequireLicenseAcceptance)' == '' ">false</PackageRequireLicenseAcceptance>
+        <PackageLicenseExpression Condition=" '$(PackageLicenseExpression)' == '' And '$(PackageLicenseFile)' == '' And '$(PackageLicense)' == '' ">MIT</PackageLicenseExpression>
+        <!-- A symbol package needs a standalone pdb: with DebugType=embedded pack fails with NU5017 on the empty .snupkg.
+             SymbolPackageFormat already holds the SDK default (symbols.nupkg) here, so that value counts as unset. -->
+        <IncludeSymbols Condition=" '$(IncludeSymbols)' == '' And '$(DebugType)' != 'embedded' ">true</IncludeSymbols>
+        <SymbolPackageFormat Condition=" '$(IncludeSymbols)' == 'true' And ('$(SymbolPackageFormat)' == '' Or '$(SymbolPackageFormat)' == 'symbols.nupkg') ">snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <!-- XML docs for packages. The SDK derives GenerateDocumentationFile (false while unset), DocumentationFile and its
+         private _DocumentationFileProduced before this file is imported, and Directory.Build.props sets nothing a
+         project could be told apart from, so an explicit GenerateDocumentationFile=false in a csproj is
+         indistinguishable from the default here: opt out with DevConfigsSkipDocumentationFile=true instead.
+         A project that sets GenerateDocumentationFile=true or its own DocumentationFile is left alone. -->
+    <PropertyGroup Condition=" '$(DevConfigsPackableLibrary)' == 'true' And '$(DevConfigsSkipDocumentationFile)' != 'true' And '$(DocumentationFile)' == '' ">
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <DocumentationFile>$(IntermediateOutputPath)$(AssemblyName).xml</DocumentationFile>
         <_DocumentationFileProduced>true</_DocumentationFileProduced>
     </PropertyGroup>
@@ -50,7 +59,7 @@
         <None Include="$(MSBuildThisFileDirectory).editorconfig" Link=".editorconfig"/>
     </ItemGroup>
 
-    <ItemGroup Condition=" '$([System.String]::Copy($(IsPackable)).ToLower())' != 'false' ">
+    <ItemGroup Condition=" '$(DevConfigsPackableLibrary)' == 'true' ">
         <!-- 10.0.303 is the first release whose Microsoft.Build.Tasks.Git clears GHSA-23fw-v26w-5fgq
              (moderate, information disclosure); 10.0.300 and 10.0.301 both carry it. Do not pin below it. -->
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401">
