@@ -17,6 +17,7 @@ Needs the .NET 10 SDK. Plain asserts, no test framework.
 
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 import tempfile
@@ -79,6 +80,13 @@ def restore_and_build(root: Path) -> tuple[int, str]:
 def main() -> int:
     work = Path(tempfile.mkdtemp(prefix="devconfigs-mirror-"))
     expected = (REPOSITORY / ".editorconfig").read_bytes()
+
+    # The mirror makes every line count in a consumer's build, so the shared file may only raise severities: a
+    # demotion would silently switch off a rule the consumer's build enforced before it opted in.
+    demotions = [line for line in expected.decode("utf-8").splitlines()
+                 if re.search(r"severity\s*=\s*(none|silent|suggestion)\b|:\s*(none|silent|suggestion)\s*$|generated_code",
+                           line, re.IGNORECASE)]
+    check(not demotions, "shared: no rule is demoted or declared generated", "\n".join(demotions))
 
     for name, switch, gitmodules, should_copy in [
         ("opted-in", True, True, True),
