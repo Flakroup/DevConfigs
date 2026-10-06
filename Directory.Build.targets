@@ -87,14 +87,28 @@
     <!-- An .editorconfig governs only the files beneath it, so the one in this submodule never reaches a consumer's
          sources: neither the compiler nor `dotnet format` reads it, only the IDE link above displays it. A repository
          that sets DevConfigsMirrorEditorConfig=true in its root Directory.Build.props, BEFORE importing
-         DevConfigs/Directory.Build.props, gets a copy of it at its root on every restore and build (list /.editorconfig
-         in that repository's .gitignore). It is a switch: turning the shared rules on makes every severity in the file
-         count in that repository's build, which must be measured there first. The .gitmodules guard keeps this
-         repository's own builds from copying the file onto itself. -->
+         DevConfigs/Directory.Build.props, gets a copy of it at its root, the parent of this submodule's directory, on
+         every restore and build (list /.editorconfig in that repository's .gitignore). It is a switch: turning the
+         shared rules on makes every severity in the file count in that repository's build, which must be measured there
+         first.
+         - The .gitmodules guard keeps a build that is not inside a consumer from writing a root-level file into whatever
+           directory happens to contain the clone: that file would govern every sibling beneath it.
+         - A root file the consumer owns is never replaced: only a file carrying the marker line of the shared one is
+           overwritten, anything else is left alone with a warning.
+         - The compiler reads its .editorconfig list at evaluation, before this target runs, so a build that skips restore
+           (no restore step) while the copy is missing compiles without the shared rules; the next build has them. -->
+    <PropertyGroup>
+        <_DevConfigsMirrorTarget>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))/.editorconfig</_DevConfigsMirrorTarget>
+    </PropertyGroup>
     <Target Name="DevConfigsMirrorEditorConfig" BeforeTargets="CollectPackageReferences;BeforeBuild"
             Condition=" '$(DevConfigsMirrorEditorConfig)' == 'true' And Exists('$(MSBuildThisFileDirectory)../.gitmodules') ">
-        <Copy SourceFiles="$(MSBuildThisFileDirectory).editorconfig" DestinationFolder="$(MSBuildThisFileDirectory).."
-              SkipUnchangedFiles="true" Retries="3" RetryDelayMilliseconds="200"/>
+        <PropertyGroup>
+            <_DevConfigsMirrorOwned Condition=" Exists('$(_DevConfigsMirrorTarget)') And !$([System.IO.File]::ReadAllText('$(_DevConfigsMirrorTarget)').StartsWith('# Mirrored copy marker')) ">true</_DevConfigsMirrorOwned>
+        </PropertyGroup>
+        <Warning Condition=" '$(_DevConfigsMirrorOwned)' == 'true' " Code="DEVCFG001"
+                 Text="$(_DevConfigsMirrorTarget) is not a mirrored copy, so DevConfigsMirrorEditorConfig left it alone and the shared rules do not apply. Remove it, or stop setting the switch."/>
+        <Copy Condition=" '$(_DevConfigsMirrorOwned)' != 'true' " SourceFiles="$(MSBuildThisFileDirectory).editorconfig"
+              DestinationFolder="$(MSBuildThisFileDirectory).." SkipUnchangedFiles="true" Retries="3" RetryDelayMilliseconds="200"/>
     </Target>
 
     <ItemGroup Condition=" '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">

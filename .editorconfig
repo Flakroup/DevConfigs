@@ -1,3 +1,4 @@
+# Mirrored copy marker - DevConfigsMirrorEditorConfig overwrites a root file only while it carries this line.
 root = true
 
 # Formatting and code style for `dotnet format`, which replaces the ReSharper DotSettings layout.

@@ -6,8 +6,10 @@ repository that sets ``DevConfigsMirrorEditorConfig=true`` before importing the 
 on every restore and build. Three consumers, each a throwaway repository root with a copy of the shared files in its own
 ``DevConfigs`` directory:
 
-* ``opted-in`` sets the switch and has a ``.gitmodules``: the root ends up with a byte-identical copy.
+* ``opted-in`` sets the switch and has a ``.gitmodules``: the root ends up with a byte-identical copy, and a restore alone
+  is enough to create it.
 * ``no-switch`` has a ``.gitmodules`` but does not opt in: no copy, so no repository is changed by merely bumping this one.
+* ``owned`` sets the switch but already has a root ``.editorconfig`` of its own: it is kept and a ``DEVCFG001`` warning is raised.
 * ``standalone`` sets the switch but has no ``.gitmodules`` (this repository's own build): the file is not copied onto itself.
 
 Needs the .NET 10 SDK. Plain asserts, no test framework.
@@ -70,7 +72,7 @@ def consumer(root: Path, switch: bool, gitmodules: bool) -> Path:
 def restore_and_build(root: Path) -> tuple[int, str]:
     process = subprocess.run(
         ["dotnet", "build", str(root / "Lib" / "Lib.csproj"), "-nologo", "-v", "q"],
-        capture_output=True, text=True, cwd=root)
+        capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root)
     return process.returncode, process.stdout + process.stderr
 
 
@@ -91,6 +93,21 @@ def main() -> int:
             check(copy.is_file() and copy.read_bytes() == expected, f"{name}: the root holds a byte-identical copy")
         else:
             check(not copy.exists(), f"{name}: nothing is copied to the root")
+
+    # The copy is made by a restore alone, which is what `dotnet format --no-restore` and an IDE load rely on.
+    root = consumer(work / "restore-only", True, True)
+    process = subprocess.run(["dotnet", "restore", str(root / "Lib" / "Lib.csproj"), "-nologo", "-v", "q"],
+                             capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root)
+    check(process.returncode == 0 and (root / ".editorconfig").is_file(), "restore-only: a restore alone creates the copy",
+          process.stdout + process.stderr)
+
+    OWN = "root = true\n# consumer rules\n"
+    # A root file the consumer owns survives, and the build says so.
+    root = consumer(work / "owned", True, True)
+    (root / ".editorconfig").write_text(OWN, encoding="utf-8")
+    code, output = restore_and_build(root)
+    check("DEVCFG001" in output, "owned: the skipped copy is reported", output)
+    check((root / ".editorconfig").read_text(encoding="utf-8") == OWN, "owned: the consumer's file is untouched")
 
     # An edit to the shared file must reach an already-mirrored consumer on the next build.
     root = work / "opted-in"
