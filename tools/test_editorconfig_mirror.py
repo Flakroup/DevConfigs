@@ -84,7 +84,8 @@ def main() -> int:
     # The mirror makes every line count in a consumer's build, so the shared file may only raise severities: a
     # demotion would silently switch off a rule the consumer's build enforced before it opted in.
     demotions = [line for line in expected.decode("utf-8").splitlines()
-                 if re.search(r"severity\s*=\s*(none|silent|suggestion)|generated_code", line)]
+                 if re.search(r"severity\s*=\s*(none|silent|suggestion)\b|:\s*(none|silent|suggestion)\s*$|generated_code",
+                           line, re.IGNORECASE)]
     check(not demotions, "shared: no rule is demoted or declared generated", "\n".join(demotions))
 
     for name, switch, gitmodules, should_copy in [
