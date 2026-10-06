@@ -84,6 +84,19 @@
         <None Include="$(MSBuildThisFileDirectory).editorconfig" Link=".editorconfig"/>
     </ItemGroup>
 
+    <!-- An .editorconfig governs only the files beneath it, so the one in this submodule never reaches a consumer's
+         sources: neither the compiler nor `dotnet format` reads it, only the IDE link above displays it. A repository
+         that sets DevConfigsMirrorEditorConfig=true in its root Directory.Build.props, BEFORE importing
+         DevConfigs/Directory.Build.props, gets a copy of it at its root on every restore and build (list /.editorconfig
+         in that repository's .gitignore). It is a switch: turning the shared rules on makes every severity in the file
+         count in that repository's build, which must be measured there first. The .gitmodules guard keeps this
+         repository's own builds from copying the file onto itself. -->
+    <Target Name="DevConfigsMirrorEditorConfig" BeforeTargets="CollectPackageReferences;BeforeBuild"
+            Condition=" '$(DevConfigsMirrorEditorConfig)' == 'true' And Exists('$(MSBuildThisFileDirectory)../.gitmodules') ">
+        <Copy SourceFiles="$(MSBuildThisFileDirectory).editorconfig" DestinationFolder="$(MSBuildThisFileDirectory).."
+              SkipUnchangedFiles="true" Retries="3" RetryDelayMilliseconds="200"/>
+    </Target>
+
     <ItemGroup Condition=" '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">
         <!-- 10.0.303 is the first release whose Microsoft.Build.Tasks.Git clears GHSA-23fw-v26w-5fgq
              (moderate, information disclosure); 10.0.300 and 10.0.301 both carry it. Do not pin below it.
