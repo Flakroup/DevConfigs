@@ -54,3 +54,20 @@ jobs:
 
       - name: Build and pack tools/fixtures in Release and assert the outputs
         run: python tools/test_fixtures.py
+
+  editorconfig-mirror:
+    name: Build the opt-in .editorconfig mirror consumers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build consumers with and without the switch and assert the copy
+        run: python tools/test_editorconfig_mirror.py
