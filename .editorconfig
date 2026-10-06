@@ -44,9 +44,6 @@ dotnet_diagnostic.IDE0005.severity = warning
 dotnet_diagnostic.IDE0007.severity = warning
 dotnet_diagnostic.IDE0003.severity = warning
 dotnet_diagnostic.IDE0049.severity = warning
-# IDE0011 counts a multi-line condition as multi-line and adds ~300 brace pairs R# never asked for;
-# R#-equivalent brace semantics come from a custom analyzer (#1385)
-dotnet_diagnostic.IDE0011.severity = none
 dotnet_diagnostic.IDE0040.severity = warning
 dotnet_diagnostic.IDE0161.severity = warning
 dotnet_diagnostic.IDE2000.severity = warning
@@ -55,53 +52,17 @@ dotnet_diagnostic.IDE2003.severity = warning
 
 # FEx-wide analyzer severities (previously never applied: the file sat outside every consumer's source tree)
 
-# IDE0290: Use primary constructor
-dotnet_diagnostic.IDE0290.severity = none
-
-# GlobalUsingsAnalyzer: Using should be in global file
-dotnet_diagnostic.GlobalUsingsAnalyzer.severity = none
-
-# RCS1090: Call 'ConfigureAwait(false)'.
-dotnet_diagnostic.RCS1090.severity = none
-
-# VSTHRD111: Use ConfigureAwait(bool)
-dotnet_diagnostic.VSTHRD111.severity = none
-
-# VSTHRD100: Avoid async void methods
-dotnet_diagnostic.VSTHRD100.severity = suggestion
-
 # RCS1133: Remove redundant Dispose/Close call.
 dotnet_diagnostic.RCS1133.severity = error
 
 # RCS1080: Use 'Count/Length' property instead of 'Any' method.
 dotnet_diagnostic.RCS1080.severity = error
 
-# CS1591: Missing XML comment for publicly visible type or member
-dotnet_diagnostic.CS1591.severity = none
-
-# CA1031: Do not catch general exception types
-dotnet_diagnostic.CA1031.severity = none
-
-# RCS1001: Add braces (when expression spans over multiple lines).
-dotnet_diagnostic.RCS1001.severity = none
-
-# CA1848: Use the LoggerMessage delegates
-dotnet_diagnostic.CA1848.severity = none
-
-# CA2254: Template should be a static expression
-dotnet_diagnostic.CA2254.severity = none
-
 # IDE0059: Unnecessary assignment of a value
 dotnet_diagnostic.IDE0059.severity = error
 
 # CS1717: Assignment made to same variable
 dotnet_diagnostic.CS1717.severity = error
-
-# IDE0290: Use primary constructor
-dotnet_diagnostic.IDE0290.severity = suggestion
-
-# IDE0028: Simplify collection initialization
-dotnet_diagnostic.IDE0028.severity = none
 
 # IDE0028: Simplify collection initialization
 dotnet_style_collection_initializer = false
@@ -112,5 +73,3 @@ dotnet_diagnostic.CA1200.severity = warning
 # IDE0305: Simplify collection initialization
 dotnet_diagnostic.IDE0305.severity = error
 
-[**/Migrations/**.cs]
-generated_code = true
