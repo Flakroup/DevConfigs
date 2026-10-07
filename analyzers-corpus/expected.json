@@ -1,5 +1,20 @@
 {
   "resharper": "2026.2.3.1",
+  "digest": "58f2e8ff4d04062fa87903b1614718f62d588905936c6b916e952ea74ad146cc",
+  "unsampled": {
+    "CSharpWarnings::CS1957": "compiler warning CS1957 (an override that binds to several runtime candidates) needs ref/out overloads in a generic base that differ only at runtime; no sample written",
+    "CSharpWarnings::WME006": "a Windows Runtime metadata export (WME) warning; the corpus is no Windows Runtime component",
+    "MISMATCHED_ASMDEF_FILENAME": "a Unity assembly definition check; Mismatch.asmdef sits in the corpus, but a JSON file cannot carry a //# marker and ReSharper reports nothing on it in this non-Unity project",
+    "Xaml.BindingWithContextNotResolved": "a XAML inspection; the corpus is a C# library with no XAML file",
+    "Xaml.PathError": "a XAML inspection; the corpus is a C# library with no XAML file",
+    "Xaml.RedundantCollectionProperty": "a XAML inspection; the corpus is a C# library with no XAML file",
+    "Xaml.RedundantFreezeAttribute": "a XAML inspection; the corpus is a C# library with no XAML file",
+    "Xaml.RedundantGridDefinitions": "a XAML inspection; the corpus is a C# library with no XAML file",
+    "Xaml.RedundantGridSpan": "a XAML inspection; the corpus is a C# library with no XAML file",
+    "Xaml.RedundantModifiersAttribute": "a XAML inspection; the corpus is a C# library with no XAML file",
+    "Xaml.RedundantNamespaceAlias": "a XAML inspection; the corpus is a C# library with no XAML file",
+    "Xaml.RedundantPropertyTypeQualifier": "a XAML inspection; the corpus is a C# library with no XAML file"
+  },
   "inspections": {
     "AccessToStaticMemberViaDerivedType": [
       "StyleA.cs: AccessToStaticMemberViaDerivedType"
@@ -110,7 +125,9 @@
     "EnforceForeachStatementBraces": [
       "StyleB.cs: EnforceForeachStatementBraces"
     ],
-    "EnforceIfStatementBraces": [],
+    "EnforceIfStatementBraces": [
+      "StyleB.cs: EnforceIfStatementBraces"
+    ],
     "EnforceLockStatementBraces": [
       "StyleB.cs: EnforceLockStatementBraces"
     ],
@@ -462,16 +479,7 @@
     "RedundantVerbatimStringPrefix": [
       "StyleA.cs: RedundantVerbatimStringPrefix"
     ],
-    "RemoveRedundantBraces": [
-      "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #1",
-      "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #2",
-      "StyleA.cs: RedundantFixedPointerDeclaration",
-      "StyleA.cs: RedundantIfElseBlock",
-      "StyleA.cs: RemoveRedundantBraces #2",
-      "StyleA.cs: UseCancellationTokenForIAsyncEnumerable",
-      "StyleB.cs: RedundantAssertionStatement #1",
-      "StyleB.cs: RedundantFixedPointerDeclaration #2"
-    ],
+    "RemoveRedundantBraces": [],
     "RemoveRedundantOrStatement.False": [
       "StyleB.cs: RemoveRedundantOrStatement.False #1"
     ],

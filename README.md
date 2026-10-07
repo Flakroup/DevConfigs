@@ -15,7 +15,7 @@ Shared build and editor configuration for Flakroup .NET repositories. Consumed a
 | `tools/validate_dotsettings.py` | Guard for the shared ReSharper layers - see [Editing the ReSharper layer](#editing-the-resharper-layer). |
 | `tools/test_fixtures.py` | Behavioural guard for the packaging defaults: builds and packs the projects in `tools/fixtures` in Release (needs the .NET 10 SDK) and asserts what comes out - see [Packaging defaults](#packaging-defaults). |
 | `tools/validate_build_props.py` | Guard for the NuGet audit policy in `Directory.Build.props`/`.targets` - see [The NuGet audit pin](#the-nuget-audit-pin). |
-| `analyzers-corpus/` | One labelled violation per ERROR inspection of `FEx.sln.DotSettings`, and `expected.json` - what ReSharper reported in each sample - guarded by `tools/validate_analyzers_corpus.py`; see [The analyzers corpus](#the-analyzers-corpus). |
+| `analyzers-corpus/` | Labelled violations of the ERROR inspections of `FEx.sln.DotSettings`, and `expected.json` - what ReSharper reported in each sample, and why an inspection has none - guarded by `tools/validate_analyzers_corpus.py`; see [The analyzers corpus](#the-analyzers-corpus). |
 
 ## Usage
 
@@ -132,18 +132,24 @@ sample opens with a `//# <inspection id>` marker (`//# <id> #2` for another vari
 next marker. `expected.json` lists, for every inspection `FEx.sln.DotSettings` sets to ERROR, the
 samples ReSharper reported it in, as `<file>: <marker>`. An empty list means ReSharper reported it
 nowhere in the corpus - either the sample misses or the inspection no longer fires in that version.
-Once ReSharper is gone, that file is the specification the Roslyn rules are held to.
+An ERROR inspection without a sample is named under `unsampled` with the reason, so an empty list never
+stands for a sample nobody wrote. Once ReSharper is gone, that file is the specification the Roslyn rules
+are held to.
 
-CI checks, without ReSharper, that the file names exactly the ERROR inspections, that no file repeats
-a marker, and that every sample it cites exists:
+CI checks, without ReSharper, that the file names exactly the ERROR inspections, that each has a sample
+or a reason, that no file repeats a marker, that every sample it cites exists, and that its `digest` -
+a hash of the corpus, `FEx.sln.DotSettings` and `.editorconfig` - still matches, so an edited sample or
+setting fails until the verdicts are recorded again:
 
 ```bash
-python tools/test_validate_analyzers_corpus.py
+python tools/validate_analyzers_corpus.py
 ```
 
-After changing a sample or the ERROR set, record the verdicts again. This needs `jb` from
-`JetBrains.ReSharper.GlobalTools` and the .NET SDK, and takes about a minute. It inspects a copy, so
-ReSharper neither rewrites the shared layer nor reads this repository's `.editorconfig`:
+After changing a sample, the shared layer or `.editorconfig`, record the verdicts again. This needs
+`jb` from `JetBrains.ReSharper.GlobalTools` and the .NET SDK, and takes about a minute. It inspects a
+copy with the shared layer as its solution settings and `.editorconfig` beside it, as a consumer sees
+both, so ReSharper never rewrites the shared layer. The `unsampled` reasons are written by hand, and a
+recording keeps them as they are:
 
 ```bash
 python tools/validate_analyzers_corpus.py --record

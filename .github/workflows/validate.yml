@@ -82,5 +82,8 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Self-test the checker and check analyzers-corpus/expected.json
+      - name: Self-test the checker
         run: python tools/test_validate_analyzers_corpus.py
+
+      - name: Check analyzers-corpus/expected.json against the corpus and the ERROR inspections
+        run: python tools/validate_analyzers_corpus.py
