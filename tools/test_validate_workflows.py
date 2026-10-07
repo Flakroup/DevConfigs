@@ -8,6 +8,7 @@ import io
 import sys
 import tempfile
 from pathlib import Path
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -68,6 +69,17 @@ def main_on(text: str, name: str = "w.yml") -> int:
             module.WORKFLOWS = saved
 
 
+def tag_from(listing: str, tag: str = "v1") -> str | None:
+    """tag_commit() over a canned git ls-remote listing, without the network."""
+    saved = module.subprocess.run
+    module.subprocess.run = lambda *_, **__: SimpleNamespace(stdout=listing)
+    try:
+        return module.tag_commit("owner/repo", tag)
+    finally:
+        module.subprocess.run = saved
+
+
+ANNOTATED = f"{OLD_SHA}\trefs/tags/v1\n{SHA}\trefs/tags/v1^{{}}\n"
 NO_PERMISSIONS = changed("permissions:\n  contents: read\n", "")
 NO_PERSIST = changed("        with:\n          persist-credentials: false\n", "")
 TOKEN_KEPT = ["w.yml:13: actions/checkout keeps the token (no persist-credentials: false)"]
@@ -142,6 +154,12 @@ CASES = [
      lambda: check_of(changed("persist-credentials: false", "persist-credentials: true")) == TOKEN_KEPT),
     ("a quoted false with a trailing comment passes",
      lambda: check_of(changed("persist-credentials: false", "persist-credentials: 'false' # no token")) == []),
+    ("an annotated tag resolves to its commit, not to the tag object",
+     lambda: tag_from(ANNOTATED) == SHA),
+    ("a lightweight tag resolves to the commit it names",
+     lambda: tag_from(f"{SHA}\trefs/tags/v1\n") == SHA),
+    ("a missing tag resolves to nothing",
+     lambda: tag_from("") is None),
     ("a directory holding an unhardened workflow fails",
      lambda: main_on(NO_PERMISSIONS) == 1),
     ("a .yaml workflow is checked too",
