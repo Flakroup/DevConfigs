@@ -19,7 +19,8 @@ SHA = "fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09"
 PYTHON_SHA = "a26af69be951a213d495a4c3e4e4022e16d87065"
 OLD_SHA = "11bd71901bbe5b1630ceea73d27597364c9af683"
 TAGS = {("actions/checkout", "v5.1.0"): SHA, ("actions/checkout", "v4.2.2"): OLD_SHA,
-        ("actions/setup-python", "v5.6.0"): PYTHON_SHA, ("pypa/gh-action-pypi-publish", "release/v1"): SHA}
+        ("actions/setup-python", "v5.6.0"): PYTHON_SHA, ("pypa/gh-action-pypi-publish", "release/v1"): SHA,
+        ("actions/checkout-fork", "v5.1.0"): SHA}
 
 
 def resolve(repository: str, tag: str) -> str | None:
@@ -145,6 +146,8 @@ CASES = [
     ("a checkout spelled in another case is still checked",
      lambda: check_of(NO_PERSIST.replace("actions/checkout@", "Actions/Checkout@"))
      == ["w.yml:13: Actions/Checkout keeps the token (no persist-credentials: false)"]),
+    ("an action whose name only starts with actions/checkout is not a checkout",
+     lambda: check_of(NO_PERSIST.replace("actions/checkout@", "actions/checkout-fork@")) == []),
     ("persist-credentials in a later step does not cover the checkout",
      lambda: check_of(NO_PERSIST.replace("python-version: '3.13'", "persist-credentials: false")) == TOKEN_KEPT),
     ("persist-credentials in a later job does not cover the checkout",
