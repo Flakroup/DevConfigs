@@ -11,6 +11,8 @@ on every restore and build. Three consumers, each a throwaway repository root wi
 * ``no-switch`` has a ``.gitmodules`` but does not opt in: no copy, so no repository is changed by merely bumping this one.
 * ``owned`` sets the switch but already has a root ``.editorconfig`` of its own: it is kept and a ``DEVCFG001`` warning is raised.
 * ``standalone`` sets the switch but has no ``.gitmodules`` (this repository's own build): the file is not copied onto itself.
+* ``parallel`` restores a solution of many projects at once, each running the mirror: no project may fail on a sibling's
+  write. A plain Copy failed this on Linux in half of the rounds.
 
 Needs the .NET 10 SDK. Plain asserts, no test framework.
 """
@@ -123,6 +125,25 @@ def main() -> int:
         (root / "DevConfigs" / ".editorconfig").read_text(encoding="utf-8") + "\n# edited\n", encoding="utf-8")
     code, output = restore_and_build(root)
     check(code == 0 and b"# edited" in (root / ".editorconfig").read_bytes(), "opted-in: an edit is mirrored on the next build", output)
+
+    # Every project of a parallel restore mirrors the same file at once: none may fail reading or replacing it.
+    root = consumer(work / "parallel", True, True)
+    names = [f"P{i}" for i in range(24)]
+    for name in names:
+        (root / name).mkdir()
+        (root / name / f"{name}.csproj").write_text(PROJECT, encoding="utf-8")
+    (root / "All.slnx").write_text(
+        "<Solution>" + "".join(f'<Project Path="{n}/{n}.csproj" />' for n in names) + "</Solution>\n", encoding="utf-8")
+    failed = []
+    for round_number in range(8):
+        (root / ".editorconfig").unlink(missing_ok=True)
+        process = subprocess.run(["dotnet", "restore", "All.slnx", "-nologo", "-v", "q"],
+                                 capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root)
+        copy = root / ".editorconfig"
+        if process.returncode != 0 or not copy.is_file() or copy.read_bytes() != expected:
+            failed.append(f"round {round_number}: " + process.stdout + process.stderr)
+    check(not failed, "parallel: every round of a parallel restore mirrors without a failure", "\n".join(failed))
+    check(not list(root.glob(".editorconfig.*.tmp")), "parallel: no temporary copy is left behind")
 
     shutil.rmtree(work, ignore_errors=True)
     print("OK" if not failures else f"{len(failures)} failed")

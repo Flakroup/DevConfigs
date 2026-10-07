@@ -96,19 +96,72 @@
          - A root file the consumer owns is never replaced: only a file carrying the marker line of the shared one is
            overwritten, anything else is left alone with a warning.
          - The compiler reads its .editorconfig list at evaluation, before this target runs, so a build that skips restore
-           (no restore step) while the copy is missing compiles without the shared rules; the next build has them. -->
-    <PropertyGroup>
-        <_DevConfigsMirrorTarget>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))/.editorconfig</_DevConfigsMirrorTarget>
-    </PropertyGroup>
+           (no restore step) while the copy is missing compiles without the shared rules; the next build has them.
+         - Every project of a parallel restore runs this target at once, so the copy is written to a unique temporary file
+           and renamed over the root one, and a read or a rename that loses to a sibling is retried: a plain Copy let one
+           project read the file while another held it open for writing (MSB4184 on a CI restore of the solution). -->
+    <UsingTask TaskName="DevConfigsMirrorFile" TaskFactory="RoslynCodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <Source ParameterType="System.String" Required="true"/>
+            <Destination ParameterType="System.String" Required="true"/>
+            <Marker ParameterType="System.String" Required="true"/>
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System.Threading"/>
+            <Code Type="Fragment" Language="cs"><![CDATA[
+var wanted = File.ReadAllBytes(Source);
+for (var attempt = 0; attempt < 20; attempt++)
+{
+    try
+    {
+        if (File.Exists(Destination))
+        {
+            var current = File.ReadAllBytes(Destination);
+            if (!Encoding.UTF8.GetString(current).TrimStart('\uFEFF').StartsWith(Marker, StringComparison.Ordinal))
+            {
+                Log.LogWarning(null, "DEVCFG001", null, null, 0, 0, 0, 0, Destination + " is not a mirrored copy, so DevConfigsMirrorEditorConfig left it alone and the shared rules do not apply. Remove it, or stop setting the switch.");
+                return true;
+            }
+            if (current.SequenceEqual(wanted))
+            {
+                return true;
+            }
+        }
+        var temporary = Destination + "." + Guid.NewGuid().ToString("N") + ".tmp";
+        try
+        {
+            File.WriteAllBytes(temporary, wanted);
+            // Both are a rename: atomic on Linux, and on Windows a sibling holding the file open fails it, and it retries.
+            if (File.Exists(Destination))
+            {
+                File.Replace(temporary, Destination, null);
+            }
+            else
+            {
+                File.Move(temporary, Destination);
+            }
+        }
+        finally
+        {
+            File.Delete(temporary);
+        }
+        return true;
+    }
+    catch (Exception exception) when (exception is IOException || exception is UnauthorizedAccessException)
+    {
+        Thread.Sleep(50);
+    }
+}
+Log.LogMessage(MessageImportance.High, Destination + " could not be mirrored while other processes held it; the next restore or build retries.");
+]]></Code>
+        </Task>
+    </UsingTask>
     <Target Name="DevConfigsMirrorEditorConfig" BeforeTargets="CollectPackageReferences;BeforeBuild"
             Condition=" '$(DevConfigsMirrorEditorConfig)' == 'true' And Exists('$(MSBuildThisFileDirectory)../.gitmodules') ">
-        <PropertyGroup>
-            <_DevConfigsMirrorOwned Condition=" Exists('$(_DevConfigsMirrorTarget)') And !$([System.IO.File]::ReadAllText('$(_DevConfigsMirrorTarget)').StartsWith('# Mirrored copy marker')) ">true</_DevConfigsMirrorOwned>
-        </PropertyGroup>
-        <Warning Condition=" '$(_DevConfigsMirrorOwned)' == 'true' " Code="DEVCFG001"
-                 Text="$(_DevConfigsMirrorTarget) is not a mirrored copy, so DevConfigsMirrorEditorConfig left it alone and the shared rules do not apply. Remove it, or stop setting the switch."/>
-        <Copy Condition=" '$(_DevConfigsMirrorOwned)' != 'true' " SourceFiles="$(MSBuildThisFileDirectory).editorconfig"
-              DestinationFolder="$(MSBuildThisFileDirectory).." SkipUnchangedFiles="true" Retries="3" RetryDelayMilliseconds="200"/>
+        <DevConfigsMirrorFile Source="$(MSBuildThisFileDirectory).editorconfig"
+                              Destination="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))/.editorconfig"
+                              Marker="# Mirrored copy marker"/>
     </Target>
 
     <ItemGroup Condition=" '$([System.String]::Copy($(IsPackable)).ToLower())' == 'true' ">
