@@ -3,7 +3,7 @@
 
 An .editorconfig governs only the files beneath it, so the one inside this submodule reaches no consumer source. A
 repository that sets ``DevConfigsMirrorEditorConfig=true`` before importing the shared props gets a copy of it at its root
-on every restore and build. Three consumers, each a throwaway repository root with a copy of the shared files in its own
+on every restore and build. The consumers, each a throwaway repository root with a copy of the shared files in its own
 ``DevConfigs`` directory:
 
 * ``opted-in`` sets the switch and has a ``.gitmodules``: the root ends up with a byte-identical copy, and a restore alone
@@ -11,14 +11,20 @@ on every restore and build. Three consumers, each a throwaway repository root wi
 * ``no-switch`` has a ``.gitmodules`` but does not opt in: no copy, so no repository is changed by merely bumping this one.
 * ``owned`` sets the switch but already has a root ``.editorconfig`` of its own: it is kept and a ``DEVCFG001`` warning is raised.
 * ``standalone`` sets the switch but has no ``.gitmodules`` (this repository's own build): the file is not copied onto itself.
+* ``parallel`` restores a solution of many projects at once, each running the mirror: no project may fail on a sibling's
+  write, whether the root copy is missing or stale. A plain Copy failed this on Linux in half of the rounds.
+* ``read-only`` holds a stale copy that cannot be replaced: the build fails with ``DEVCFG002`` instead of passing
+  under the old rules.
 
 Needs the .NET 10 SDK. Plain asserts, no test framework.
 """
 
 from __future__ import annotations
 
+import os
 import re
 import shutil
+import stat
 import subprocess
 import tempfile
 from pathlib import Path
@@ -123,6 +129,52 @@ def main() -> int:
         (root / "DevConfigs" / ".editorconfig").read_text(encoding="utf-8") + "\n# edited\n", encoding="utf-8")
     code, output = restore_and_build(root)
     check(code == 0 and b"# edited" in (root / ".editorconfig").read_bytes(), "opted-in: an edit is mirrored on the next build", output)
+
+    # A current copy is left alone: the compiler takes it as an input, so a rewrite would recompile every project.
+    written = (root / ".editorconfig").stat().st_mtime_ns
+    code, output = restore_and_build(root)
+    check(code == 0 and (root / ".editorconfig").stat().st_mtime_ns == written,
+          "opted-in: a copy already current is not rewritten", output)
+
+    # Every project of a parallel restore mirrors the same file at once: none may fail reading or replacing it.
+    root = consumer(work / "parallel", True, True)
+    names = [f"P{i}" for i in range(24)]
+    for name in names:
+        (root / name).mkdir()
+        (root / name / f"{name}.csproj").write_text(PROJECT, encoding="utf-8")
+    (root / "All.slnx").write_text(
+        "<Solution>" + "".join(f'<Project Path="{n}/{n}.csproj" />' for n in names) + "</Solution>\n", encoding="utf-8")
+    failed = []
+    stale = expected + b"\n# stale\n"
+    for round_number in range(8):
+        # Even rounds create the copy (a rename onto nothing), odd ones replace a stale one (a rename over it).
+        if round_number % 2:
+            (root / ".editorconfig").write_bytes(stale)
+        else:
+            (root / ".editorconfig").unlink(missing_ok=True)
+        # -m:24 runs every project at once whatever the core count: on CI's four cores the old Copy passed every round.
+        process = subprocess.run(["dotnet", "restore", "All.slnx", "-nologo", "-v", "q", "-m:24"],
+                                 capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root)
+        copy = root / ".editorconfig"
+        if process.returncode != 0 or not copy.is_file() or copy.read_bytes() != expected:
+            failed.append(f"round {round_number}: " + (process.stdout + process.stderr)[-300:])
+    check(not failed, "parallel: every round of a parallel restore mirrors without a failure", "\n".join(failed))
+    check(not list(root.glob(".editorconfig.*.tmp")), "parallel: no temporary copy is left behind")
+
+    # A copy that can never be replaced fails the build: a pass would compile under the stale rules.
+    root = consumer(work / "read-only", True, True)
+    (root / ".editorconfig").write_bytes(stale)
+    if os.name == "nt":
+        os.chmod(root / ".editorconfig", stat.S_IREAD)
+    else:
+        os.chmod(root, stat.S_IREAD | stat.S_IEXEC)
+    if os.name != "nt" and os.geteuid() == 0:
+        print("SKIP  read-only: root ignores permissions")
+    else:
+        code, output = restore_and_build(root)
+        check(code != 0 and "DEVCFG002" in output, "read-only: a copy that cannot be replaced fails the build", output)
+    os.chmod(root, stat.S_IRWXU)
+    os.chmod(root / ".editorconfig", stat.S_IREAD | stat.S_IWRITE)
 
     shutil.rmtree(work, ignore_errors=True)
     print("OK" if not failures else f"{len(failures)} failed")
