@@ -130,6 +130,12 @@ def main() -> int:
     code, output = restore_and_build(root)
     check(code == 0 and b"# edited" in (root / ".editorconfig").read_bytes(), "opted-in: an edit is mirrored on the next build", output)
 
+    # A current copy is left alone: the compiler takes it as an input, so a rewrite would recompile every project.
+    written = (root / ".editorconfig").stat().st_mtime_ns
+    code, output = restore_and_build(root)
+    check(code == 0 and (root / ".editorconfig").stat().st_mtime_ns == written,
+          "opted-in: a copy already current is not rewritten", output)
+
     # Every project of a parallel restore mirrors the same file at once: none may fail reading or replacing it.
     root = consumer(work / "parallel", True, True)
     names = [f"P{i}" for i in range(24)]
@@ -146,11 +152,12 @@ def main() -> int:
             (root / ".editorconfig").write_bytes(stale)
         else:
             (root / ".editorconfig").unlink(missing_ok=True)
-        process = subprocess.run(["dotnet", "restore", "All.slnx", "-nologo", "-v", "q"],
+        # -m:24 runs every project at once whatever the core count: on CI's four cores the old Copy passed every round.
+        process = subprocess.run(["dotnet", "restore", "All.slnx", "-nologo", "-v", "q", "-m:24"],
                                  capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root)
         copy = root / ".editorconfig"
         if process.returncode != 0 or not copy.is_file() or copy.read_bytes() != expected:
-            failed.append(f"round {round_number}: " + process.stdout + process.stderr)
+            failed.append(f"round {round_number}: " + (process.stdout + process.stderr)[-300:])
     check(not failed, "parallel: every round of a parallel restore mirrors without a failure", "\n".join(failed))
     check(not list(root.glob(".editorconfig.*.tmp")), "parallel: no temporary copy is left behind")
 
