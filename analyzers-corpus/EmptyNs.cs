@@ -1,0 +1,4 @@
+//# EmptyNamespace
+namespace Corpus.Empty
+{
+}

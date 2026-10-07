@@ -1,0 +1,580 @@
+{
+  "resharper": "2026.2.3.1",
+  "inspections": {
+    "AccessToStaticMemberViaDerivedType": [
+      "StyleA.cs: AccessToStaticMemberViaDerivedType"
+    ],
+    "ArrangeModifiersOrder": [
+      "StyleA.cs: ArrangeModifiersOrder"
+    ],
+    "ArrangeRedundantParentheses": [
+      "StyleA.cs: ArrangeRedundantParentheses"
+    ],
+    "ArrangeStaticMemberQualifier": [
+      "StyleA.cs: ArrangeStaticMemberQualifier"
+    ],
+    "ArrangeThisQualifier": [
+      "StyleA.cs: ArrangeThisQualifier"
+    ],
+    "ArrangeTypeMemberModifiers": [
+      "StyleA.cs: ArrangeTypeMemberModifiers"
+    ],
+    "ArrangeTypeModifiers": [
+      "StyleA.cs: ArrangeTypeModifiers"
+    ],
+    "ArrayWithDefaultValuesInitialization": [],
+    "BaseMemberHasParams": [
+      "StyleA.cs: BaseMemberHasParams"
+    ],
+    "BuiltInTypeReferenceStyle": [
+      "StyleA.cs: BuiltInTypeReferenceStyle"
+    ],
+    "BuiltInTypeReferenceStyleForMemberAccess": [
+      "StyleA.cs: BuiltInTypeReferenceStyleForMemberAccess"
+    ],
+    "ByRefArgumentIsVolatileField": [],
+    "CSharpWarnings::CS0108,CS0114": [
+      "StyleA.cs: CSharpWarnings::CS0108,CS0114 #1",
+      "StyleA.cs: CSharpWarnings::CS0108,CS0114 #2"
+    ],
+    "CSharpWarnings::CS0109": [
+      "StyleA.cs: CSharpWarnings::CS0109"
+    ],
+    "CSharpWarnings::CS0184": [
+      "StyleA.cs: CSharpWarnings::CS0184"
+    ],
+    "CSharpWarnings::CS0420": [
+      "StyleA.cs: ByRefArgumentIsVolatileField",
+      "StyleA.cs: CSharpWarnings::CS0420"
+    ],
+    "CSharpWarnings::CS0628": [
+      "StyleA.cs: CSharpWarnings::CS0628"
+    ],
+    "CSharpWarnings::CS0659": [
+      "StyleA.cs: CSharpWarnings::CS0659"
+    ],
+    "CSharpWarnings::CS0672": [
+      "StyleA.cs: CSharpWarnings::CS0672"
+    ],
+    "CSharpWarnings::CS1957": [],
+    "CSharpWarnings::CS4014": [
+      "StyleA.cs: CSharpWarnings::CS4014"
+    ],
+    "CSharpWarnings::CS7023": [
+      "W7023.cs: CSharpWarnings::CS7023"
+    ],
+    "CSharpWarnings::WME006": [],
+    "CatchClauseWithoutVariable": [],
+    "CheckNamespace": [
+      "EmptyNs.cs: EmptyNamespace",
+      "Stubs.cs",
+      "Wrong/Cn.cs: CheckNamespace"
+    ],
+    "ComplexObjectDestructuringProblem": [],
+    "ComplexObjectInContextDestructuringProblem": [],
+    "ConvertClosureToMethodGroup": [
+      "StyleA.cs: ConvertClosureToMethodGroup"
+    ],
+    "ConvertToConstant.Global": [],
+    "ConvertToConstant.Local": [
+      "StyleA.cs: ConvertToConstant.Local #1",
+      "StyleA.cs: ConvertToConstant.Local #2",
+      "StyleA.cs: LocalVariableHidesMember",
+      "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #1",
+      "StyleA.cs: RedundantTypeSpecificationInDefaultExpression",
+      "StyleA.cs: RedundantVerbatimPrefix",
+      "StyleA.cs: SuggestVarOrType_BuiltInTypes #1",
+      "StyleA.cs: SuggestVarOrType_BuiltInTypes #2",
+      "StyleA.cs: VariableHidesOuterVariable",
+      "StyleB.cs: RedundantDefaultMemberInitializer #1"
+    ],
+    "EmptyEmbeddedStatement": [],
+    "EmptyForStatement": [
+      "StyleA.cs: EmptyForStatement"
+    ],
+    "EmptyNamespace": [
+      "EmptyNs.cs: EmptyNamespace"
+    ],
+    "EmptyStatement": [
+      "StyleA.cs: EmptyStatement"
+    ],
+    "EnforceDoWhileStatementBraces": [
+      "StyleB.cs: EnforceDoWhileStatementBraces"
+    ],
+    "EnforceFixedStatementBraces": [
+      "StyleB.cs: EnforceFixedStatementBraces"
+    ],
+    "EnforceForStatementBraces": [
+      "StyleB.cs: EnforceForStatementBraces"
+    ],
+    "EnforceForeachStatementBraces": [
+      "StyleB.cs: EnforceForeachStatementBraces"
+    ],
+    "EnforceIfStatementBraces": [],
+    "EnforceLockStatementBraces": [
+      "StyleB.cs: EnforceLockStatementBraces"
+    ],
+    "EnforceUsingStatementBraces": [
+      "StyleB.cs: EnforceUsingStatementBraces"
+    ],
+    "EnforceWhileStatementBraces": [
+      "StyleB.cs: EnforceWhileStatementBraces"
+    ],
+    "InconsistentNaming": [
+      "StyleA.cs: AccessToStaticMemberViaDerivedType",
+      "StyleA.cs: BaseMemberHasParams",
+      "StyleA.cs: CSharpWarnings::CS0108,CS0114 #1",
+      "StyleA.cs: CSharpWarnings::CS0108,CS0114 #2",
+      "StyleA.cs: CSharpWarnings::CS0628",
+      "StyleA.cs: CSharpWarnings::CS0672",
+      "StyleA.cs: ComplexObjectDestructuringProblem",
+      "StyleA.cs: LocalVariableHidesMember",
+      "StyleA.cs: OptionalParameterHierarchyMismatch",
+      "StyleA.cs: ParameterHidesMember",
+      "StyleA.cs: RedundantBaseConstructorCall",
+      "StyleA.cs: RedundantEmptyFinallyBlock",
+      "StyleA.cs: RedundantEmptyObjectCreationArgumentList",
+      "StyleA.cs: UnusedMemberHierarchy.Local",
+      "StyleB.cs: ArrayWithDefaultValuesInitialization #1",
+      "StyleB.cs: ArrayWithDefaultValuesInitialization #2",
+      "StyleB.cs: ArrayWithDefaultValuesInitialization #3",
+      "StyleB.cs: CatchClauseWithoutVariable #1",
+      "StyleB.cs: CatchClauseWithoutVariable #2",
+      "StyleB.cs: CatchClauseWithoutVariable #3",
+      "StyleB.cs: ComplexObjectDestructuringProblem #1",
+      "StyleB.cs: ComplexObjectDestructuringProblem #2",
+      "StyleB.cs: ComplexObjectDestructuringProblem #3",
+      "StyleB.cs: ComplexObjectDestructuringProblem #4",
+      "StyleB.cs: ComplexObjectDestructuringProblem #5",
+      "StyleB.cs: ComplexObjectDestructuringProblem #6",
+      "StyleB.cs: ComplexObjectInContextDestructuringProblem #1",
+      "StyleB.cs: ComplexObjectInContextDestructuringProblem #2",
+      "StyleB.cs: ComplexObjectInContextDestructuringProblem #3",
+      "StyleB.cs: ConvertToConstant.Global #1",
+      "StyleB.cs: ConvertToConstant.Global #2",
+      "StyleB.cs: ConvertToConstant.Global #3",
+      "StyleB.cs: ConvertToConstant.Global #4",
+      "StyleB.cs: EmptyEmbeddedStatement #1",
+      "StyleB.cs: EmptyEmbeddedStatement #2",
+      "StyleB.cs: EmptyEmbeddedStatement #3",
+      "StyleB.cs: EmptyEmbeddedStatement #4",
+      "StyleB.cs: EnforceDoWhileStatementBraces",
+      "StyleB.cs: EnforceFixedStatementBraces",
+      "StyleB.cs: EnforceForStatementBraces",
+      "StyleB.cs: EnforceForeachStatementBraces",
+      "StyleB.cs: EnforceIfStatementBraces",
+      "StyleB.cs: EnforceLockStatementBraces",
+      "StyleB.cs: EnforceUsingStatementBraces",
+      "StyleB.cs: EnforceWhileStatementBraces",
+      "StyleB.cs: InconsistentNaming #1",
+      "StyleB.cs: InconsistentNaming #2",
+      "StyleB.cs: InvokeAsExtensionMethod #1",
+      "StyleB.cs: InvokeAsExtensionMethod #2",
+      "StyleB.cs: NotifyPropertyChangedInvocatorFromConstructor #1",
+      "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Global #1",
+      "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Global #2",
+      "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Local #1",
+      "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Local #2",
+      "StyleB.cs: RedundantAnnotation #1",
+      "StyleB.cs: RedundantAnnotation #2",
+      "StyleB.cs: RedundantAnnotation #3",
+      "StyleB.cs: RedundantAnnotation #4",
+      "StyleB.cs: RedundantAnnotation #5",
+      "StyleB.cs: RedundantAssertionStatement #1",
+      "StyleB.cs: RedundantAssertionStatement #2",
+      "StyleB.cs: RedundantAssertionStatement #3",
+      "StyleB.cs: RedundantAssertionStatement #4",
+      "StyleB.cs: RedundantAwait #1",
+      "StyleB.cs: RedundantAwait #2",
+      "StyleB.cs: RedundantAwait #3",
+      "StyleB.cs: RedundantBaseQualifier",
+      "StyleB.cs: RedundantCast.0 #1",
+      "StyleB.cs: RedundantCast.0 #2",
+      "StyleB.cs: RedundantCast.0 #3",
+      "StyleB.cs: RedundantCast.0 #4",
+      "StyleB.cs: RedundantCast.0 #5",
+      "StyleB.cs: RedundantDeclarationSemicolon #2",
+      "StyleB.cs: RedundantDeclarationSemicolon #3",
+      "StyleB.cs: RedundantDefaultMemberInitializer #1",
+      "StyleB.cs: RedundantDefaultMemberInitializer #2",
+      "StyleB.cs: RedundantDefaultMemberInitializer #3",
+      "StyleB.cs: RedundantDelegateInvoke #1",
+      "StyleB.cs: RedundantDelegateInvoke #2",
+      "StyleB.cs: RedundantDiscardedPattern #1",
+      "StyleB.cs: RedundantDiscardedPattern #2",
+      "StyleB.cs: RedundantDiscardedPattern #3",
+      "StyleB.cs: RedundantDiscardedPattern #4",
+      "StyleB.cs: RedundantDiscardedPattern #5",
+      "StyleB.cs: RedundantFixedPointerDeclaration #2",
+      "StyleB.cs: RedundantFixedPointerDeclaration #3",
+      "StyleB.cs: RedundantInlineAssertion #1",
+      "StyleB.cs: RedundantInlineAssertion #2",
+      "StyleB.cs: RedundantOverflowCheckingContext #1",
+      "StyleB.cs: RedundantOverflowCheckingContext #2",
+      "StyleB.cs: RedundantOverflowCheckingContext #3",
+      "StyleB.cs: RedundantOverflowCheckingContext #4",
+      "StyleB.cs: RedundantOverriddenMember",
+      "StyleB.cs: RedundantTypeSpecificationInDefaultExpression #1",
+      "StyleB.cs: RedundantTypeSpecificationInDefaultExpression #2",
+      "StyleB.cs: RedundantTypeSpecificationInDefaultExpression #3",
+      "StyleB.cs: RemoveRedundantOrStatement.False #1",
+      "StyleB.cs: RemoveRedundantOrStatement.False #2",
+      "StyleB.cs: RemoveRedundantOrStatement.False #3",
+      "StyleB.cs: RemoveRedundantOrStatement.True #1",
+      "StyleB.cs: RemoveRedundantOrStatement.True #2",
+      "StyleB.cs: UnusedLocalFunctionParameter #1",
+      "StyleB.cs: UnusedLocalFunctionParameter #2",
+      "StyleB.cs: UnusedLocalFunctionParameter #3",
+      "StyleB.cs: UnusedMemberHierarchy.Local #1",
+      "StyleB.cs: UnusedMemberHierarchy.Local #2",
+      "StyleB.cs: UnusedMemberHierarchy.Local #3",
+      "StyleB.cs: UseNameofExpressionForPartOfTheString #1",
+      "StyleB.cs: UseNameofExpressionForPartOfTheString #2",
+      "StyleB.cs: UseNameofExpressionForPartOfTheString #3",
+      "StyleB.cs: UseNameofExpressionForPartOfTheString #4",
+      "W7023.cs: CSharpWarnings::CS7023"
+    ],
+    "InvokeAsExtensionMethod": [],
+    "LocalVariableHidesMember": [
+      "StyleA.cs: LocalVariableHidesMember"
+    ],
+    "LoopVariableIsNeverChangedInsideLoop": [
+      "StyleA.cs: EnforceDoWhileStatementBraces",
+      "StyleA.cs: EnforceWhileStatementBraces",
+      "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #1",
+      "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #2",
+      "StyleB.cs: EmptyEmbeddedStatement #1",
+      "StyleB.cs: EnforceDoWhileStatementBraces",
+      "StyleB.cs: EnforceWhileStatementBraces"
+    ],
+    "MISMATCHED_ASMDEF_FILENAME": [],
+    "MemberHidesStaticFromOuterClass": [
+      "StyleA.cs: MemberHidesStaticFromOuterClass"
+    ],
+    "MethodHasAsyncOverload": [
+      "StyleA.cs: MethodHasAsyncOverload"
+    ],
+    "MethodHasAsyncOverloadWithCancellation": [
+      "StyleA.cs: MethodHasAsyncOverloadWithCancellation"
+    ],
+    "MethodOverloadWithOptionalParameter": [
+      "StyleA.cs: MethodOverloadWithOptionalParameter",
+      "StyleA.cs: RedundantOverload.Global",
+      "StyleA.cs: RedundantOverload.Local"
+    ],
+    "MethodSupportsCancellation": [
+      "StyleA.cs: MethodSupportsCancellation"
+    ],
+    "NonAtomicCompoundOperator": [
+      "StyleA.cs: NonAtomicCompoundOperator"
+    ],
+    "NotifyPropertyChangedInvocatorFromConstructor": [],
+    "ObjectCreationAsStatement": [
+      "StyleA.cs: ObjectCreationAsStatement"
+    ],
+    "OptionalParameterHierarchyMismatch": [
+      "StyleA.cs: OptionalParameterHierarchyMismatch"
+    ],
+    "OptionalParameterRefOut": [
+      "StyleA.cs: OptionalParameterRefOut"
+    ],
+    "ParameterHidesMember": [
+      "StyleA.cs: ParameterHidesMember"
+    ],
+    "ParameterOnlyUsedForPreconditionCheck.Global": [],
+    "ParameterOnlyUsedForPreconditionCheck.Local": [],
+    "PartialMethodParameterNameMismatch": [
+      "StyleA.cs: PartialMethodParameterNameMismatch"
+    ],
+    "PartialMethodWithSinglePart": [
+      "StyleA.cs: PartialMethodWithSinglePart"
+    ],
+    "PartialTypeWithSinglePart": [
+      "StyleA.cs: PartialTypeWithSinglePart"
+    ],
+    "RedundantAnnotation": [],
+    "RedundantAnonymousTypePropertyName": [
+      "StyleA.cs: RedundantAnonymousTypePropertyName"
+    ],
+    "RedundantArgumentDefaultValue": [
+      "StyleA.cs: RedundantArgumentDefaultValue",
+      "StyleB.cs: ComplexObjectInContextDestructuringProblem #2"
+    ],
+    "RedundantAssertionStatement": [],
+    "RedundantAssignment": [
+      "StyleA.cs: RedundantAssignment"
+    ],
+    "RedundantAttributeParentheses": [
+      "StyleA.cs: RedundantAttributeParentheses"
+    ],
+    "RedundantAwait": [],
+    "RedundantBaseConstructorCall": [
+      "StyleA.cs: RedundantBaseConstructorCall"
+    ],
+    "RedundantBaseQualifier": [
+      "StyleB.cs: RedundantBaseQualifier"
+    ],
+    "RedundantBoolCompare": [
+      "StyleA.cs: RedundantBoolCompare"
+    ],
+    "RedundantCaseLabel": [
+      "StyleA.cs: RedundantCaseLabel"
+    ],
+    "RedundantCast": [
+      "StyleA.cs: RedundantCast",
+      "StyleA.cs: RedundantCast.0",
+      "StyleB.cs: RedundantCast.0 #1",
+      "StyleB.cs: RedundantCast.0 #2",
+      "StyleB.cs: RedundantCast.0 #3",
+      "StyleB.cs: RedundantCast.0 #4",
+      "StyleB.cs: RedundantCast.0 #5"
+    ],
+    "RedundantCast.0": [],
+    "RedundantCatchClause": [
+      "StyleA.cs: RedundantCatchClause"
+    ],
+    "RedundantCheckBeforeAssignment": [
+      "StyleA.cs: RedundantCheckBeforeAssignment"
+    ],
+    "RedundantCollectionInitializerElementBraces": [
+      "StyleA.cs: RedundantCollectionInitializerElementBraces"
+    ],
+    "RedundantDeclarationSemicolon": [
+      "StyleB.cs: RedundantDeclarationSemicolon #2"
+    ],
+    "RedundantDefaultMemberInitializer": [],
+    "RedundantDelegateCreation": [
+      "StyleA.cs: RedundantDelegateCreation"
+    ],
+    "RedundantDelegateInvoke": [],
+    "RedundantDiscardDesignation": [
+      "StyleA.cs: RedundantDiscardDesignation"
+    ],
+    "RedundantDiscardedPattern": [],
+    "RedundantEmptyFinallyBlock": [
+      "StyleA.cs: RedundantEmptyFinallyBlock"
+    ],
+    "RedundantEmptyObjectCreationArgumentList": [
+      "StyleA.cs: RedundantEmptyObjectCreationArgumentList"
+    ],
+    "RedundantEmptyObjectOrCollectionInitializer": [
+      "StyleA.cs: RedundantEmptyObjectOrCollectionInitializer"
+    ],
+    "RedundantEmptySwitchSection": [
+      "StyleA.cs: RedundantEmptySwitchSection"
+    ],
+    "RedundantEnumerableCastCall": [
+      "StyleA.cs: RedundantEnumerableCastCall"
+    ],
+    "RedundantExplicitArrayCreation": [
+      "StyleA.cs: RedundantExplicitArrayCreation",
+      "StyleA.cs: RedundantExplicitParamsArrayCreation",
+      "StyleB.cs: ArrayWithDefaultValuesInitialization #1",
+      "StyleB.cs: ArrayWithDefaultValuesInitialization #2"
+    ],
+    "RedundantExplicitArraySize": [
+      "StyleA.cs: ArrayWithDefaultValuesInitialization",
+      "StyleA.cs: RedundantExplicitArraySize"
+    ],
+    "RedundantExplicitNullableCreation": [
+      "StyleA.cs: RedundantExplicitNullableCreation"
+    ],
+    "RedundantExplicitParamsArrayCreation": [
+      "StyleA.cs: RedundantExplicitParamsArrayCreation"
+    ],
+    "RedundantExplicitTupleComponentName": [
+      "StyleA.cs: RedundantExplicitTupleComponentName"
+    ],
+    "RedundantFixedPointerDeclaration": [],
+    "RedundantIfElseBlock": [
+      "StyleA.cs: RedundantIfElseBlock"
+    ],
+    "RedundantInlineAssertion": [],
+    "RedundantJumpStatement": [
+      "StyleA.cs: RedundantJumpStatement"
+    ],
+    "RedundantLambdaParameterType": [
+      "StyleA.cs: RedundantLambdaParameterType"
+    ],
+    "RedundantLambdaSignatureParentheses": [
+      "StyleA.cs: RedundantLambdaSignatureParentheses"
+    ],
+    "RedundantLogicalConditionalExpressionOperand": [
+      "StyleA.cs: RedundantLogicalConditionalExpressionOperand",
+      "StyleA.cs: RemoveRedundantOrStatement.False",
+      "StyleB.cs: RemoveRedundantOrStatement.False #2"
+    ],
+    "RedundantNameQualifier": [
+      "Stubs.cs",
+      "StyleA.cs: RedundantNameQualifier"
+    ],
+    "RedundantOverflowCheckingContext": [],
+    "RedundantOverload.Global": [
+      "StyleA.cs: RedundantOverload.Global"
+    ],
+    "RedundantOverload.Local": [
+      "StyleA.cs: RedundantOverload.Local"
+    ],
+    "RedundantOverriddenMember": [
+      "StyleB.cs: RedundantOverriddenMember"
+    ],
+    "RedundantPropertyPatternClause": [
+      "StyleA.cs: RedundantPropertyPatternClause"
+    ],
+    "RedundantQueryOrderByAscendingKeyword": [
+      "StyleA.cs: RedundantQueryOrderByAscendingKeyword"
+    ],
+    "RedundantRangeBound": [
+      "StyleA.cs: RedundantRangeBound"
+    ],
+    "RedundantStringFormatCall": [
+      "StyleA.cs: RedundantStringFormatCall"
+    ],
+    "RedundantStringInterpolation": [
+      "StyleA.cs: RedundantStringInterpolation"
+    ],
+    "RedundantStringToCharArrayCall": [
+      "StyleA.cs: RedundantStringToCharArrayCall"
+    ],
+    "RedundantTernaryExpression": [
+      "StyleA.cs: RedundantTernaryExpression"
+    ],
+    "RedundantToStringCall": [
+      "StyleA.cs: RedundantToStringCall"
+    ],
+    "RedundantToStringCallForValueType": [
+      "StyleA.cs: RedundantToStringCallForValueType"
+    ],
+    "RedundantTypeArgumentsOfMethod": [
+      "StyleA.cs: RedundantTypeArgumentsOfMethod"
+    ],
+    "RedundantTypeSpecificationInDefaultExpression": [],
+    "RedundantUnsafeContext": [
+      "StyleA.cs: RedundantUnsafeContext"
+    ],
+    "RedundantUsingDirective": [
+      "RedundantUsing.cs: RedundantUsingDirective",
+      "StyleB.cs"
+    ],
+    "RedundantVerbatimPrefix": [
+      "StyleA.cs: RedundantVerbatimPrefix"
+    ],
+    "RedundantVerbatimStringPrefix": [
+      "StyleA.cs: RedundantVerbatimStringPrefix"
+    ],
+    "RemoveRedundantBraces": [
+      "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #1",
+      "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #2",
+      "StyleA.cs: RedundantFixedPointerDeclaration",
+      "StyleA.cs: RedundantIfElseBlock",
+      "StyleA.cs: RemoveRedundantBraces #2",
+      "StyleA.cs: UseCancellationTokenForIAsyncEnumerable",
+      "StyleB.cs: RedundantAssertionStatement #1",
+      "StyleB.cs: RedundantFixedPointerDeclaration #2"
+    ],
+    "RemoveRedundantOrStatement.False": [
+      "StyleB.cs: RemoveRedundantOrStatement.False #1"
+    ],
+    "RemoveRedundantOrStatement.True": [],
+    "SuggestVarOrType_BuiltInTypes": [
+      "StyleA.cs: ArrangeRedundantParentheses",
+      "StyleA.cs: ConvertToConstant.Local #2",
+      "StyleA.cs: EmptyForStatement",
+      "StyleA.cs: EnforceForStatementBraces",
+      "StyleA.cs: EnforceForeachStatementBraces",
+      "StyleA.cs: LocalVariableHidesMember",
+      "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #1",
+      "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #2",
+      "StyleA.cs: RedundantAssignment",
+      "StyleA.cs: RedundantStringToCharArrayCall",
+      "StyleA.cs: RedundantTypeSpecificationInDefaultExpression",
+      "StyleA.cs: RedundantVerbatimPrefix",
+      "StyleA.cs: SuggestVarOrType_BuiltInTypes #1",
+      "StyleA.cs: UseCancellationTokenForIAsyncEnumerable",
+      "StyleA.cs: VariableHidesOuterVariable",
+      "StyleB.cs: EmptyEmbeddedStatement #2",
+      "StyleB.cs: EnforceForStatementBraces",
+      "StyleB.cs: EnforceForeachStatementBraces",
+      "StyleB.cs: RedundantCast.0 #5"
+    ],
+    "SuggestVarOrType_Elsewhere": [
+      "StyleA.cs: SuggestVarOrType_Elsewhere #1"
+    ],
+    "SuggestVarOrType_SimpleTypes": [
+      "StyleA.cs: SuggestVarOrType_SimpleTypes #1"
+    ],
+    "ThreadStaticAtInstanceField": [
+      "StyleA.cs: ThreadStaticAtInstanceField"
+    ],
+    "ThreadStaticFieldHasInitializer": [
+      "StyleA.cs: ThreadStaticFieldHasInitializer"
+    ],
+    "UnassignedField.Compiler": [
+      "StyleA.cs: ArrangeTypeMemberModifiers",
+      "StyleA.cs: LocalVariableHidesMember",
+      "StyleA.cs: ParameterHidesMember",
+      "StyleA.cs: UnassignedField.Compiler",
+      "StyleA.cs: ValueParameterNotUsed",
+      "StyleB.cs: InconsistentNaming #2"
+    ],
+    "UnassignedReadonlyField": [],
+    "UnassignedReadonlyField.Compiler": [
+      "StyleA.cs: UnassignedReadonlyField",
+      "StyleA.cs: UnassignedReadonlyField.Compiler"
+    ],
+    "UnusedField.Compiler": [
+      "StyleA.cs: UnusedField.Compiler"
+    ],
+    "UnusedLocalFunctionParameter": [],
+    "UnusedMember.Local": [
+      "StyleA.cs: CSharpWarnings::CS0628",
+      "StyleA.cs: UnusedMember.Local"
+    ],
+    "UnusedMemberHierarchy.Local": [],
+    "UnusedMethodReturnValue.Local": [
+      "StyleA.cs: UnusedMethodReturnValue.Local"
+    ],
+    "UnusedParameter.Local": [
+      "StyleA.cs: UnusedLocalFunctionParameter",
+      "StyleA.cs: UnusedParameter.Local",
+      "StyleB.cs: UnusedLocalFunctionParameter #1",
+      "StyleB.cs: UnusedLocalFunctionParameter #2",
+      "StyleB.cs: UnusedLocalFunctionParameter #3"
+    ],
+    "UnusedParameterInPartialMethod": [
+      "StyleA.cs: UnusedParameterInPartialMethod"
+    ],
+    "UnusedTypeParameter": [
+      "StyleA.cs: UnusedTypeParameter"
+    ],
+    "UseCancellationTokenForIAsyncEnumerable": [
+      "StyleA.cs: UseCancellationTokenForIAsyncEnumerable"
+    ],
+    "UseCollectionCountProperty": [
+      "StyleA.cs: UseCollectionCountProperty"
+    ],
+    "UseNameOfInsteadOfTypeOf": [
+      "StyleA.cs: UseNameOfInsteadOfTypeOf"
+    ],
+    "UseNameofExpression": [
+      "StyleA.cs: UseNameofExpression"
+    ],
+    "UseNameofExpressionForPartOfTheString": [],
+    "UseNameofForDependencyProperty": [],
+    "ValueParameterNotUsed": [
+      "StyleA.cs: ValueParameterNotUsed"
+    ],
+    "VariableHidesOuterVariable": [
+      "StyleA.cs: VariableHidesOuterVariable"
+    ],
+    "Xaml.BindingWithContextNotResolved": [],
+    "Xaml.PathError": [],
+    "Xaml.RedundantCollectionProperty": [],
+    "Xaml.RedundantFreezeAttribute": [],
+    "Xaml.RedundantGridDefinitions": [],
+    "Xaml.RedundantGridSpan": [],
+    "Xaml.RedundantModifiersAttribute": [],
+    "Xaml.RedundantNamespaceAlias": [],
+    "Xaml.RedundantPropertyTypeQualifier": []
+  }
+}

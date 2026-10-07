@@ -71,3 +71,16 @@ jobs:
 
       - name: Build consumers with and without the switch and assert the copy
         run: python tools/test_editorconfig_mirror.py
+
+  analyzers-corpus:
+    name: Check the analyzers corpus against the ERROR inspections
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Self-test the checker and check analyzers-corpus/expected.json
+        run: python tools/test_validate_analyzers_corpus.py

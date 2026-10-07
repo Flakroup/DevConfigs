@@ -15,6 +15,7 @@ Shared build and editor configuration for Flakroup .NET repositories. Consumed a
 | `tools/validate_dotsettings.py` | Guard for the shared ReSharper layers - see [Editing the ReSharper layer](#editing-the-resharper-layer). |
 | `tools/test_fixtures.py` | Behavioural guard for the packaging defaults: builds and packs the projects in `tools/fixtures` in Release (needs the .NET 10 SDK) and asserts what comes out - see [Packaging defaults](#packaging-defaults). |
 | `tools/validate_build_props.py` | Guard for the NuGet audit policy in `Directory.Build.props`/`.targets` - see [The NuGet audit pin](#the-nuget-audit-pin). |
+| `analyzers-corpus/` | One labelled violation per ERROR inspection of `FEx.sln.DotSettings`, and `expected.json` - what ReSharper reported in each sample - guarded by `tools/validate_analyzers_corpus.py`; see [The analyzers corpus](#the-analyzers-corpus). |
 
 ## Usage
 
@@ -123,6 +124,30 @@ telemetry consent, `IsMigratorApplied` entries.
 That state lands here when the save layer in ReSharper's options dialog is set to **Solution
 team-shared**. Save personal preferences to a personal layer instead, and keep this file to
 configuration the team actually shares.
+
+## The analyzers corpus
+
+`analyzers-corpus/` is the measure for replacing ReSharper's inspections with Roslyn analyzers. Each
+sample opens with a `//# <inspection id>` marker (`//# <id> #2` for another variant) and runs to the
+next marker. `expected.json` lists, for every inspection `FEx.sln.DotSettings` sets to ERROR, the
+samples ReSharper reported it in, as `<file>: <marker>`. An empty list means ReSharper reported it
+nowhere in the corpus - either the sample misses or the inspection no longer fires in that version.
+Once ReSharper is gone, that file is the specification the Roslyn rules are held to.
+
+CI checks, without ReSharper, that the file names exactly the ERROR inspections, that no file repeats
+a marker, and that every sample it cites exists:
+
+```bash
+python tools/test_validate_analyzers_corpus.py
+```
+
+After changing a sample or the ERROR set, record the verdicts again. This needs `jb` from
+`JetBrains.ReSharper.GlobalTools` and the .NET SDK, and takes about a minute. It inspects a copy, so
+ReSharper neither rewrites the shared layer nor reads this repository's `.editorconfig`:
+
+```bash
+python tools/validate_analyzers_corpus.py --record
+```
 
 ## The NuGet audit pin
 
