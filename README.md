@@ -15,6 +15,7 @@ Shared build and editor configuration for Flakroup .NET repositories. Consumed a
 | `tools/validate_dotsettings.py` | Guard for the shared ReSharper layers - see [Editing the ReSharper layer](#editing-the-resharper-layer). |
 | `tools/test_fixtures.py` | Behavioural guard for the packaging defaults: builds and packs the projects in `tools/fixtures` in Release (needs the .NET 10 SDK) and asserts what comes out - see [Packaging defaults](#packaging-defaults). |
 | `tools/validate_build_props.py` | Guard for the NuGet audit policy in `Directory.Build.props`/`.targets` - see [The NuGet audit pin](#the-nuget-audit-pin). |
+| `tools/validate_workflows.py` | Guard for the CI workflows: a read-only token, `persist-credentials: false` on every checkout, every action pinned to the commit its commented tag points at, and `docker://` images by digest. See [The workflow guard](#the-workflow-guard). |
 | `analyzers-corpus/` | Labelled violations of the ERROR inspections of `FEx.sln.DotSettings`, and `expected.json` - what ReSharper reported in each sample, and why an inspection has none - guarded by `tools/validate_analyzers_corpus.py`; see [The analyzers corpus](#the-analyzers-corpus). |
 
 ## Usage
@@ -154,6 +155,28 @@ recording keeps them as they are:
 ```bash
 python tools/validate_analyzers_corpus.py --record
 ```
+
+## The workflow guard
+
+Every workflow under `.github/workflows` must declare a top-level `permissions:` block and grant
+write access nowhere, set `persist-credentials: false` on every `actions/checkout` step, pin every
+action to a full commit SHA with its tag in a trailing comment, and pin a `docker://` image to a
+`sha256` digest. CI runs the guard and its self-test; the guard asks `git ls-remote` for each comment's
+tag, so it needs github.com and fails when a tag no longer points at the pinned commit:
+
+```bash
+python tools/validate_workflows.py
+```
+
+To move a pin, take the commit the tag points at - `^{}` peels an annotated tag to its commit, and is
+the line to use when both come back:
+
+```bash
+git ls-remote https://github.com/actions/checkout.git refs/tags/v5.1.0 'refs/tags/v5.1.0^{}'
+```
+
+Dependabot (`.github/dependabot.yml`) opens a weekly pull request for each pinned action with a newer
+release, rewriting both the SHA and the comment, so a pin does not freeze out upstream fixes.
 
 ## The NuGet audit pin
 
