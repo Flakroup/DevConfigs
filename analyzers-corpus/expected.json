@@ -1,6 +1,6 @@
 {
   "resharper": "2026.2.3.1",
-  "digest": "a7b5a51176a632d1c04144b6301e238ff9078119c777d2236bcb73873adc1e84",
+  "digest": "ce0fb6eee722db6dfb3e64e14aaa47301c7d4423875d28e2f995430cd05d9699",
   "unsampled": {
     "CSharpWarnings::CS1957": "compiler warning CS1957 (an override that binds to several runtime candidates) needs ref/out overloads in a generic base that differ only at runtime; no sample written",
     "CSharpWarnings::WME006": "a Windows Runtime metadata export (WME) warning; the corpus is no Windows Runtime component",
@@ -23,9 +23,7 @@
     "ComplexObjectInContextDestructuringProblem": "A Structured Logging plugin inspection, and jb inspectcode does not load the plugin",
     "ConvertToConstant.Global": "ReSharper reports nothing on the samples under this id or a successor at any severity, nor under this id on the variants tried (public and internal static readonly fields of string and int)",
     "EmptyEmbeddedStatement": "The compiler reports CS0642 on three samples, and ReSharper leaves those to it; the empty while and foreach bodies (StyleB #1 and #2) get no report from either",
-    "InvokeAsExtensionMethod": "Renamed InvokeAsExtensionMember, which ReSharper reports on every sample at note severity; the shared layer sets only the old id to ERROR",
     "NotifyPropertyChangedInvocatorFromConstructor": "ReSharper reports nothing on the samples under this id or a successor at any severity, nor under this id on the variants tried (a raise from the constructor, with and without [NotifyPropertyChangedInvocator])",
-    "RedundantAnnotation": "Superseded by RedundantNullnessAttributeWithNullableReferenceTypes (five samples) and AnnotationRedundancyAtValueType (StyleB #1), both reported at warning severity; the shared layer sets neither to ERROR",
     "RedundantAssertionStatement": "ReSharper reports nothing on the samples under this id or a successor at any severity, nor under this id on the variants tried (Debug.Assert on a parameter and on a local known to be non-null)",
     "RedundantAwait": "ReSharper reports nothing on the samples under this id or a successor at any severity, nor under this id on the variants tried (return await, an expression-bodied await, a lone trailing await)",
     "RedundantCast.0": "ReSharper reports this sample as RedundantCast instead",
@@ -35,7 +33,6 @@
     "RedundantFixedPointerDeclaration": "ReSharper reports nothing on the samples under this id or a successor at any severity, nor under this id on the variants tried (fixed on &arr[0] and on the array itself)",
     "RedundantInlineAssertion": "ReSharper reports nothing on the samples under this id or a successor at any severity, nor under this id on the variants tried (ArgumentNullException.ThrowIfNull and Debug.Assert before a use)",
     "RedundantOverflowCheckingContext": "ReSharper reports nothing on the samples under this id or a successor at any severity, nor under this id on the variants tried (unchecked expression and block, checked on constants)",
-    "RedundantTypeSpecificationInDefaultExpression": "Superseded by ArrangeDefaultValueWhenTypeNotEvident and ArrangeDefaultValueWhenTypeEvident, reported at note severity on the three StyleB samples; the shared layer sets neither to ERROR, and the StyleA sample, a default(int) local, gets neither",
     "RemoveRedundantBraces": "The shared .editorconfig sets csharp_prefer_braces = when_multiline, under which ReSharper never calls braces redundant; without that file it reports the if braces (#2) but still not the braced case block (#1)",
     "RemoveRedundantOrStatement.True": "ReSharper reports nothing on the samples under this id or a successor at any severity, nor under this id on the variants tried (a || true as an expression body and as an if condition); at note severity it suggests ReplaceWithSimpleAssignment.True on StyleB #1",
     "UnassignedReadonlyField": "ReSharper reports this sample as UnassignedReadonlyField.Compiler instead",
@@ -47,6 +44,16 @@
   "inspections": {
     "AccessToStaticMemberViaDerivedType": [
       "StyleA.cs: AccessToStaticMemberViaDerivedType"
+    ],
+    "AnnotationRedundancyAtValueType": [
+      "StyleB.cs: AnnotationRedundancyAtValueType"
+    ],
+    "ArrangeDefaultValueWhenTypeEvident": [
+      "StyleB.cs: ArrangeDefaultValueWhenTypeEvident"
+    ],
+    "ArrangeDefaultValueWhenTypeNotEvident": [
+      "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #1",
+      "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #2"
     ],
     "ArrangeModifiersOrder": [
       "StyleA.cs: ArrangeModifiersOrder"
@@ -121,11 +128,11 @@
     ],
     "ConvertToConstant.Global": [],
     "ConvertToConstant.Local": [
+      "StyleA.cs: ArrangeDefaultValueWhenTypeEvident",
       "StyleA.cs: ConvertToConstant.Local #1",
       "StyleA.cs: ConvertToConstant.Local #2",
       "StyleA.cs: LocalVariableHidesMember",
       "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #1",
-      "StyleA.cs: RedundantTypeSpecificationInDefaultExpression",
       "StyleA.cs: RedundantVerbatimPrefix",
       "StyleA.cs: SuggestVarOrType_BuiltInTypes #1",
       "StyleA.cs: SuggestVarOrType_BuiltInTypes #2",
@@ -181,6 +188,11 @@
       "StyleA.cs: RedundantEmptyFinallyBlock",
       "StyleA.cs: RedundantEmptyObjectCreationArgumentList",
       "StyleA.cs: UnusedMemberHierarchy.Local",
+      "StyleB.cs: AnnotationRedundancyAtValueType",
+      "StyleB.cs: ArrangeDefaultValueWhenTypeEvident",
+      "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #1",
+      "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #2",
+      "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #3",
       "StyleB.cs: ArrayWithDefaultValuesInitialization #1",
       "StyleB.cs: ArrayWithDefaultValuesInitialization #2",
       "StyleB.cs: ArrayWithDefaultValuesInitialization #3",
@@ -214,18 +226,13 @@
       "StyleB.cs: EnforceWhileStatementBraces",
       "StyleB.cs: InconsistentNaming #1",
       "StyleB.cs: InconsistentNaming #2",
-      "StyleB.cs: InvokeAsExtensionMethod #1",
-      "StyleB.cs: InvokeAsExtensionMethod #2",
+      "StyleB.cs: InvokeAsExtensionMember #1",
+      "StyleB.cs: InvokeAsExtensionMember #2",
       "StyleB.cs: NotifyPropertyChangedInvocatorFromConstructor #1",
       "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Global #1",
       "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Global #2",
       "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Local #1",
       "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Local #2",
-      "StyleB.cs: RedundantAnnotation #1",
-      "StyleB.cs: RedundantAnnotation #2",
-      "StyleB.cs: RedundantAnnotation #3",
-      "StyleB.cs: RedundantAnnotation #4",
-      "StyleB.cs: RedundantAnnotation #5",
       "StyleB.cs: RedundantAssertionStatement #1",
       "StyleB.cs: RedundantAssertionStatement #2",
       "StyleB.cs: RedundantAssertionStatement #3",
@@ -255,14 +262,15 @@
       "StyleB.cs: RedundantFixedPointerDeclaration #3",
       "StyleB.cs: RedundantInlineAssertion #1",
       "StyleB.cs: RedundantInlineAssertion #2",
+      "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #1",
+      "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #2",
+      "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #3",
+      "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #4",
       "StyleB.cs: RedundantOverflowCheckingContext #1",
       "StyleB.cs: RedundantOverflowCheckingContext #2",
       "StyleB.cs: RedundantOverflowCheckingContext #3",
       "StyleB.cs: RedundantOverflowCheckingContext #4",
       "StyleB.cs: RedundantOverriddenMember",
-      "StyleB.cs: RedundantTypeSpecificationInDefaultExpression #1",
-      "StyleB.cs: RedundantTypeSpecificationInDefaultExpression #2",
-      "StyleB.cs: RedundantTypeSpecificationInDefaultExpression #3",
       "StyleB.cs: RemoveRedundantOrStatement.False #1",
       "StyleB.cs: RemoveRedundantOrStatement.False #2",
       "StyleB.cs: RemoveRedundantOrStatement.False #3",
@@ -280,7 +288,11 @@
       "StyleB.cs: UseNameofExpressionForPartOfTheString #4",
       "W7023.cs: CSharpWarnings::CS7023"
     ],
-    "InvokeAsExtensionMethod": [],
+    "InvokeAsExtensionMember": [
+      "StyleA.cs: InvokeAsExtensionMember",
+      "StyleB.cs: InvokeAsExtensionMember #1",
+      "StyleB.cs: InvokeAsExtensionMember #2"
+    ],
     "LocalVariableHidesMember": [
       "StyleA.cs: LocalVariableHidesMember"
     ],
@@ -342,7 +354,6 @@
     "PartialTypeWithSinglePart": [
       "StyleA.cs: PartialTypeWithSinglePart"
     ],
-    "RedundantAnnotation": [],
     "RedundantAnonymousTypePropertyName": [
       "StyleA.cs: RedundantAnonymousTypePropertyName"
     ],
@@ -458,6 +469,13 @@
       "Stubs.cs",
       "StyleA.cs: RedundantNameQualifier"
     ],
+    "RedundantNullnessAttributeWithNullableReferenceTypes": [
+      "StyleA.cs: RedundantNullnessAttributeWithNullableReferenceTypes",
+      "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #1",
+      "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #2",
+      "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #3",
+      "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #4"
+    ],
     "RedundantOverflowCheckingContext": [],
     "RedundantOverload.Global": [
       "StyleA.cs: RedundantOverload.Global"
@@ -498,7 +516,6 @@
     "RedundantTypeArgumentsOfMethod": [
       "StyleA.cs: RedundantTypeArgumentsOfMethod"
     ],
-    "RedundantTypeSpecificationInDefaultExpression": [],
     "RedundantUnsafeContext": [
       "StyleA.cs: RedundantUnsafeContext"
     ],
@@ -518,6 +535,7 @@
     ],
     "RemoveRedundantOrStatement.True": [],
     "SuggestVarOrType_BuiltInTypes": [
+      "StyleA.cs: ArrangeDefaultValueWhenTypeEvident",
       "StyleA.cs: ArrangeRedundantParentheses",
       "StyleA.cs: ConvertToConstant.Local #2",
       "StyleA.cs: EmptyForStatement",
@@ -528,7 +546,6 @@
       "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #2",
       "StyleA.cs: RedundantAssignment",
       "StyleA.cs: RedundantStringToCharArrayCall",
-      "StyleA.cs: RedundantTypeSpecificationInDefaultExpression",
       "StyleA.cs: RedundantVerbatimPrefix",
       "StyleA.cs: SuggestVarOrType_BuiltInTypes #1",
       "StyleA.cs: UseCancellationTokenForIAsyncEnumerable",
