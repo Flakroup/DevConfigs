@@ -52,7 +52,7 @@ def sarif(*results: dict) -> dict:
 
 def consistent(**changes: object) -> dict:
     """A record that agrees with MARKERS and the digest "D", with any key replaced."""
-    return {"digest": "D", "inspections": {"Alpha": ["A.cs: Alpha"], "Beta": []}} | changes
+    return {"digest": "D", "inspections": {"Alpha": ["A.cs: Alpha"], "Beta": ["A.cs: Beta #1"]}} | changes
 
 
 def inputs(directory: Path, source: bytes = SOURCE.encode(), extra: dict[str, bytes] | None = None
@@ -85,7 +85,8 @@ def recorded(version: str) -> tuple[dict, dict]:
 
     with tempfile.TemporaryDirectory() as directory:
         corpus, layer, editorconfig = inputs(Path(directory))
-        content = record(corpus, layer, editorconfig, {"Gone": "why"}, inspect)
+        content = record(corpus, layer, editorconfig, {"unsampled": {"Gone": "why"}, "silent": {"Quiet": "why"}},
+                         inspect)
         seen["digest"] = digest(corpus, layer, editorconfig)
         return content, seen
 
@@ -142,9 +143,9 @@ def main_record(existing: str | None) -> tuple[int, bytes, dict]:
     """Run main(['--record']) with a stand-in recorder; return the exit code, the bytes written and its input."""
     given: dict = {}
 
-    def fake_record(corpus: Path, dotsettings: Path, editorconfig: Path, unsampled: dict) -> dict:
-        given.update(corpus=corpus, dotsettings=dotsettings, editorconfig=editorconfig, unsampled=unsampled)
-        return {"resharper": "1.0", "unsampled": unsampled, "inspections": {"Alpha": ["A.cs: Alpha"]}}
+    def fake_record(corpus: Path, dotsettings: Path, editorconfig: Path, reasons: dict) -> dict:
+        given.update(corpus=corpus, dotsettings=dotsettings, editorconfig=editorconfig, reasons=reasons)
+        return {"resharper": "1.0", **reasons, "inspections": {"Alpha": ["A.cs: Alpha"]}}
 
     with tempfile.TemporaryDirectory() as directory:
         expected = Path(directory) / "expected.json"
@@ -191,13 +192,13 @@ CASES = [
      == ["digest: the corpus, FEx.sln.DotSettings or .editorconfig changed since the last recording"
          " - run --record"]),
     ("an ERROR inspection with no verdict is reported",
-     lambda: validate(consistent(inspections={"Alpha": []}), ["Alpha", "Beta"], MARKERS, "D")
+     lambda: validate(consistent(inspections={"Alpha": ["A.cs: Alpha"]}), ["Alpha", "Beta"], MARKERS, "D")
      == ["Beta: an ERROR inspection with no recorded verdict"]),
     ("a verdict for an inspection that is not ERROR is reported",
-     lambda: validate(consistent(inspections={"Alpha": [], "Gone": []}), ["Alpha"], MARKERS, "D")
+     lambda: validate(consistent(inspections={"Alpha": ["A.cs: Alpha"], "Gone": []}), ["Alpha"], MARKERS, "D")
      == ["Gone: a recorded verdict for an inspection that is not ERROR"]),
     ("an ERROR inspection with no sample and no reason is reported",
-     lambda: validate(consistent(inspections={"Alpha": [], "Gamma": []}), ["Alpha", "Gamma"], MARKERS, "D")
+     lambda: validate(consistent(inspections={"Alpha": ["A.cs: Alpha"], "Gamma": []}), ["Alpha", "Gamma"], MARKERS, "D")
      == ["Gamma: an ERROR inspection with no sample and no reason under unsampled"]),
     ("an empty reason does not excuse a missing sample",
      lambda: validate(consistent(inspections={"Gamma": []}, unsampled={"Gamma": ""}), ["Gamma"], MARKERS, "D")
@@ -206,13 +207,53 @@ CASES = [
      lambda: validate(consistent(inspections={"Gamma": []}, unsampled={"Gamma": "XAML only"}), ["Gamma"],
                       MARKERS, "D") == []),
     ("a variant marker alone samples its inspection",
-     lambda: validate(consistent(inspections={"Beta": []}), ["Beta"], MARKERS, "D") == []),
+     lambda: validate(consistent(inspections={"Beta": ["A.cs: Beta #1"]}), ["Beta"], MARKERS, "D") == []),
     ("an unsampled entry for an inspection with a sample is reported",
-     lambda: validate(consistent(inspections={"Alpha": []}, unsampled={"Alpha": "why"}), ["Alpha"], MARKERS, "D")
-     == ["Alpha: listed under unsampled, but the corpus has a sample"]),
+     lambda: validate(consistent(inspections={"Alpha": ["A.cs: Alpha"]}, unsampled={"Alpha": "why"}), ["Alpha"],
+                      MARKERS, "D") == ["Alpha: listed under unsampled, but the corpus has a sample"]),
+    ("a blank or non-text unsampled reason does not excuse a missing sample",
+     lambda: all(validate(consistent(inspections={"Gamma": []}, unsampled={"Gamma": reason}), ["Gamma"], MARKERS,
+                          "D") == ["Gamma: an ERROR inspection with no sample and no reason under unsampled"]
+                 for reason in (" ", True))),
     ("an unsampled entry for an inspection that is not ERROR is reported",
      lambda: validate(consistent(inspections={}, unsampled={"Gone": "why"}), [], MARKERS, "D")
      == ["Gone: listed under unsampled, but it is not an ERROR inspection"]),
+    ("a sampled inspection ReSharper reports nowhere needs a reason under silent",
+     lambda: validate(consistent(inspections={"Beta": []}), ["Beta"], MARKERS, "D")
+     == ["Beta: ReSharper reports none of its samples and silent gives no reason"]),
+    ("an empty silent reason does not excuse it",
+     lambda: validate(consistent(inspections={"Beta": []}, silent={"Beta": ""}), ["Beta"], MARKERS, "D")
+     == ["Beta: ReSharper reports none of its samples and silent gives no reason"]),
+    ("a blank or non-text silent reason does not excuse it",
+     lambda: all(validate(consistent(inspections={"Beta": []}, silent={"Beta": reason}), ["Beta"], MARKERS, "D")
+                 == ["Beta: ReSharper reports none of its samples and silent gives no reason"]
+                 for reason in (" ", True))),
+    ("an inspection reported only in another rule's sample still needs a reason under silent",
+     lambda: validate(consistent(inspections={"Alpha": ["A.cs: Alpha"], "Beta": ["A.cs: Alpha"]}), ["Alpha", "Beta"],
+                      MARKERS, "D") == ["Beta: ReSharper reports none of its samples and silent gives no reason"]),
+    ("a silent inspection may be reported in another rule's sample",
+     lambda: validate(consistent(inspections={"Alpha": ["A.cs: Alpha"], "Beta": ["A.cs: Alpha"]},
+                                 silent={"Beta": "quiet"}), ["Alpha", "Beta"], MARKERS, "D") == []),
+    ("silent problems come out sorted by inspection",
+     lambda: validate(consistent(inspections={"Beta": [], "Alpha": []}, silent={"Zeta": "q", "Gone": "q"}),
+                      ["Alpha", "Beta"], MARKERS, "D")
+     == ["Alpha: ReSharper reports none of its samples and silent gives no reason",
+         "Beta: ReSharper reports none of its samples and silent gives no reason",
+         "Gone: listed under silent, but it is not an ERROR inspection",
+         "Zeta: listed under silent, but it is not an ERROR inspection"]),
+    ("a sampled inspection ReSharper reports nowhere passes with a reason under silent",
+     lambda: validate(consistent(inspections={"Beta": []}, silent={"Beta": "superseded"}), ["Beta"], MARKERS, "D")
+     == []),
+    ("a silent entry for an inspection ReSharper reports is reported",
+     lambda: validate(consistent(inspections={"Beta": ["A.cs: Beta #1"]}, silent={"Beta": "quiet"}), ["Beta"],
+                      MARKERS, "D") == ["Beta: listed under silent, but ReSharper reports one of its samples"]),
+    ("a silent entry for an inspection that is not ERROR is reported",
+     lambda: validate(consistent(inspections={}, silent={"Gone": "quiet"}), [], MARKERS, "D")
+     == ["Gone: listed under silent, but it is not an ERROR inspection"]),
+    ("a silent entry for an inspection with no sample is reported",
+     lambda: validate(consistent(inspections={"Gamma": []}, unsampled={"Gamma": "XAML only"},
+                                 silent={"Gamma": "quiet"}), ["Gamma"], MARKERS, "D")
+     == ["Gamma: listed under silent, but the corpus has no sample"]),
     ("a marker repeated within one file is reported",
      lambda: validate(consistent(inspections={}), [], {"A.cs": [(1, "Alpha"), (9, "Alpha")]}, "D")
      == ["A.cs:9: marker 'Alpha' repeats line 1"]),
@@ -223,7 +264,7 @@ CASES = [
      lambda: validate(consistent(inspections={"Alpha": ["B.cs: Alpha"]}), ["Alpha"], MARKERS, "D")
      == ["Alpha: cites 'B.cs: Alpha', which is no sample or file in the corpus"]),
     ("a cited file without markers passes",
-     lambda: validate(consistent(inspections={"Alpha": ["A.cs"]}), ["Alpha"], MARKERS, "D") == []),
+     lambda: validate(consistent(inspections={"Alpha": ["A.cs", "A.cs: Alpha"]}), ["Alpha"], MARKERS, "D") == []),
     ("the digest ignores line endings",
      lambda: hashed(SOURCE.replace("\n", "\r\n").encode()) == hashed()),
     ("the digest changes with a sample",
@@ -243,9 +284,9 @@ CASES = [
     ("a recording files ReSharper's reports under the ERROR inspections",
      lambda: recorded("2026.2")[0]["inspections"]
      == {"CSharpWarnings::CS0108,CS0114": [], "CheckNamespace": ["A.cs: Alpha"]}),
-    ("a recording stores the digest of its inputs and keeps the unsampled reasons",
-     lambda: (lambda pair: pair[0]["digest"] == pair[1]["digest"] and pair[0]["unsampled"] == {"Gone": "why"})(
-         recorded("2026.2"))),
+    ("a recording stores the digest of its inputs and keeps the unsampled and silent reasons",
+     lambda: (lambda pair: pair[0]["digest"] == pair[1]["digest"] and pair[0]["unsampled"] == {"Gone": "why"}
+              and pair[0]["silent"] == {"Quiet": "why"})(recorded("2026.2"))),
     ("a recording keeps only the version number from jb's banner",
      lambda: recorded(BANNER)[0]["resharper"] == "2026.2.3.1"),
     ("a banner without a version number records it as unknown",
@@ -255,12 +296,12 @@ CASES = [
               and {"--swea", "--severity=ERROR", "--format=Sarif"} <= set(command))(resharper_calls()[0][2])),
     ("ReSharper's report and version are returned",
      lambda: resharper_calls()[1] == (sarif(), BANNER)),
-    ("--record writes LF-only JSON with a two-space indent and carries the unsampled reasons",
-     lambda: main_record('{"unsampled": {"X": "why"}}')[:2] == (0, json.dumps(
-         {"resharper": "1.0", "unsampled": {"X": "why"}, "inspections": {"Alpha": ["A.cs: Alpha"]}},
-         indent=2).encode() + b"\n")),
-    ("--record without a previous record starts with no unsampled reasons",
-     lambda: main_record(None)[2]["unsampled"] == {}),
+    ("--record writes LF-only JSON with a two-space indent and carries the unsampled and silent reasons",
+     lambda: main_record('{"unsampled": {"X": "why"}, "silent": {"Y": "quiet"}}')[:2] == (0, json.dumps(
+         {"resharper": "1.0", "unsampled": {"X": "why"}, "silent": {"Y": "quiet"},
+          "inspections": {"Alpha": ["A.cs: Alpha"]}}, indent=2).encode() + b"\n")),
+    ("--record without a previous record starts with no reasons",
+     lambda: main_record(None)[2]["reasons"] == {"unsampled": {}, "silent": {}}),
     ("the committed corpus and expected.json agree with FEx.sln.DotSettings",
      lambda: main([]) == 0),
     ("an unknown argument is a usage error",

@@ -134,13 +134,17 @@ next marker. `expected.json` lists, for every inspection `FEx.sln.DotSettings` s
 samples ReSharper reported it in, as `<file>: <marker>`. An empty list means ReSharper reported it
 nowhere in the corpus - either the sample misses or the inspection no longer fires in that version.
 An ERROR inspection without a sample is named under `unsampled` with the reason, so an empty list never
-stands for a sample nobody wrote. Once ReSharper is gone, that file is the specification the Roslyn rules
-are held to.
+stands for a sample nobody wrote. One ReSharper reports in none of its own samples is named under `silent`
+with the reason: it reports the sample under a newer id (below ERROR when the shared layer never promoted
+that id), leaves it to the compiler, is switched off by the shared `.editorconfig`, needs a plugin, or
+stays quiet at every severity - the last kind leaves a Roslyn rule no ReSharper verdict to match. Once ReSharper is gone, that file is the specification the
+Roslyn rules are held to.
 
 CI checks, without ReSharper, that the file names exactly the ERROR inspections, that each has a sample
-or a reason, that no file repeats a marker, that every sample it cites exists, and that its `digest` -
-a hash of the corpus, `FEx.sln.DotSettings` and `.editorconfig` - still matches, so an edited sample or
-setting fails until the verdicts are recorded again:
+or a reason, that each rule ReSharper reports in none of its own samples has a reason, that no file repeats
+a marker, that every sample it cites exists, and that its `digest` - a hash of the corpus,
+`FEx.sln.DotSettings` and `.editorconfig` - still matches, so an edited sample or setting fails until the
+verdicts are recorded again:
 
 ```bash
 python tools/validate_analyzers_corpus.py
@@ -149,8 +153,9 @@ python tools/validate_analyzers_corpus.py
 After changing a sample, the shared layer or `.editorconfig`, record the verdicts again. This needs
 `jb` from `JetBrains.ReSharper.GlobalTools` and the .NET SDK, and takes about a minute. It inspects a
 copy with the shared layer as its solution settings and `.editorconfig` beside it, as a consumer sees
-both, so ReSharper never rewrites the shared layer. The `unsampled` reasons are written by hand, and a
-recording keeps them as they are:
+both, so ReSharper never rewrites the shared layer. The `unsampled` and `silent` reasons are written by
+hand, and a recording keeps them as they are; a `silent` rule that starts firing fails the check until its
+reason goes:
 
 ```bash
 python tools/validate_analyzers_corpus.py --record
