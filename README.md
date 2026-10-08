@@ -13,7 +13,7 @@ Shared build and editor configuration for Flakroup .NET repositories. Consumed a
 | `FEx.sln.DotSettings` | ReSharper settings, including the inspection severities promoted to ERROR that gate commits. |
 | `Settings.XamlStyler` | XAML Styler configuration. |
 | `tools/validate_dotsettings.py` | Guard for the shared ReSharper layers - see [Editing the ReSharper layer](#editing-the-resharper-layer). |
-| `tools/test_fixtures.py` | Behavioural guard for the packaging defaults: builds and packs the projects in `tools/fixtures` in Release (needs the .NET 10 SDK) and asserts what comes out - see [Packaging defaults](#packaging-defaults). |
+| `tools/test_fixtures.py` | Behavioural guard for the packaging defaults: builds and packs the projects in `tools/fixtures` in Release (needs the .NET 10 SDK) and asserts what comes out - see [Packaging defaults](#packaging-defaults). It also checks the TRX report name a `*.Tests` project passes to `dotnet test`. |
 | `tools/validate_build_props.py` | Guard for the NuGet audit policy in `Directory.Build.props`/`.targets` - see [The NuGet audit pin](#the-nuget-audit-pin). |
 | `tools/validate_workflows.py` | Guard for the CI workflows: a read-only token, `persist-credentials: false` on every checkout, every action pinned to the commit its commented tag points at, and `docker://` images by digest. See [The workflow guard](#the-workflow-guard). |
 | `analyzers-corpus/` | Labelled violations of the ERROR inspections of `FEx.sln.DotSettings`, and `expected.json` - what ReSharper reported in each sample, and why an inspection has none - guarded by `tools/validate_analyzers_corpus.py`; see [The analyzers corpus](#the-analyzers-corpus). |
