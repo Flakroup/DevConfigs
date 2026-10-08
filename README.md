@@ -141,7 +141,7 @@ An ERROR inspection without a sample is named under `unsampled` with the reason,
 stands for a sample nobody wrote. One ReSharper reports in none of its own samples is named under `silent`
 with the reason: it reports the sample under a newer id (below ERROR when the shared layer never promoted
 that id), leaves it to the compiler, is switched off by the shared `.editorconfig`, needs a plugin, or
-stays quiet at every severity - the last kind leaves a Roslyn rule no ReSharper verdict to match. A sample can also sit under a rule ReSharper does not report there: StyleA's `int d = default(int);` is filed under `ArrangeDefaultValueWhenTypeEvident`, which ReSharper reports on the StyleB return and field forms but not on a local declaration, while IDE0034 flags all three - a Roslyn port is stricter on that sample by design. Once ReSharper is gone, that file is the specification the
+stays quiet at every severity - the last kind leaves a Roslyn rule no ReSharper verdict to match. A sample can also sit under a rule ReSharper does not report there: StyleA's `int d = default(int);` is filed under `ArrangeDefaultValueWhenTypeEvident`, which ReSharper reports on the StyleB field form (and `ArrangeDefaultValueWhenTypeNotEvident` on the return and argument forms) but never on a local declaration. IDE0034 simplifies `default(T)` wherever the type can be inferred, so a Roslyn port is expected to report that sample where ReSharper does not. Once ReSharper is gone, that file is the specification the
 Roslyn rules are held to.
 
 CI checks, without ReSharper, that the file names exactly the ERROR inspections, that each has a sample
