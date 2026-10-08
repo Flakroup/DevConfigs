@@ -109,10 +109,10 @@ public class B_Icn1 { public void badName() { } }
 //# InconsistentNaming #2
 public class B_Icn2 { private int Field; public int G() => Field; }
 
-//# InvokeAsExtensionMethod #1
+//# InvokeAsExtensionMember #1
 public static class B_IaeExt { public static int Twice(this int x) => x * 2; }
 public class B_Iae1 { public int M(int i) => B_IaeExt.Twice(i); }
-//# InvokeAsExtensionMethod #2
+//# InvokeAsExtensionMember #2
 public class B_Iae2 { public int M(List<int> l) => Enumerable.Count(l); }
 
 //# NotifyPropertyChangedInvocatorFromConstructor #1
@@ -135,15 +135,15 @@ public class B_Pol1 { private void M(int x) { if (x < 0) throw new ArgumentOutOf
 //# ParameterOnlyUsedForPreconditionCheck.Local #2
 public class B_Pol2 { private void M(string? s) { ArgumentNullException.ThrowIfNull(s); } public void G() => M(""); }
 
-//# RedundantAnnotation #1
+//# AnnotationRedundancyAtValueType
 public class B_Ran1 { [NotNull] public int Ra = 0; }
-//# RedundantAnnotation #2
+//# RedundantNullnessAttributeWithNullableReferenceTypes #1
 public class B_Ran2 { [CanBeNull] public string? Ra = ""; }
-//# RedundantAnnotation #3
+//# RedundantNullnessAttributeWithNullableReferenceTypes #2
 public class B_Ran3 { [NotNull] public string Ra() => ""; }
-//# RedundantAnnotation #4
+//# RedundantNullnessAttributeWithNullableReferenceTypes #3
 public class B_Ran4 { public void M([NotNull] string s) { Console.Write(s); } }
-//# RedundantAnnotation #5
+//# RedundantNullnessAttributeWithNullableReferenceTypes #4
 public class B_Ran5 { [CanBeNull] public int? Ra() => 1; }
 
 //# RedundantAssertionStatement #1
@@ -228,11 +228,11 @@ public class B_Roo4 { public int M(int i) { unchecked { return i + 1; } } }
 //# RedundantOverriddenMember
 public class B_Rom { public override int GetHashCode() => base.GetHashCode(); }
 
-//# RedundantTypeSpecificationInDefaultExpression #1
+//# ArrangeDefaultValueWhenTypeNotEvident #1
 public class B_Rtd1 { public int M() { return default(int); } }
-//# RedundantTypeSpecificationInDefaultExpression #2
+//# ArrangeDefaultValueWhenTypeNotEvident #2
 public class B_Rtd2 { public void P(int i) { Console.Write(i); } public void M() { P(default(int)); } }
-//# RedundantTypeSpecificationInDefaultExpression #3
+//# ArrangeDefaultValueWhenTypeEvident
 public class B_Rtd3 { public int F = default(int); }
 
 //# RemoveRedundantOrStatement.False #1

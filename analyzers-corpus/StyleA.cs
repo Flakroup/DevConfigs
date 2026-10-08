@@ -147,7 +147,7 @@ public class Ewh { public void M(bool b) { while (b)
 //# InconsistentNaming
 public class Icn { public void bad_name() { } }
 
-//# InvokeAsExtensionMethod
+//# InvokeAsExtensionMember
 public class Iae { public int M(List<int> l) => Enumerable.First(l); }
 
 //# LocalVariableHidesMember
@@ -214,7 +214,7 @@ public partial class Pms { partial void Only(); public void G() => Only(); }
 //# PartialTypeWithSinglePart
 public partial class Pts { }
 
-//# RedundantAnnotation
+//# RedundantNullnessAttributeWithNullableReferenceTypes
 public class Ran { [NotNull] public string Ra = ""; }
 
 //# RedundantAnonymousTypePropertyName
@@ -380,7 +380,7 @@ public class Rtv { public string M(int i) => "a" + i.ToString(); }
 //# RedundantTypeArgumentsOfMethod
 public class Rta { public T Id<T>(T t) => t; public int M() => Id<int>(1); }
 
-//# RedundantTypeSpecificationInDefaultExpression
+//# ArrangeDefaultValueWhenTypeEvident
 public class Rtd { public int M() { int d = default(int); return d; } }
 
 //# RedundantUnsafeContext
