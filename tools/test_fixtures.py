@@ -196,6 +196,17 @@ def main() -> int:
     code, items = run("msbuild", csproj("enabled", "Lib"), "-p:Configuration=Debug", "-p:TargetFramework=net10.0", "-getItem:PackageReference")
     check(code == 0 and "Microsoft.SourceLink.GitHub" in items, "Lib: the pinned SourceLink reference stays in a Debug build too", items[-500:])
 
+    # --- A test project names its TRX report after itself --------------------------------------
+    # `dotnet test` in MTP mode reads RunArguments from each project and puts it first on that assembly's command line
+    # (dotnet/sdk v10.0.401, SolutionAndProjectUtility.GetRunProperties); without a name of its own, two assemblies that
+    # start in the same microsecond share xUnit's timestamped default and one report replaces the other.
+    values = properties("enabled", "Tests", "RunArguments")
+    check(values == {"RunArguments": "--report-xunit-trx --report-xunit-trx-filename Fixture.Tests.trx"},
+          "*.Tests project: dotnet test writes its TRX report under the project's name", str(values))
+    for name, label in (("App", "Exe application"), ("LibTest", "library-type test project not named *.Tests")):
+        values = properties("enabled", name, "RunArguments")
+        check("trx" not in values.get("RunArguments", "trx"), f"{label}: no TRX arguments", str(values))
+
     # --- Things that must get nothing -----------------------------------------------------------
     for name, label in (("NonPackableLib", "IsPackable=false library"), ("Tests", "*.Tests project"),
                         ("LibTest", "library-type test project not named *.Tests"), ("App", "Exe application")):

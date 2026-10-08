@@ -53,6 +53,13 @@
         <OutputType>Exe</OutputType>
         <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
         <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+        <!-- One TRX report per assembly, named after the project. xUnit names it <user>_<machine>_<timestamp>.trx by
+             default, so two assemblies of one solution-wide `dotnet test` that start in the same microsecond write one file
+             and one report silently replaces the other. In MTP mode `dotnet test` puts RunArguments, which the SDK fills
+             from StartArguments, in front of its own options on each assembly's command line. The report switch comes
+             along because xUnit rejects the file name without it (exit 5), and MTP takes the switch twice when the run
+             passes it as well. -->
+        <StartArguments>--report-xunit-trx --report-xunit-trx-filename $(MSBuildProjectName).trx</StartArguments>
         <NoWarn>$(NoWarn);VSTHRD200</NoWarn>
         <!-- VSTHRD200: Use Async suffix for async methods - https://github.com/microsoft/vs-threading/blob/main/doc/analyzers/VSTHRD200.md -->
         <WarningsAsErrors>$(WarningsAsErrors),NS2002</WarningsAsErrors>
