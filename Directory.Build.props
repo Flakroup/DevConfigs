@@ -10,7 +10,8 @@
         <Authors>Flakroup</Authors>
         <Company>Flakroup</Company>
         <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
-        <!-- The IDE rules .editorconfig raises run in every build, not only in the editor and `dotnet format`. -->
+        <!-- The IDE rules .editorconfig raises run in the build wherever it reaches the code, not only in the editor and
+             `dotnet format`. -->
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <Copyright>Copyright © Flakroup 2025-2026</Copyright>
         <ImplicitUsings>disable</ImplicitUsings>

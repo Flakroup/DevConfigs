@@ -69,9 +69,13 @@ dotnet_naming_style.pascal_case.capitalization = pascal_case
 dotnet_naming_style.underscore_camel_case.required_prefix = _
 dotnet_naming_style.underscore_camel_case.capitalization = camel_case
 
-# Severities enforced in every build (EnforceCodeStyleInBuild): the Roslyn counterparts of the ReSharper ERROR
-# inspections in FEx.sln.DotSettings, as measured against analyzers-corpus. What has no SDK counterpart goes to
-# FEx.Analyzers. Formatting-only rules stay at warning; TreatWarningsAsErrors decides what they cost a consumer.
+# Severities enforced in the build (EnforceCodeStyleInBuild) wherever this file reaches the code - a mirrored copy,
+# or this repository's own files: the Roslyn counterparts of the ReSharper ERROR inspections in FEx.sln.DotSettings,
+# chosen against analyzers-corpus. What has no SDK counterpart goes to FEx.Analyzers. Formatting-only rules stay at
+# warning; TreatWarningsAsErrors decides what they cost a consumer. IDE0001, IDE0002, IDE0003 and IDE0049 never run
+# in a build (Roslyn marks them EnforceOnBuild.Never), and IDE0005 only with XML docs on: `dotnet format` applies
+# those. It also applies IDE0051 by DELETING the member, so a project whose private members only reflection reaches
+# (a NUKE build's targets) suppresses IDE0051 in its own NoWarn rather than let a commit hook remove them.
 dotnet_diagnostic.IDE0001.severity = error
 dotnet_diagnostic.IDE0002.severity = error
 dotnet_diagnostic.IDE0003.severity = error
@@ -115,7 +119,7 @@ dotnet_diagnostic.CS0672.severity = error
 dotnet_diagnostic.CS4014.severity = error
 dotnet_diagnostic.CS7023.severity = error
 dotnet_diagnostic.CS8826.severity = error
-# IDE0005 above is applied by `dotnet format`; the build cannot run it - see build.globalconfig.
+# IDE0005 above runs in a build only where XML docs are generated; see build.globalconfig.
 dotnet_diagnostic.IDE0055.severity = warning
 dotnet_diagnostic.IDE0161.severity = warning
 dotnet_diagnostic.IDE2000.severity = warning

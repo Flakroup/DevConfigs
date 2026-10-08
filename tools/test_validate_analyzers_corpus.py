@@ -293,7 +293,8 @@ CASES = [
      lambda: recorded("no version here")[0]["resharper"] == "unknown"),
     ("ReSharper is asked for solution-wide ERROR results as SARIF, without building the violating samples",
      lambda: (lambda command: command[:2] == ["jb", "inspectcode"]
-              and {"--swea", "--severity=ERROR", "--format=Sarif", "--no-build"} <= set(command))(next(c for c in resharper_calls()[0] if c[:2] == ["jb", "inspectcode"]))),
+              and {"--swea", "--severity=ERROR", "--format=Sarif", "--no-build"} <= set(command))(
+         next(c for c in resharper_calls()[0] if c[:2] == ["jb", "inspectcode"]))),
     ("the copy is restored before ReSharper inspects it: --no-build resolves no packages of its own",
      lambda: (lambda heads: heads.index(["dotnet", "restore"]) < heads.index(["jb", "inspectcode"]))(
          [c[:2] for c in resharper_calls()[0]])),
