@@ -1,6 +1,6 @@
 {
   "resharper": "2026.2.3.1",
-  "digest": "58c40926366a3a981218cbd6ee4b7e4e9d37e5c9b4c17d48fa8326d500865170",
+  "digest": "ce0fb6eee722db6dfb3e64e14aaa47301c7d4423875d28e2f995430cd05d9699",
   "unsampled": {
     "CSharpWarnings::CS1957": "compiler warning CS1957 (an override that binds to several runtime candidates) needs ref/out overloads in a generic base that differ only at runtime; no sample written",
     "CSharpWarnings::WME006": "a Windows Runtime metadata export (WME) warning; the corpus is no Windows Runtime component",
@@ -192,6 +192,7 @@
       "StyleB.cs: ArrangeDefaultValueWhenTypeEvident",
       "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #1",
       "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #2",
+      "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #3",
       "StyleB.cs: ArrayWithDefaultValuesInitialization #1",
       "StyleB.cs: ArrayWithDefaultValuesInitialization #2",
       "StyleB.cs: ArrayWithDefaultValuesInitialization #3",

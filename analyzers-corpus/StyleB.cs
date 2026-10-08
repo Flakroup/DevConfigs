@@ -232,6 +232,9 @@ public class B_Rom { public override int GetHashCode() => base.GetHashCode(); }
 public class B_Rtd1 { public int M() { return default(int); } }
 //# ArrangeDefaultValueWhenTypeNotEvident #2
 public class B_Rtd2 { public void P(int i) { Console.Write(i); } public void M() { P(default(int)); } }
+//# ArrangeDefaultValueWhenTypeNotEvident #3
+// Compliant on purpose: the shared layer pins the default literal, so neither successor may report this one.
+public class B_Rtd4 { public int M() { return default; } public int F = default; }
 //# ArrangeDefaultValueWhenTypeEvident
 public class B_Rtd3 { public int F = default(int); }
 
