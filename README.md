@@ -134,15 +134,17 @@ next marker. `expected.json` lists, for every inspection `FEx.sln.DotSettings` s
 samples ReSharper reported it in, as `<file>: <marker>`. An empty list means ReSharper reported it
 nowhere in the corpus - either the sample misses or the inspection no longer fires in that version.
 An ERROR inspection without a sample is named under `unsampled` with the reason, so an empty list never
-stands for a sample nobody wrote, and one whose samples ReSharper reports nowhere is named under `silent`
-with the reason - most often that ReSharper reports the same sample under a newer id, or leaves it to the
-compiler. Once ReSharper is gone, that file is the specification the Roslyn rules
-are held to.
+stands for a sample nobody wrote. One ReSharper reports in none of its own samples is named under `silent`
+with the reason: it reports the sample under a newer id, leaves it to the compiler, is switched off by the
+shared `.editorconfig`, needs a plugin, or stays quiet on every variant tried - the last kind leaves a
+Roslyn rule no ReSharper verdict to match. Once ReSharper is gone, that file is the specification the
+Roslyn rules are held to.
 
 CI checks, without ReSharper, that the file names exactly the ERROR inspections, that each has a sample
-or a reason, that each empty verdict has a reason, that no file repeats a marker, that every sample it cites exists, and that its `digest` -
-a hash of the corpus, `FEx.sln.DotSettings` and `.editorconfig` - still matches, so an edited sample or
-setting fails until the verdicts are recorded again:
+or a reason, that each rule ReSharper reports in none of its own samples has a reason, that no file repeats
+a marker, that every sample it cites exists, and that its `digest` - a hash of the corpus,
+`FEx.sln.DotSettings` and `.editorconfig` - still matches, so an edited sample or setting fails until the
+verdicts are recorded again:
 
 ```bash
 python tools/validate_analyzers_corpus.py

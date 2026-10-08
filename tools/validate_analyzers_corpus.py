@@ -6,15 +6,15 @@ ERROR. Each sample starts with a ``//# <inspection id>`` marker line (``//# <id>
 and runs until the next marker; a marker is unique within its file, and two files may carry the same rule in
 different layouts. ``analyzers-corpus/expected.json`` records, for every ERROR inspection, the samples
 ReSharper reported it in, as ``<file>: <marker>`` - an empty list means ReSharper reported it nowhere in the
-corpus. An ERROR inspection with no sample is named under ``unsampled`` with the reason, and one whose samples
-ReSharper reports nowhere is named under ``silent`` with the reason it stays quiet. Once ReSharper is
-gone that file is the specification the Roslyn rules are measured against, so it must stay complete and
+corpus. An ERROR inspection with no sample is named under ``unsampled`` with the reason, and one ReSharper
+reports in none of its own samples is named under ``silent`` with the reason it stays quiet. Once ReSharper
+is gone that file is the specification the Roslyn rules are measured against, so it must stay complete and
 consistent with the corpus.
 
 Default mode (CI, no ReSharper needed): check that ``expected.json`` names exactly the ERROR inspections
-of ``FEx.sln.DotSettings``, that each has a sample or a reason, that each empty verdict has a reason, that
-no file repeats a marker, that every
-sample it cites exists, and that its ``digest`` still matches the inputs it was recorded on.
+of ``FEx.sln.DotSettings``, that each has a sample or a reason, that each rule ReSharper reports in none
+of its own samples has a reason, that no file repeats a marker, that every sample it cites exists, and that
+its ``digest`` still matches the inputs it was recorded on.
 
 ``--record`` (needs ``jb`` from ``JetBrains.ReSharper.GlobalTools`` and the .NET SDK): inspect a copy of
 the corpus with the shared layer as its solution settings and this repository's ``.editorconfig`` beside it,
@@ -107,6 +107,17 @@ def verdicts(sarif: dict, markers: dict[str, list[tuple[int, str]]], inspections
     return {inspection: sorted(owners) for inspection, owners in found.items()}
 
 
+def explained(reasons: dict, inspection: str) -> bool:
+    """Whether ``reasons`` gives an inspection a reason - a string with something in it."""
+    reason = reasons.get(inspection)
+    return isinstance(reason, str) and bool(reason.strip())
+
+
+def own_samples(inspection: str, owners: list[str]) -> list[str]:
+    """The owners that are samples of the inspection itself, not reports it makes in another rule's sample."""
+    return [owner for owner in owners if VARIANT.sub("", owner.partition(": ")[2]) == inspection]
+
+
 def validate(expected: dict, inspections: list[str], markers: dict[str, list[tuple[int, str]]],
              inputs: str) -> list[str]:
     """Problems with ``expected.json`` against the shared layer and the corpus; empty when consistent."""
@@ -132,7 +143,7 @@ def validate(expected: dict, inspections: list[str], markers: dict[str, list[tup
     sampled = {VARIANT.sub("", marker) for file_markers in markers.values() for _, marker in file_markers}
     unsampled = expected.get("unsampled", {})
     for inspection in inspections:
-        if inspection not in sampled and not unsampled.get(inspection):
+        if inspection not in sampled and not explained(unsampled, inspection):
             problems.append(f"{inspection}: an ERROR inspection with no sample and no reason under unsampled")
     for inspection in sorted(unsampled):
         if inspection in sampled:
@@ -142,11 +153,11 @@ def validate(expected: dict, inspections: list[str], markers: dict[str, list[tup
 
     silent = expected.get("silent", {})
     for inspection, owners in sorted(expected.get("inspections", {}).items()):
-        if not owners and inspection in sampled and not silent.get(inspection):
+        if inspection in sampled and not own_samples(inspection, owners) and not explained(silent, inspection):
             problems.append(f"{inspection}: ReSharper reports none of its samples and silent gives no reason")
     for inspection in sorted(silent):
-        if expected.get("inspections", {}).get(inspection):
-            problems.append(f"{inspection}: listed under silent, but ReSharper reports it")
+        if own_samples(inspection, expected.get("inspections", {}).get(inspection, [])):
+            problems.append(f"{inspection}: listed under silent, but ReSharper reports one of its samples")
         elif inspection not in inspections:
             problems.append(f"{inspection}: listed under silent, but it is not an ERROR inspection")
         elif inspection not in sampled:

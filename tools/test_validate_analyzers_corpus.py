@@ -209,8 +209,12 @@ CASES = [
     ("a variant marker alone samples its inspection",
      lambda: validate(consistent(inspections={"Beta": ["A.cs: Beta #1"]}), ["Beta"], MARKERS, "D") == []),
     ("an unsampled entry for an inspection with a sample is reported",
-     lambda: validate(consistent(inspections={"Alpha": ["A.cs: Alpha"]}, unsampled={"Alpha": "why"}), ["Alpha"], MARKERS, "D")
-     == ["Alpha: listed under unsampled, but the corpus has a sample"]),
+     lambda: validate(consistent(inspections={"Alpha": ["A.cs: Alpha"]}, unsampled={"Alpha": "why"}), ["Alpha"],
+                      MARKERS, "D") == ["Alpha: listed under unsampled, but the corpus has a sample"]),
+    ("a blank or non-text unsampled reason does not excuse a missing sample",
+     lambda: all(validate(consistent(inspections={"Gamma": []}, unsampled={"Gamma": reason}), ["Gamma"], MARKERS,
+                          "D") == ["Gamma: an ERROR inspection with no sample and no reason under unsampled"]
+                 for reason in (" ", True))),
     ("an unsampled entry for an inspection that is not ERROR is reported",
      lambda: validate(consistent(inspections={}, unsampled={"Gone": "why"}), [], MARKERS, "D")
      == ["Gone: listed under unsampled, but it is not an ERROR inspection"]),
@@ -220,12 +224,29 @@ CASES = [
     ("an empty silent reason does not excuse it",
      lambda: validate(consistent(inspections={"Beta": []}, silent={"Beta": ""}), ["Beta"], MARKERS, "D")
      == ["Beta: ReSharper reports none of its samples and silent gives no reason"]),
+    ("a blank or non-text silent reason does not excuse it",
+     lambda: all(validate(consistent(inspections={"Beta": []}, silent={"Beta": reason}), ["Beta"], MARKERS, "D")
+                 == ["Beta: ReSharper reports none of its samples and silent gives no reason"]
+                 for reason in (" ", True))),
+    ("an inspection reported only in another rule's sample still needs a reason under silent",
+     lambda: validate(consistent(inspections={"Alpha": ["A.cs: Alpha"], "Beta": ["A.cs: Alpha"]}), ["Alpha", "Beta"],
+                      MARKERS, "D") == ["Beta: ReSharper reports none of its samples and silent gives no reason"]),
+    ("a silent inspection may be reported in another rule's sample",
+     lambda: validate(consistent(inspections={"Alpha": ["A.cs: Alpha"], "Beta": ["A.cs: Alpha"]},
+                                 silent={"Beta": "quiet"}), ["Alpha", "Beta"], MARKERS, "D") == []),
+    ("silent problems come out sorted by inspection",
+     lambda: validate(consistent(inspections={"Beta": [], "Alpha": []}, silent={"Zeta": "q", "Gone": "q"}),
+                      ["Alpha", "Beta"], MARKERS, "D")
+     == ["Alpha: ReSharper reports none of its samples and silent gives no reason",
+         "Beta: ReSharper reports none of its samples and silent gives no reason",
+         "Gone: listed under silent, but it is not an ERROR inspection",
+         "Zeta: listed under silent, but it is not an ERROR inspection"]),
     ("a sampled inspection ReSharper reports nowhere passes with a reason under silent",
      lambda: validate(consistent(inspections={"Beta": []}, silent={"Beta": "superseded"}), ["Beta"], MARKERS, "D")
      == []),
     ("a silent entry for an inspection ReSharper reports is reported",
      lambda: validate(consistent(inspections={"Beta": ["A.cs: Beta #1"]}, silent={"Beta": "quiet"}), ["Beta"],
-                      MARKERS, "D") == ["Beta: listed under silent, but ReSharper reports it"]),
+                      MARKERS, "D") == ["Beta: listed under silent, but ReSharper reports one of its samples"]),
     ("a silent entry for an inspection that is not ERROR is reported",
      lambda: validate(consistent(inspections={}, silent={"Gone": "quiet"}), [], MARKERS, "D")
      == ["Gone: listed under silent, but it is not an ERROR inspection"]),
@@ -243,7 +264,7 @@ CASES = [
      lambda: validate(consistent(inspections={"Alpha": ["B.cs: Alpha"]}), ["Alpha"], MARKERS, "D")
      == ["Alpha: cites 'B.cs: Alpha', which is no sample or file in the corpus"]),
     ("a cited file without markers passes",
-     lambda: validate(consistent(inspections={"Alpha": ["A.cs"]}), ["Alpha"], MARKERS, "D") == []),
+     lambda: validate(consistent(inspections={"Alpha": ["A.cs", "A.cs: Alpha"]}), ["Alpha"], MARKERS, "D") == []),
     ("the digest ignores line endings",
      lambda: hashed(SOURCE.replace("\n", "\r\n").encode()) == hashed()),
     ("the digest changes with a sample",
