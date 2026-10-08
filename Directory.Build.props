@@ -10,6 +10,8 @@
         <Authors>Flakroup</Authors>
         <Company>Flakroup</Company>
         <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
+        <!-- The IDE rules .editorconfig raises run in every build, not only in the editor and `dotnet format`. -->
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <Copyright>Copyright © Flakroup 2025-2026</Copyright>
         <ImplicitUsings>disable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
@@ -27,6 +29,12 @@
         <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591</WarningsNotAsErrors>
         <WarnOnPackingNonPackableProject>true</WarnOnPackingNonPackableProject>
     </PropertyGroup>
+
+    <!-- Declared here and not in Directory.Build.targets: the SDK folds GlobalAnalyzerConfigFiles into the compiler's
+         analyzer configuration at evaluation, so an item declared after its targets are imported never reaches csc. -->
+    <ItemGroup>
+        <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)build.globalconfig" />
+    </ItemGroup>
 
     <!-- XML docs default, only for a repository that opted in with DevConfigsPackageDefaults=true (set before the import
          of this file; the private marker lets Directory.Build.targets notice a switch set too late). A project's own value

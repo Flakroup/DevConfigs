@@ -1,0 +1,8 @@
+# RS0030 (Microsoft.CodeAnalysis.BannedApiAnalyzers): one documentation ID per line, then the reason after a semicolon.
+# The JetBrains nullness attributes duplicate what nullable reference types already say and the compiler checks; a
+# second, unchecked vocabulary for the same fact drifts from the first. ContractAnnotation is not banned: nullable
+# reference types have no counterpart for its input-to-output contracts.
+T:JetBrains.Annotations.NotNullAttribute;Use a non-nullable reference type; nullable reference types are enabled
+T:JetBrains.Annotations.CanBeNullAttribute;Use a nullable reference type (T?) or System.Diagnostics.CodeAnalysis.MaybeNull
+T:JetBrains.Annotations.ItemNotNullAttribute;Use a non-nullable element type, e.g. IEnumerable<T> rather than IEnumerable<T?>
+T:JetBrains.Annotations.ItemCanBeNullAttribute;Use a nullable element type, e.g. IEnumerable<T?> or Task<T?>

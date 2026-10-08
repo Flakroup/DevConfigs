@@ -38,13 +38,85 @@ csharp_style_namespace_declarations = file_scoped
 dotnet_style_allow_multiple_blank_lines_experimental = false
 dotnet_style_allow_statement_immediately_after_block_experimental = false
 
-# Severities `dotnet format` applies; the build ignores IDE rules until EnforceCodeStyleInBuild is on
+# Options the rules below read, each matching the ReSharper verdict the corpus recorded
+dotnet_style_parentheses_in_arithmetic_binary_operators = never_if_unnecessary
+dotnet_style_parentheses_in_relational_binary_operators = never_if_unnecessary
+dotnet_style_parentheses_in_other_binary_operators = never_if_unnecessary
+dotnet_style_parentheses_in_other_operators = never_if_unnecessary
+dotnet_style_namespace_match_folder = true
+dotnet_code_quality_unused_parameters = non_public
+csharp_prefer_simple_default_expression = true
+
+# Naming: the three ReSharper naming rules the code base follows (constants and private static readonly fields
+# PascalCase, other private fields _camelCase). Rules are matched in order, so the specific ones come first.
+dotnet_naming_rule.a_constants.symbols = constants
+dotnet_naming_rule.a_constants.style = pascal_case
+dotnet_naming_rule.a_constants.severity = error
+dotnet_naming_symbols.constants.applicable_kinds = field
+dotnet_naming_symbols.constants.required_modifiers = const
+dotnet_naming_rule.b_private_static_readonly.symbols = private_static_readonly
+dotnet_naming_rule.b_private_static_readonly.style = pascal_case
+dotnet_naming_rule.b_private_static_readonly.severity = error
+dotnet_naming_symbols.private_static_readonly.applicable_kinds = field
+dotnet_naming_symbols.private_static_readonly.applicable_accessibilities = private
+dotnet_naming_symbols.private_static_readonly.required_modifiers = static, readonly
+dotnet_naming_rule.c_private_fields.symbols = private_fields
+dotnet_naming_rule.c_private_fields.style = underscore_camel_case
+dotnet_naming_rule.c_private_fields.severity = error
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+dotnet_naming_style.underscore_camel_case.required_prefix = _
+dotnet_naming_style.underscore_camel_case.capitalization = camel_case
+
+# Severities enforced in every build (EnforceCodeStyleInBuild): the Roslyn counterparts of the ReSharper ERROR
+# inspections in FEx.sln.DotSettings, as measured against analyzers-corpus. What has no SDK counterpart goes to
+# FEx.Analyzers. Formatting-only rules stay at warning; TreatWarningsAsErrors decides what they cost a consumer.
+dotnet_diagnostic.IDE0001.severity = error
+dotnet_diagnostic.IDE0002.severity = error
+dotnet_diagnostic.IDE0003.severity = error
+dotnet_diagnostic.IDE0004.severity = error
+dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.IDE0007.severity = error
+dotnet_diagnostic.IDE0034.severity = error
+dotnet_diagnostic.IDE0036.severity = error
+dotnet_diagnostic.IDE0037.severity = error
+dotnet_diagnostic.IDE0040.severity = error
+dotnet_diagnostic.IDE0047.severity = error
+dotnet_diagnostic.IDE0049.severity = error
+dotnet_diagnostic.IDE0051.severity = error
+dotnet_diagnostic.IDE0075.severity = error
+dotnet_diagnostic.IDE0082.severity = error
+dotnet_diagnostic.IDE0090.severity = error
+dotnet_diagnostic.IDE0100.severity = error
+dotnet_diagnostic.IDE0110.severity = error
+dotnet_diagnostic.IDE0130.severity = error
+dotnet_diagnostic.IDE0200.severity = error
+dotnet_diagnostic.IDE0350.severity = error
+dotnet_diagnostic.IDE0380.severity = error
+dotnet_diagnostic.IDE1006.severity = error
+dotnet_diagnostic.CA1507.severity = error
+dotnet_diagnostic.CA1806.severity = error
+dotnet_diagnostic.CA1829.severity = error
+dotnet_diagnostic.CA2016.severity = error
+dotnet_diagnostic.CA2019.severity = error
+dotnet_diagnostic.CA2259.severity = error
+dotnet_diagnostic.CS0108.severity = error
+dotnet_diagnostic.CS0109.severity = error
+dotnet_diagnostic.CS0114.severity = error
+dotnet_diagnostic.CS0169.severity = error
+dotnet_diagnostic.CS0184.severity = error
+dotnet_diagnostic.CS0420.severity = error
+dotnet_diagnostic.CS0628.severity = error
+dotnet_diagnostic.CS0642.severity = error
+dotnet_diagnostic.CS0649.severity = error
+dotnet_diagnostic.CS0659.severity = error
+dotnet_diagnostic.CS0672.severity = error
+dotnet_diagnostic.CS4014.severity = error
+dotnet_diagnostic.CS7023.severity = error
+dotnet_diagnostic.CS8826.severity = error
+# IDE0005 above is applied by `dotnet format`; the build cannot run it - see build.globalconfig.
 dotnet_diagnostic.IDE0055.severity = warning
-dotnet_diagnostic.IDE0005.severity = warning
-dotnet_diagnostic.IDE0007.severity = warning
-dotnet_diagnostic.IDE0003.severity = warning
-dotnet_diagnostic.IDE0049.severity = warning
-dotnet_diagnostic.IDE0040.severity = warning
 dotnet_diagnostic.IDE0161.severity = warning
 dotnet_diagnostic.IDE2000.severity = warning
 dotnet_diagnostic.IDE2003.severity = warning

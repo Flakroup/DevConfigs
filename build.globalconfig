@@ -1,0 +1,8 @@
+is_global = true
+# IDE0005 (unnecessary usings) cannot run in a build without XML documentation output (dotnet/roslyn#41640). With
+# EnforceCodeStyleInBuild on, the compiler reports EnableGenerateDocumentationFile in its place, once per project:
+# a diagnostic about a setting, not about code, and one no build reported before that switch. Turning documentation
+# on everywhere costs thousands of CS1591 and hundreds of XML-doc errors, so unused usings stay with `dotnet format`
+# (the consumer's pre-commit hook and CI), which needs no documentation output. The line lives here and not in
+# .editorconfig because a diagnostic without a source location obeys a global configuration only.
+dotnet_diagnostic.EnableGenerateDocumentationFile.severity = none

@@ -30,7 +30,7 @@ import tempfile
 from pathlib import Path
 
 REPOSITORY = Path(__file__).resolve().parent.parent
-SHARED = ["Directory.Build.props", "Directory.Build.targets", ".editorconfig"]
+SHARED = ["Directory.Build.props", "Directory.Build.targets", ".editorconfig", "build.globalconfig", "BannedSymbols.txt"]
 failures: list[str] = []
 
 PROPS = """<Project>
@@ -70,7 +70,7 @@ def consumer(root: Path, switch: bool, gitmodules: bool) -> Path:
     (root / "Directory.Build.targets").write_text(TARGETS, encoding="utf-8")
     (root / "Lib").mkdir()
     (root / "Lib" / "Lib.csproj").write_text(PROJECT, encoding="utf-8")
-    (root / "Lib" / "Marker.cs").write_text("namespace Fixture;\npublic static class Marker { }\n", encoding="utf-8")
+    (root / "Lib" / "Marker.cs").write_text("namespace Lib;\n\npublic static class Marker\n{\n}\n", encoding="utf-8")
     if gitmodules:
         (root / ".gitmodules").write_text('[submodule "DevConfigs"]\n\tpath = DevConfigs\n', encoding="utf-8")
     return root
@@ -94,6 +94,12 @@ def main() -> int:
                            line, re.IGNORECASE)]
     check(not demotions, "shared: no rule is demoted or declared generated", "\n".join(demotions))
 
+    # build.globalconfig is the one place a severity goes down, so it may hold that one line and nothing else.
+    global_severities = [line for line in (REPOSITORY / "build.globalconfig").read_text(encoding="utf-8").splitlines()
+                         if "severity" in line and not line.lstrip().startswith("#")]
+    check(global_severities == ["dotnet_diagnostic.EnableGenerateDocumentationFile.severity = none"],
+          "shared: build.globalconfig silences EnableGenerateDocumentationFile and nothing else", "\n".join(global_severities))
+
     for name, switch, gitmodules, should_copy in [
         ("opted-in", True, True, True),
         ("no-switch", False, True, False),
@@ -102,6 +108,9 @@ def main() -> int:
         root = consumer(work / name, switch, gitmodules)
         code, output = restore_and_build(root)
         check(code == 0, f"{name}: the consumer builds", output)
+        # IDE0005 at error with XML docs off makes the compiler report EnableGenerateDocumentationFile instead;
+        # build.globalconfig, wired by Directory.Build.props, is what keeps that out of every consumer's build.
+        check("EnableGenerateDocumentationFile" not in output, f"{name}: the IDE0005 documentation nag is silenced", output)
         copy = root / ".editorconfig"
         if should_copy:
             check(copy.is_file() and copy.read_bytes() == expected, f"{name}: the root holds a byte-identical copy")
@@ -114,6 +123,20 @@ def main() -> int:
                              capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root)
     check(process.returncode == 0 and (root / ".editorconfig").is_file(), "restore-only: a restore alone creates the copy",
           process.stdout + process.stderr)
+
+    # RS0030 matches a banned symbol by its documentation ID, so an attribute declared under JetBrains' name stands in
+    # for the package without a download.
+    root = consumer(work / "banned", True, True)
+    (root / "Lib" / "Annotations.cs").write_text(
+        "#pragma warning disable IDE0130 // the documentation ID needs JetBrains' namespace\n"
+        "using System;\n\nnamespace JetBrains.Annotations;\n\n[AttributeUsage(AttributeTargets.All)]\n"
+        "public sealed class NotNullAttribute : Attribute\n{\n}\n", encoding="utf-8")
+    (root / "Lib" / "Guarded.cs").write_text(
+        "using JetBrains.Annotations;\n\nnamespace Lib;\n\npublic static class Guarded\n{\n"
+        "    public static string Echo([NotNull] string value) => value;\n}\n", encoding="utf-8")
+    code, output = restore_and_build(root)
+    check("RS0030" in output and "NotNullAttribute" in output, "banned: a JetBrains nullness attribute is reported (RS0030)",
+          output)
 
     OWN = "root = true\n# consumer rules\n"
     # A root file the consumer owns survives, and the build says so.
