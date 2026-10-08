@@ -135,9 +135,9 @@ samples ReSharper reported it in, as `<file>: <marker>`. An empty list means ReS
 nowhere in the corpus - either the sample misses or the inspection no longer fires in that version.
 An ERROR inspection without a sample is named under `unsampled` with the reason, so an empty list never
 stands for a sample nobody wrote. One ReSharper reports in none of its own samples is named under `silent`
-with the reason: it reports the sample under a newer id, leaves it to the compiler, is switched off by the
-shared `.editorconfig`, needs a plugin, or stays quiet on every variant tried - the last kind leaves a
-Roslyn rule no ReSharper verdict to match. Once ReSharper is gone, that file is the specification the
+with the reason: it reports the sample under a newer id (below ERROR when the shared layer never promoted
+that id), leaves it to the compiler, is switched off by the shared `.editorconfig`, needs a plugin, or
+stays quiet at every severity - the last kind leaves a Roslyn rule no ReSharper verdict to match. Once ReSharper is gone, that file is the specification the
 Roslyn rules are held to.
 
 CI checks, without ReSharper, that the file names exactly the ERROR inspections, that each has a sample
