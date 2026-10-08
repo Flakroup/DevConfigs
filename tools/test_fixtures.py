@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Behavioural test of the shared packaging defaults: build tiny projects against the real props/targets.
+"""Behavioural test of the shared packaging defaults, plus the TRX report name every ``*.Tests`` project passes to
+``dotnet test``: build tiny projects against the real props/targets.
 
 Reading the XML cannot tell whether a pack actually contains the docs, symbols and SourceLink, so this builds
 ``tools/fixtures`` in Release the way a consumer with ``TreatWarningsAsErrors=true`` would, and asserts what comes out.
@@ -195,6 +196,16 @@ def main() -> int:
           "Lib: packaging properties", str(values))
     code, items = run("msbuild", csproj("enabled", "Lib"), "-p:Configuration=Debug", "-p:TargetFramework=net10.0", "-getItem:PackageReference")
     check(code == 0 and "Microsoft.SourceLink.GitHub" in items, "Lib: the pinned SourceLink reference stays in a Debug build too", items[-500:])
+
+    # --- A test project names its TRX report after itself --------------------------------------
+    # `dotnet test` in MTP mode reads RunArguments from each project and puts it first on that assembly's command line
+    # (dotnet/sdk v10.0.401, TestApplication.GetArguments); without a name of its own, two assemblies that
+    # start in the same microsecond share xUnit's timestamped default and one report replaces the other.
+    values = properties("enabled", "Tests", "RunArguments")
+    check(values == {"RunArguments": "--report-xunit-trx --report-xunit-trx-filename Fixture.Tests.trx"},
+          "*.Tests project: RunArguments name its TRX report after the project", str(values))
+    values = properties("enabled", "App", "RunArguments")
+    check("trx" not in values.get("RunArguments", "trx"), "Exe application: no TRX arguments", str(values))
 
     # --- Things that must get nothing -----------------------------------------------------------
     for name, label in (("NonPackableLib", "IsPackable=false library"), ("Tests", "*.Tests project"),
