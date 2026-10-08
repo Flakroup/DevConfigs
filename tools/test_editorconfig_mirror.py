@@ -15,6 +15,11 @@ on every restore and build. The consumers, each a throwaway repository root with
   write, whether the root copy is missing or stale. A plain Copy failed this on Linux in half of the rounds.
 * ``read-only`` holds a stale copy that cannot be replaced: the build fails with ``DEVCFG002`` instead of passing
   under the old rules.
+* ``enforced`` breaks a naming rule: the build fails, because the IDE rules run in it.
+* ``banned`` uses each JetBrains nullness attribute: RS0030 reports every one.
+
+``build.globalconfig`` is checked to hold its one severity and nothing else, and no mirrored consumer's build may
+report the ``EnableGenerateDocumentationFile`` diagnostic it silences.
 
 Needs the .NET 10 SDK. Plain asserts, no test framework.
 """
@@ -30,7 +35,7 @@ import tempfile
 from pathlib import Path
 
 REPOSITORY = Path(__file__).resolve().parent.parent
-SHARED = ["Directory.Build.props", "Directory.Build.targets", ".editorconfig"]
+SHARED = ["Directory.Build.props", "Directory.Build.targets", ".editorconfig", "build.globalconfig", "BannedSymbols.txt"]
 failures: list[str] = []
 
 PROPS = """<Project>
@@ -70,7 +75,7 @@ def consumer(root: Path, switch: bool, gitmodules: bool) -> Path:
     (root / "Directory.Build.targets").write_text(TARGETS, encoding="utf-8")
     (root / "Lib").mkdir()
     (root / "Lib" / "Lib.csproj").write_text(PROJECT, encoding="utf-8")
-    (root / "Lib" / "Marker.cs").write_text("namespace Fixture;\npublic static class Marker { }\n", encoding="utf-8")
+    (root / "Lib" / "Marker.cs").write_text("namespace Lib;\n\npublic static class Marker\n{\n}\n", encoding="utf-8")
     if gitmodules:
         (root / ".gitmodules").write_text('[submodule "DevConfigs"]\n\tpath = DevConfigs\n', encoding="utf-8")
     return root
@@ -94,6 +99,13 @@ def main() -> int:
                            line, re.IGNORECASE)]
     check(not demotions, "shared: no rule is demoted or declared generated", "\n".join(demotions))
 
+    # build.globalconfig is the one place a severity goes down, so it may hold that one line and nothing else - not a
+    # second severity, and not a section declaring files generated, which silences every analyzer at once.
+    global_entries = [line.strip() for line in (REPOSITORY / "build.globalconfig").read_text(encoding="utf-8").splitlines()
+                      if line.strip() and not line.lstrip().startswith("#")]
+    check(global_entries == ["is_global = true", "dotnet_diagnostic.EnableGenerateDocumentationFile.severity = none"],
+          "shared: build.globalconfig silences EnableGenerateDocumentationFile and nothing else", "\n".join(global_entries))
+
     for name, switch, gitmodules, should_copy in [
         ("opted-in", True, True, True),
         ("no-switch", False, True, False),
@@ -104,6 +116,11 @@ def main() -> int:
         check(code == 0, f"{name}: the consumer builds", output)
         copy = root / ".editorconfig"
         if should_copy:
+            # IDE0005 at error with XML docs off makes the compiler report EnableGenerateDocumentationFile instead;
+            # build.globalconfig, wired by Directory.Build.props, keeps that out of the build. Only a consumer the
+            # rules reach can see it, so the other shapes would pass this with the wiring gone.
+            check("EnableGenerateDocumentationFile" not in output, f"{name}: the IDE0005 documentation nag is silenced",
+                  output)
             check(copy.is_file() and copy.read_bytes() == expected, f"{name}: the root holds a byte-identical copy")
         else:
             check(not copy.exists(), f"{name}: nothing is copied to the root")
@@ -114,6 +131,35 @@ def main() -> int:
                              capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root)
     check(process.returncode == 0 and (root / ".editorconfig").is_file(), "restore-only: a restore alone creates the copy",
           process.stdout + process.stderr)
+
+    # The IDE rules fail the build where the mirrored copy reaches the code - EnforceCodeStyleInBuild, not the editor.
+    root = consumer(work / "enforced", True, True)
+    (root / "Lib" / "Marker.cs").write_text(
+        "namespace Lib;\n\npublic static class Marker\n{\n    public static int Count() => count;\n\n"
+        "    private static readonly int count = 1;\n}\n", encoding="utf-8")
+    code, output = restore_and_build(root)
+    check(code != 0 and "IDE1006" in output, "enforced: an IDE rule at error fails the build (IDE1006)", output)
+
+    # RS0030 matches a banned symbol by its documentation ID, so attributes declared under JetBrains' names stand in
+    # for the package without a download. The names are spelled here, not read from BannedSymbols.txt, so a line
+    # dropped from that file is a failure rather than a smaller test.
+    banned = ["NotNull", "CanBeNull", "ItemNotNull", "ItemCanBeNull"]
+    root = consumer(work / "banned", True, True)
+    (root / "Lib" / "Annotations.cs").write_text(
+        "#pragma warning disable IDE0130 // the documentation ID needs JetBrains' namespace\n"
+        "using System;\n\nnamespace JetBrains.Annotations;\n"
+        + "".join(f"\n[AttributeUsage(AttributeTargets.All)]\npublic sealed class {name}Attribute : Attribute\n{{\n}}\n"
+                  for name in banned), encoding="utf-8")
+    (root / "Lib" / "Guarded.cs").write_text(
+        "using JetBrains.Annotations;\n\nnamespace Lib;\n\npublic static class Guarded\n{\n"
+        + "".join(f"    public static string Echo{name}([{name}] string value) => value;\n\n" for name in banned).rstrip("\n")
+        + "\n}\n", encoding="utf-8")
+    code, output = restore_and_build(root)
+    # By the line of each use, not by name: the message is localized, and NotNull is a substring of ItemNotNull.
+    for index, name in enumerate(banned):
+        location = f"Guarded.cs({7 + 2 * index},"
+        check(any(location in line and "RS0030" in line for line in output.splitlines()),
+              f"banned: JetBrains' {name} is reported (RS0030)", output)
 
     OWN = "root = true\n# consumer rules\n"
     # A root file the consumer owns survives, and the build says so.

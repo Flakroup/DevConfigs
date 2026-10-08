@@ -177,9 +177,13 @@ def run_resharper(solution_directory: Path, run=subprocess.run) -> tuple[dict, s
         check=True, capture_output=True)
     run(["dotnet", "sln", str(solution), "add", str(solution_directory / "Corpus.csproj")],
         check=True, capture_output=True)
+    # Restore, then --no-build: the samples violate on purpose and the .editorconfig beside them raises compiler
+    # diagnostics to errors, so a build fails and jb exits non-zero. ReSharper's analysis needs the restored packages
+    # (without them the JetBrains.Annotations inspections go silent), not the build output.
+    run(["dotnet", "restore", str(solution)], check=True, capture_output=True)
     report = solution_directory.parent / "report.sarif"
-    run(["jb", "inspectcode", str(solution), "--swea", "--severity=ERROR", "--format=Sarif", f"--output={report}"],
-        check=True)
+    run(["jb", "inspectcode", str(solution), "--swea", "--severity=ERROR", "--format=Sarif", "--no-build",
+         f"--output={report}"], check=True)
     version = run(["jb", "inspectcode", "--version"], capture_output=True, text=True).stdout
     return json.loads(report.read_text(encoding="utf-8-sig")), version
 

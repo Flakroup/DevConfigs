@@ -291,9 +291,13 @@ CASES = [
      lambda: recorded(BANNER)[0]["resharper"] == "2026.2.3.1"),
     ("a banner without a version number records it as unknown",
      lambda: recorded("no version here")[0]["resharper"] == "unknown"),
-    ("ReSharper is asked for solution-wide ERROR results as SARIF",
+    ("ReSharper is asked for solution-wide ERROR results as SARIF, without building the violating samples",
      lambda: (lambda command: command[:2] == ["jb", "inspectcode"]
-              and {"--swea", "--severity=ERROR", "--format=Sarif"} <= set(command))(resharper_calls()[0][2])),
+              and {"--swea", "--severity=ERROR", "--format=Sarif", "--no-build"} <= set(command))(
+         next(c for c in resharper_calls()[0] if c[:2] == ["jb", "inspectcode"]))),
+    ("the copy is restored before ReSharper inspects it: --no-build resolves no packages of its own",
+     lambda: (lambda heads: heads.index(["dotnet", "restore"]) < heads.index(["jb", "inspectcode"]))(
+         [c[:2] for c in resharper_calls()[0]])),
     ("ReSharper's report and version are returned",
      lambda: resharper_calls()[1] == (sarif(), BANNER)),
     ("--record writes LF-only JSON with a two-space indent and carries the unsampled and silent reasons",

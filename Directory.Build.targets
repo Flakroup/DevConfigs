@@ -205,6 +205,12 @@ if (!mirrored)
     </ItemGroup>
 
     <ItemGroup>
+        <!-- RS0030 reports every use of a symbol BannedSymbols.txt lists; that file says what is banned and why. -->
+        <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="5.6.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <AdditionalFiles Include="$(MSBuildThisFileDirectory)BannedSymbols.txt" Link="BannedSymbols.txt" Visible="false" />
         <PackageReference Include="IDisposableAnalyzers.Reloaded" Version="5.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
