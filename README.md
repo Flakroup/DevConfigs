@@ -88,6 +88,10 @@ repository that wants docs for everything sets `GenerateDocumentationFile=true` 
 default respects). Embedded sources and symbols are skipped for `DebugType=none` (the compiler rejects `/embed` without a pdb),
 symbols also for `DebugType=embedded` (`NU5017` on the empty symbol package).
 
+**Package readme.** A package-defaults project (either way in above) with a `README.md` next to its project file packs it and
+points `PackageReadmeFile` at it. A project without one is left alone (a `PackageReadmeFile` that names a missing file fails the
+pack), and a project that sets `PackageReadmeFile` itself keeps it, with no extra item added.
+
 **SourceLink pin.** The `Microsoft.SourceLink.GitHub` reference (it pulls a `Microsoft.Build.Tasks.Git` that clears
 GHSA-23fw-v26w-5fgq) stays on every packable build, whatever the Configuration or the switch.
 
@@ -99,7 +103,7 @@ the documentation backlog is done.
 **The guard.** `tools/test_fixtures.py` (the `packaging` job in `validate.yml`) builds and packs the projects in
 `tools/fixtures` with `TreatWarningsAsErrors=true` - one folder per kind of consumer: `enabled` (switch on), `disabled` (no
 switch, including a `PackAsTool` executable and the docs cases), `explicit-docs` (switch on, docs for everything) and
-`late-switch` (switch after the import) - and checks the packages, the nuspec and the pdbs (SourceLink data, and whether a
+`late-switch` (switch after the import) - and checks the packages, the nuspec (readme included) and the pdbs (SourceLink data, and whether a
 project's own source is embedded). The fixtures stop at their own `.editorconfig` so the repository's `CS1591 = none` does not
 hide the warning they assert on.
 

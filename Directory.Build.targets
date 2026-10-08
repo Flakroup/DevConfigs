@@ -33,6 +33,17 @@
         <SymbolPackageFormat Condition=" '$(IncludeSymbols)' == 'true' And ('$(SymbolPackageFormat)' == '' Or '$(SymbolPackageFormat)' == 'symbols.nupkg') ">snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
+    <!-- A README.md next to the project file becomes the package readme, but only when the project has one and did not
+         name a readme itself (its own PackageReadmeFile wins, and so does its own item that packs the file); a project
+         without a README.md is left as it was, because a PackageReadmeFile that points at nothing fails the pack. -->
+    <PropertyGroup Condition=" ('$(DevConfigsExplicitlyPackable)' == 'true' Or '$(DevConfigsPackableLibrary)' == 'true') And '$(PackageReadmeFile)' == '' And Exists('$(MSBuildProjectDirectory)/README.md') ">
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <DevConfigsReadmeDefault>true</DevConfigsReadmeDefault>
+    </PropertyGroup>
+    <ItemGroup Condition=" '$(DevConfigsReadmeDefault)' == 'true' ">
+        <None Include="$(MSBuildProjectDirectory)/README.md" Pack="true" PackagePath="" Link="README.md"/>
+    </ItemGroup>
+
     <!-- Only for a project that sets IsPackable=true itself, as before: pack on every Release build. The default (library)
          case does not get it, it would pack every library on each build and again in a consumer's own pack step. -->
     <PropertyGroup Condition=" '$(DevConfigsExplicitlyPackable)' == 'true' ">

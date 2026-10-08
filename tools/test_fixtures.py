@@ -12,6 +12,8 @@ Four repository roots mirror the kinds of consumer (``enabled``, ``disabled``, `
   warning. ``NonPackableLib`` (IsPackable=false), ``Tests`` (*.Tests) and ``App`` (Exe) get nothing, and their pdb holds no
   source. ``OptOuts``, ``ExplicitFalse``, ``LicenseFile`` and ``OwnDocFile`` keep what the project sets itself. ``Embedded``
   (DebugType=embedded) packs without a symbol package, ``NoPdb`` (DebugType=none) builds without /embed.
+* ``Readme``, ``NoReadme`` and ``OwnReadme`` cover the package readme default (README.md beside the project, none, the project's own
+  ``PackageReadmeFile``).
 * ``disabled`` does not opt in: an application and its internal library get nothing, and the library's pdb holds no source.
 
 Needs the .NET 10 SDK and network access for restore. SourceLink needs a git repository with a remote, as in CI.
@@ -79,7 +81,7 @@ foreach (var path in args)
 
 
 def run(*args: str, cwd: Path = FIXTURES) -> tuple[int, str]:
-    process = subprocess.run(["dotnet", *args], capture_output=True, text=True, cwd=cwd)
+    process = subprocess.run(["dotnet", *args], capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=cwd)
     return process.returncode, process.stdout + process.stderr
 
 
@@ -248,6 +250,24 @@ def main() -> int:
     values = properties("enabled", "OwnDocFile", "DocumentationFile")
     check(code == 0 and own.is_file() and values.get("DocumentationFile", "").endswith("own-docs/Fixture.OwnDocFile.xml"),
           "OwnDocFile: a project's own DocumentationFile path is kept", str(values) + log[-500:])
+
+    # --- A README.md next to the project becomes the package readme, only when there is one --------------------
+    code, log = pack("enabled", "Readme", out / "Readme")
+    nupkg = next((out / "Readme").glob("*.nupkg"), None)
+    nuspec = next((entry for entry in entries(nupkg) if entry.endswith(".nuspec")), "")
+    check(code == 0 and "README.md" in entries(nupkg) and "<readme>README.md</readme>" in read(nupkg, nuspec),
+          "Readme: the project's README.md is packed and named in the nuspec", log[-800:] + read(nupkg, nuspec))
+    code, log = pack("enabled", "NoReadme", out / "NoReadme")
+    nupkg = next((out / "NoReadme").glob("*.nupkg"), None)
+    nuspec = next((entry for entry in entries(nupkg) if entry.endswith(".nuspec")), "")
+    check(code == 0 and "README.md" not in entries(nupkg) and "<readme>" not in read(nupkg, nuspec),
+          "NoReadme: a project without a README.md packs without a readme and without an error", log[-800:])
+    code, log = pack("enabled", "OwnReadme", out / "OwnReadme")
+    nupkg = next((out / "OwnReadme").glob("*.nupkg"), None)
+    nuspec = next((entry for entry in entries(nupkg) if entry.endswith(".nuspec")), "")
+    check(code == 0 and entries(nupkg).count("PACKAGE.md") == 1 and "README.md" not in entries(nupkg)
+          and "<readme>PACKAGE.md</readme>" in read(nupkg, nuspec),
+          "OwnReadme: a project's own PackageReadmeFile wins and the README.md beside it is left out", log[-800:] + read(nupkg, nuspec))
 
     # --- Debug types without a standalone pdb --------------------------------------------------
     code, log = pack("enabled", "Embedded", out / "Embedded")
