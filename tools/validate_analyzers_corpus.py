@@ -6,12 +6,14 @@ ERROR. Each sample starts with a ``//# <inspection id>`` marker line (``//# <id>
 and runs until the next marker; a marker is unique within its file, and two files may carry the same rule in
 different layouts. ``analyzers-corpus/expected.json`` records, for every ERROR inspection, the samples
 ReSharper reported it in, as ``<file>: <marker>`` - an empty list means ReSharper reported it nowhere in the
-corpus. An ERROR inspection with no sample is named under ``unsampled`` with the reason. Once ReSharper is
+corpus. An ERROR inspection with no sample is named under ``unsampled`` with the reason, and one whose samples
+ReSharper reports nowhere is named under ``silent`` with the reason it stays quiet. Once ReSharper is
 gone that file is the specification the Roslyn rules are measured against, so it must stay complete and
 consistent with the corpus.
 
 Default mode (CI, no ReSharper needed): check that ``expected.json`` names exactly the ERROR inspections
-of ``FEx.sln.DotSettings``, that each has a sample or a reason, that no file repeats a marker, that every
+of ``FEx.sln.DotSettings``, that each has a sample or a reason, that each empty verdict has a reason, that
+no file repeats a marker, that every
 sample it cites exists, and that its ``digest`` still matches the inputs it was recorded on.
 
 ``--record`` (needs ``jb`` from ``JetBrains.ReSharper.GlobalTools`` and the .NET SDK): inspect a copy of
@@ -138,6 +140,18 @@ def validate(expected: dict, inspections: list[str], markers: dict[str, list[tup
         elif inspection not in inspections:
             problems.append(f"{inspection}: listed under unsampled, but it is not an ERROR inspection")
 
+    silent = expected.get("silent", {})
+    for inspection, owners in sorted(expected.get("inspections", {}).items()):
+        if not owners and inspection in sampled and not silent.get(inspection):
+            problems.append(f"{inspection}: ReSharper reports none of its samples and silent gives no reason")
+    for inspection in sorted(silent):
+        if expected.get("inspections", {}).get(inspection):
+            problems.append(f"{inspection}: listed under silent, but ReSharper reports it")
+        elif inspection not in inspections:
+            problems.append(f"{inspection}: listed under silent, but it is not an ERROR inspection")
+        elif inspection not in sampled:
+            problems.append(f"{inspection}: listed under silent, but the corpus has no sample")
+
     for inspection, owners in sorted(expected.get("inspections", {}).items()):
         for owner in owners:
             if owner not in seen and owner not in markers:
@@ -159,8 +173,10 @@ def run_resharper(solution_directory: Path, run=subprocess.run) -> tuple[dict, s
     return json.loads(report.read_text(encoding="utf-8-sig")), version
 
 
-def record(corpus: Path, dotsettings: Path, editorconfig: Path, unsampled: dict, inspect=run_resharper) -> dict:
-    """Inspect a copy of the corpus with the shared layer and editorconfig; return ``expected.json``'s content."""
+def record(corpus: Path, dotsettings: Path, editorconfig: Path, reasons: dict, inspect=run_resharper) -> dict:
+    """Inspect a copy of the corpus with the shared layer and editorconfig; return ``expected.json``'s content.
+
+    ``reasons`` carries the hand-written ``unsampled`` and ``silent`` maps over unchanged."""
     with tempfile.TemporaryDirectory() as directory:
         copy = Path(directory) / "Corpus"
         shutil.copytree(corpus, copy, ignore=shutil.ignore_patterns(*NOT_INPUTS))
@@ -173,14 +189,16 @@ def record(corpus: Path, dotsettings: Path, editorconfig: Path, unsampled: dict,
     inspections = error_inspections(dotsettings.read_text(encoding="utf-8-sig"))
     return {"resharper": version_number.group(0) if version_number else "unknown",
             "digest": digest(corpus, dotsettings, editorconfig),
-            "unsampled": unsampled,
+            "unsampled": reasons.get("unsampled", {}),
+            "silent": reasons.get("silent", {}),
             "inspections": verdicts(sarif, markers, inspections)}
 
 
 def main(arguments: list[str]) -> int:
     if arguments == ["--record"]:
-        unsampled = json.loads(EXPECTED.read_text(encoding="utf-8")).get("unsampled", {}) if EXPECTED.exists() else {}
-        content = record(CORPUS, DOTSETTINGS, EDITORCONFIG, unsampled)
+        previous = json.loads(EXPECTED.read_text(encoding="utf-8")) if EXPECTED.exists() else {}
+        content = record(CORPUS, DOTSETTINGS, EDITORCONFIG,
+                         {key: previous.get(key, {}) for key in ("unsampled", "silent")})
         # LF on every platform, so a recording on Windows diffs only where a verdict changed.
         EXPECTED.write_text(json.dumps(content, indent=2) + "\n", encoding="utf-8", newline="\n")
         print(f"Recorded {EXPECTED.relative_to(ROOT)}")

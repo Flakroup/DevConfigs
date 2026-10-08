@@ -199,10 +199,10 @@ public class Opr { public void M([Optional] ref int a) { a++; } }
 public class Phm { private int value; public int G() => value; public void M(int value) { Console.Write(value); } }
 
 //# ParameterOnlyUsedForPreconditionCheck.Global
-public class Pog { public void M(string s) { if (s == null) throw new ArgumentNullException(nameof(s)); } }
+public class Pog { public void M(string s) { if (string.IsNullOrEmpty(s)) throw new ArgumentException("empty", nameof(s)); Console.Write(1); } }
 
 //# ParameterOnlyUsedForPreconditionCheck.Local
-public class Pol { private void M(string s) { if (s == null) throw new ArgumentNullException(nameof(s)); } public void G() => M("a"); }
+public class Pol { private void M(string s) { Debug.Assert(s.Length > 0); Console.Write(1); } public void G() => M("a"); }
 
 //# PartialMethodParameterNameMismatch
 public partial class Pmm { partial void M(int a); }
