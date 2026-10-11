@@ -10,8 +10,11 @@ consumers, each a throwaway repository root with a copy of the shared files in i
   rule is held at error by the global config and not by the consumer's warning policy.
 * ``fex-off`` is that project built with ``-p:DevConfigsFExAnalyzers=false``: it builds green.
 * ``fex-self`` is a project named ``FEx.Analyzers``: it does not reference its own package.
-* ``fex-pin`` reads the ``PackageReference`` version: the default is the props file's pin, and
-  ``-p:FExAnalyzersVersion`` overrides it.
+* ``fex-pin`` reads the ``PackageReference`` version: the default is the props file's pin, and ``-p:FExAnalyzersVersion``
+  or a value the consumer's own props set before the import overrides it.
+* ``fex-lib`` packs a prerelease library: its nuspec has no FEx.Analyzers dependency (``PrivateAssets=all``).
+* The rule list is compared with the IDs inside the restored package, so a rule dropped from the global config, or one the
+  package no longer has, is named.
 
 Needs the .NET 10 SDK and network access for restore. Plain asserts, no test framework.
 """
@@ -22,7 +25,9 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
+import zipfile
 from pathlib import Path
 
 REPOSITORY = Path(__file__).resolve().parent.parent
@@ -36,6 +41,13 @@ PROPS = """<Project>
 """
 TARGETS = """<Project>
     <Import Project="$(MSBuildThisFileDirectory)DevConfigs/Directory.Build.targets"/>
+</Project>
+"""
+PROPS_PINNED = """<Project>
+    <PropertyGroup>
+        <FExAnalyzersVersion>{version}</FExAnalyzersVersion>
+    </PropertyGroup>
+    <Import Project="$(MSBuildThisFileDirectory)DevConfigs/Directory.Build.props"/>
 </Project>
 """
 PROJECT = """<Project Sdk="Microsoft.NET.Sdk">
@@ -84,14 +96,24 @@ def package_references(project: Path, *extra: str) -> dict[str, str]:
     """Identity -> Version of every PackageReference the project evaluates to."""
     code, output = dotnet(project, "msbuild", str(project), "-getItem:PackageReference", *extra)
     if code != 0 or "{" not in output:
-        failures.append(f"msbuild -getItem failed for {project.name}")
-        print(output[-1500:])
+        check(False, f"msbuild -getItem {' '.join(extra)} evaluates {project.parent.parent.name}", output[-1500:])
         return {}
     items = json.loads(output[output.index("{"):])["Items"].get("PackageReference", [])
     return {item["Identity"]: item.get("Version", "") for item in items}
 
 
+def package_rule_ids(version: str) -> set[str] | None:
+    """The FEX#### IDs inside the restored analyzer DLL (UTF-16 string literals of its descriptors), or None if it is not there."""
+    code, output = dotnet(REPOSITORY / "x", "nuget", "locals", "global-packages", "--list")
+    folder = output.split("global-packages:", 1)[-1].strip() if code == 0 else ""
+    library = Path(folder, "fex.analyzers", version, "analyzers", "dotnet", "cs", "FEx.Analyzers.dll")
+    if not folder or not library.is_file():
+        return None
+    return {match.decode("utf-16-le") for match in re.findall(rb"F\x00E\x00X\x00(?:[0-9]\x00){4}", library.read_bytes())}
+
+
 def main() -> int:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # a nuspec carries a BOM; a legacy console codepage cannot print it
     work = Path(tempfile.mkdtemp(prefix="devconfigs-fex-"))
 
     # The global config is per ID, not per category: FEX0001..FEX00NN with nothing missing, nothing else, all at error.
@@ -101,6 +123,7 @@ def main() -> int:
     check(entries[:1] == ["is_global = true"] and all(rules)
           and [int(rule.group(1)) for rule in rules if rule] == list(range(1, len(rules) + 1)),
           "shared: FEx.Analyzers.globalconfig holds FEX0001..FEX00NN, each at error, in order", "\n".join(entries))
+    configured = {f"FEX{rule.group(1)}" for rule in rules if rule}
 
     pin = re.search(r'<FExAnalyzersVersion Condition=[^>]*>([^<]+)</FExAnalyzersVersion>',
                     (REPOSITORY / "Directory.Build.props").read_text(encoding="utf-8"))
@@ -110,6 +133,13 @@ def main() -> int:
     project = consumer(work / "fex-clean", "Lib", CLEAN)
     code, output = build(project)
     check(code == 0, "fex-clean: a project with no violation builds", output)
+
+    packaged = package_rule_ids(default_version)
+    check(bool(packaged), f"fex-clean: the restored FEx.Analyzers {default_version} is in the NuGet cache and carries rule IDs")
+    if packaged:
+        missing, extra = sorted(packaged - configured), sorted(configured - packaged)
+        check(not missing and not extra, "shared: the global config lists exactly the rule IDs the pinned package has",
+              f"missing from the global config: {missing}\nnot in the package: {extra}")
 
     project = consumer(work / "fex-error", "Lib", EMPTY_STATEMENT)
     code, output = build(project)
@@ -133,6 +163,26 @@ def main() -> int:
     other = "0.4.0-alpha.374"
     check(package_references(project, f"-p:FExAnalyzersVersion={other}").get("FEx.Analyzers") == other,
           f"fex-pin: -p:FExAnalyzersVersion={other} overrides it")
+
+    # A global property always wins, so only a value set in the consumer's props, before the import, tells the Condition apart.
+    before_import = "0.4.0-alpha.360"
+    project = consumer(work / "fex-pin-props", "Lib", CLEAN)
+    (work / "fex-pin-props" / "Directory.Build.props").write_text(PROPS_PINNED.format(version=before_import), encoding="utf-8")
+    check(before_import != default_version and package_references(project).get("FEx.Analyzers") == before_import,
+          f"fex-pin: a version the consumer's props set before the import ({before_import}) beats the default",
+          str(package_references(project)))
+
+    # PrivateAssets=all: a library that consumes the analyzer must not hand it on to its own consumers. Prerelease on purpose,
+    # so NU5104 (a stable package with a prerelease dependency) cannot be what keeps the dependency out of the result.
+    project = consumer(work / "fex-lib", "Lib", CLEAN)
+    out = work / "fex-lib" / "out"
+    code, output = dotnet(project, "pack", str(project), "-nologo", "-v", "q", "-p:Version=1.0.0-test", "-o", str(out))
+    nuspec = ""
+    for package in sorted(out.glob("*.nupkg")):
+        with zipfile.ZipFile(package) as archive:
+            nuspec = next((archive.read(name).decode("utf-8-sig") for name in archive.namelist() if name.endswith(".nuspec")), "")
+    check(code == 0 and "<id>Lib</id>" in nuspec and "FEx.Analyzers" not in nuspec,
+          "fex-lib: the nuspec of a packed prerelease library has no FEx.Analyzers dependency", output + nuspec)
 
     shutil.rmtree(work, ignore_errors=True)
     print("OK" if not failures else f"{len(failures)} failed")
