@@ -8,14 +8,16 @@ Shared build and editor configuration for Flakroup .NET repositories. Consumed a
 | File | Purpose |
 |---|---|
 | `Directory.Build.props` | Common MSBuild properties: target-framework ids (`TargetFrameworkId`, `StandardTargetFrameworkIds`, `WindowsTargetFrameworkIds`, ...), `Nullable`, `LangVersion`, warning levels and warnings-as-errors (`CS1591` is kept out of it via `WarningsNotAsErrors`), authors/company/copyright, `EnforceCodeStyleInBuild` (the IDE rules `.editorconfig` raises fail the build wherever it reaches the code, not only `dotnet format`; the few Roslyn never runs in a build are listed in `.editorconfig`), the `build.globalconfig` wiring (`GlobalAnalyzerConfigFiles`), centrally pinned package versions, and the `*.Tests` block (MTP runner, xUnit v3, NSubstitute, Shouldly, coverage, hang dump, a TRX report named after the project). |
-| `Directory.Build.targets` | Opt-in packaging defaults for library repositories (XML docs, `snupkg` symbols, embedded sources, SourceLink, deterministic paths, MIT license) - see [Packaging defaults](#packaging-defaults) - the pinned SourceLink package reference, and the shared analyzer set (IDisposableAnalyzers, VS Threading, ReflectionAnalyzers, PolySharp, BannedApiAnalyzers). |
+| `Directory.Build.targets` | Opt-in packaging defaults for library repositories (XML docs, `snupkg` symbols, embedded sources, SourceLink, deterministic paths, MIT license) - see [Packaging defaults](#packaging-defaults) - the pinned SourceLink package reference, and the shared analyzer set (IDisposableAnalyzers, VS Threading, ReflectionAnalyzers, PolySharp, BannedApiAnalyzers, and FEx.Analyzers - see [FEx.Analyzers](#fexanalyzers)). |
 | `.editorconfig` | Formatting and code-style rules, linked into every project. A repository that sets `DevConfigsMirrorEditorConfig=true` (before the props import) also gets a copy at its root on every restore and build, so the compiler and `dotnet format` apply it; list `/.editorconfig` in its `.gitignore`. A root file that is not a mirrored copy is left alone with a warning (`DEVCFG001`), a copy that cannot be written fails the build (`DEVCFG002`), and a `--no-restore` build with the copy missing compiles without it once. Without the switch it is only displayed by the IDE. The file only raises severities - a demotion would switch off, in every opted-in build, a rule that build enforced before. |
 | `build.globalconfig` | The one severity a build needs that `.editorconfig` cannot carry: it silences `EnableGenerateDocumentationFile`, the location-less diagnostic the compiler reports in place of IDE0005 when XML docs are off (dotnet/roslyn#41640). There unused usings stay with `dotnet format`; a build that generates XML docs runs IDE0005 itself. |
+| `FEx.Analyzers.globalconfig` | Every FEx.Analyzers rule (`FEX0001` to `FEX0053`) at `error`, one line per ID, wired through `GlobalAnalyzerConfigFiles` in `Directory.Build.props`. Always applied: `DevConfigsFExAnalyzers=false` removes the package reference and not these severities - see [FEx.Analyzers](#fexanalyzers). |
 | `BannedSymbols.txt` | The APIs RS0030 (BannedApiAnalyzers) reports, each with the reason: today the JetBrains nullness attributes, which nullable reference types replace. It applies to every consumer, mirror or not. |
 | `FEx.sln.DotSettings` | ReSharper settings, including the inspection severities promoted to ERROR that gate commits. |
 | `Settings.XamlStyler` | XAML Styler configuration. |
 | `tools/validate_dotsettings.py` | Guard for the shared ReSharper layers - see [Editing the ReSharper layer](#editing-the-resharper-layer). |
 | `tools/test_fixtures.py` | Behavioural guard for the packaging defaults: builds and packs the projects in `tools/fixtures` in Release (needs the .NET 10 SDK) and asserts what comes out - see [Packaging defaults](#packaging-defaults). It also checks the TRX report name a `*.Tests` project passes to `dotnet test`. |
+| `tools/test_fex_analyzers.py` | Behavioural guard for the FEx.Analyzers wiring: builds throwaway consumers (needs the .NET 10 SDK and nuget.org) and asserts that a violation fails the build without `TreatWarningsAsErrors`, that `DevConfigsFExAnalyzers=false` builds it green, that a project named `FEx.Analyzers` references nothing, the `FExAnalyzersVersion` pin and its overrides, that the rule list matches the pinned package, and that a packed library does not depend on FEx.Analyzers. |
 | `tools/validate_build_props.py` | Guard for the NuGet audit policy in `Directory.Build.props`/`.targets` - see [The NuGet audit pin](#the-nuget-audit-pin). |
 | `tools/validate_workflows.py` | Guard for the CI workflows: a read-only token, `persist-credentials: false` on every checkout, every action pinned to the commit its commented tag points at, and `docker://` images by digest. See [The workflow guard](#the-workflow-guard). |
 | `analyzers-corpus/` | Labelled violations of the ERROR inspections of `FEx.sln.DotSettings`, and `expected.json` - what ReSharper reported in each sample, and why an inspection has none - guarded by `tools/validate_analyzers_corpus.py`; see [The analyzers corpus](#the-analyzers-corpus). |
@@ -108,6 +110,44 @@ switch, including a `PackAsTool` executable and the docs cases), `explicit-docs`
 `late-switch` (switch after the import) - and checks the packages, the nuspec (readme included) and the pdbs (SourceLink data, and whether a
 project's own source is embedded). The fixtures stop at their own `.editorconfig` so the repository's `CS1591 = none` does not
 hide the warning they assert on.
+
+## FEx.Analyzers
+
+[FEx.Analyzers](https://www.nuget.org/packages/FEx.Analyzers) is the Roslyn analyzer package meant to replace the ReSharper inspections
+(see [The analyzers corpus](#the-analyzers-corpus)). `Directory.Build.targets` references it in every project, with
+`PrivateAssets=all`, and `FEx.Analyzers.globalconfig` holds each of its rules (`FEX0001` to `FEX0053`) at `error`, so a hit fails the
+build whether or not the consumer sets `TreatWarningsAsErrors`. The severities are per ID and not per category: a rule a later
+package version adds stays at its default until a line for it is added to the file.
+
+- **`FExAnalyzersVersion`** is the version the reference takes. It is a pin of its own and not `$(FExVersion)`, because a consumer's
+  FEx packages can be older than the first FEx.Analyzers release. A consumer can set another value before the import of
+  `Directory.Build.props` (or with `-p:FExAnalyzersVersion=...`); the default moves with this repository.
+- **`DevConfigsFExAnalyzers=false`** leaves the `PackageReference` out, and only that. It is for a project that must not consume
+  the published package. FEx, when it bumps its DevConfigs pin, has to set it and reference its own analyzer through a
+  `ProjectReference`; until then FEx sets nothing of the kind. A project named `FEx.Analyzers` never gets the reference either.
+- The global config is declared in `Directory.Build.props`, next to `build.globalconfig`, because the SDK folds
+  `GlobalAnalyzerConfigFiles` into the compiler's configuration at evaluation and an item declared in the targets file never
+  reaches it. For the same reason it is unconditional: the opt-out does not switch the severities off. With no analyzer loaded
+  there is nothing for them to apply to, but an analyzer that arrives another way (the `ProjectReference` above) runs at `error`.
+
+### Turning off one rule
+
+A rule that is wrong for one project or one line is not switched off by a second global config: a consumer's own globalconfig
+setting `dotnet_diagnostic.FEX00NN.severity = none` **clashes** with this one (`warning MultipleGlobalAnalyzerKeys`), Roslyn drops
+the key, and the rule falls back to its default of warning - still an error under `TreatWarningsAsErrors`. What works:
+
+- **`#pragma warning disable FEX00NN` at the call site**, with a justification. The choice for a single false positive.
+- A nested `.editorconfig` with `[*.cs]` and `dotnet_diagnostic.FEX00NN.severity = none`, for a directory.
+- A consumer globalconfig with `global_level = 1` (above the default level), which wins over this file instead of clashing with it.
+- `<NoWarn>FEX00NN</NoWarn>` also works, but some consumers forbid a project-wide `NoWarn`.
+
+`tools/test_fex_analyzers.py` (the `fex-analyzers` job in `validate.yml`) builds consumers against the real props and targets and
+asserts all of it (including that the rule list matches the IDs inside the pinned package, and that a packed library does not
+depend on FEx.Analyzers):
+
+```bash
+python tools/test_fex_analyzers.py
+```
 
 ## Changing it
 

@@ -233,6 +233,16 @@ if (!mirrored)
         </PackageReference>
     </ItemGroup>
 
+    <!-- FEx.Analyzers, its rules at error through FEx.Analyzers.globalconfig (wired in Directory.Build.props). The version is
+         $(FExAnalyzersVersion), a pin of its own. DevConfigsFExAnalyzers=false is the opt-out; FEx.Analyzers itself never references
+         its own package. -->
+    <ItemGroup Condition=" '$(DevConfigsFExAnalyzers)' != 'false' And '$(MSBuildProjectName)' != 'FEx.Analyzers' ">
+        <PackageReference Include="FEx.Analyzers" Version="$(FExAnalyzersVersion)">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
     <ItemGroup Condition=" $(MSBuildProjectName.EndsWith('.Tests')) " >
         <None Remove="coverage.cobertura.xml"/>
         <Compile Remove="TestResults\**" />
