@@ -35,7 +35,8 @@ import tempfile
 from pathlib import Path
 
 REPOSITORY = Path(__file__).resolve().parent.parent
-SHARED = ["Directory.Build.props", "Directory.Build.targets", ".editorconfig", "build.globalconfig", "BannedSymbols.txt"]
+SHARED = ["Directory.Build.props", "Directory.Build.targets", ".editorconfig", "build.globalconfig", "BannedSymbols.txt",
+          "FEx.Analyzers.globalconfig"]
 failures: list[str] = []
 
 PROPS = """<Project>

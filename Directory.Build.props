@@ -35,6 +35,8 @@
          analyzer configuration at evaluation, so an item declared after its targets are imported never reaches csc. -->
     <ItemGroup>
         <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)build.globalconfig" />
+        <!-- The FEx.Analyzers rules at error, per ID; the package reference itself is in Directory.Build.targets. -->
+        <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)FEx.Analyzers.globalconfig" />
     </ItemGroup>
 
     <!-- XML docs default, only for a repository that opted in with DevConfigsPackageDefaults=true (set before the import
@@ -99,6 +101,8 @@
         <AvaloniaVersion>12.0.4</AvaloniaVersion>
         <!-- Microsoft.Testing.Platform and the HangDump extension, which is bound to the platform's internals, on one number. The other MTP packages (Telemetry, MSBuild, TrxReport) arrive transitively through xunit and the coverage extension at whatever they ask for: raising this means checking those resolve to it too. -->
         <MtpVersion>2.4.0</MtpVersion>
+        <!-- Its own pin, not $(FExVersion): a consumer's FEx packages can be older than the first FEx.Analyzers release. -->
+        <FExAnalyzersVersion Condition=" '$(FExAnalyzersVersion)' == '' ">0.4.0-alpha.378</FExAnalyzersVersion>
     </PropertyGroup>
 
     <ItemGroup Condition=" '$([System.String]::Copy($(IsTestProject)).ToLower())' == 'true' ">
