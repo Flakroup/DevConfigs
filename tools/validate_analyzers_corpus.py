@@ -38,7 +38,8 @@ CORPUS = ROOT / "analyzers-corpus"
 EXPECTED = CORPUS / "expected.json"
 DOTSETTINGS = ROOT / "FEx.sln.DotSettings"
 EDITORCONFIG = ROOT / ".editorconfig"
-NOT_INPUTS = ("bin", "obj", "expected.json")
+# expected.json is the recording and roslyn-map.json the Roslyn side's bridge to it: neither is an input of a recording.
+NOT_INPUTS = ("bin", "obj", "expected.json", "roslyn-map.json")
 
 ERROR_SEVERITY = re.compile(r'InspectionSeverities/=([^/"]+)/@EntryIndexedValue">ERROR<')
 ESCAPE = re.compile(r"_([0-9A-F]{4})")
