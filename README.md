@@ -235,17 +235,22 @@ the CI run.
 
 **The map**, `analyzers-corpus/roslyn-map.json`, is the only place the two id spaces meet:
 
-- `inspections` - ReSharper id to `{"roslyn": [rule ids]}`. `"scope": "own"` (with a `reason`) compares only the
-  inspection's own samples, for an inspection whose ReSharper verdict also lists samples of other rules that
-  Roslyn has no reason to repeat.
-- `gaps` - ReSharper id to the reason Roslyn does not match yet. A gap is tolerated.
-- `waivers` - ReSharper id to `{"extra": [...], "missing": [...], "reason": ...}`: a deliberate, exactly named
-  difference (`extra` is reported by Roslyn and not by ReSharper, `missing` the other way). A waiver is tolerated.
+- `inspections` - ReSharper id to `{"roslyn": [rule ids]}`. `"scope": "own"` (with a `reason`) compares the
+  inspection's own samples, and lets the samples of other inspections differ - but only by the exact set named
+  in `"outside": {"extra": [...], "missing": [...]}`, so the scope cannot hide a change in either direction. A scope
+  that hides nothing fails.
+- `gaps` - ReSharper id to `{"reason": ..., "extra": [...], "missing": [...]}`: Roslyn does not match yet, and
+  the difference measured today is pinned (`extra` is reported by Roslyn and not by ReSharper, `missing` the
+  other way). A gap is tolerated only while the difference is exactly that.
+- `waivers` - the same shape, for a deliberate difference that is not expected to close.
 
 **The ratchet** keeps those lists shrinking. These fail the build: a new mismatch; an inspection with no entry in
-the map; a gap that now matches (remove it); a waiver that no longer describes the difference exactly; a FEX
-rule reported below error (the shared configuration is not reaching the compiler); AD0001 (an analyzer crashed);
-and a canary - an engine that did not run would otherwise look like a wall of honest gaps.
+the map; a gap that now matches (remove it); a gap, a waiver or a scope whose difference is no longer the pinned
+one, whether it grew, shrank or moved; a FEX rule, or one of the four `dotnet format` rules, reported below error
+(the shared configuration is not reaching it); AD0001 (an analyzer crashed - the exception text is in the
+problem); and a canary - an engine that did not run would otherwise look like a wall of honest gaps. A result
+suppressed in source counts as not reported. The accounting is checked too: the inspections compared and the
+ones excluded must be disjoint and together exactly the ones `expected.json` records.
 
 To start a map entry, `--propose` prints a draft from the overlap of the two verdicts. Every entry in it needs a
 person to read the difference and write the reason; a reason that starts with `TODO` is rejected.
@@ -254,8 +259,10 @@ person to read the difference and write the reason; a reason that starts with `T
 python tools/validate_roslyn_parity.py --propose
 ```
 
-`--json PATH` writes the full result, `--work DIR` keeps the throwaway consumer in `DIR` and `--reuse` reads the
-engines' output already there instead of building again. After a change to the corpus, `expected.json` or the
+`--json PATH` writes the full result. `--work DIR` keeps the throwaway consumer in `DIR`, which must be empty or
+made by this tool (it carries a `.roslyn-parity-work` marker); the tool refuses any other directory, and clears
+only the files and folders it wrote itself. `--reuse` reads the engines' output already in `DIR` instead of
+building again. After a change to the corpus, `expected.json` or the
 shared configuration, run the gate; to change `expected.json`, record the verdicts as described above first.
 
 ## The workflow guard

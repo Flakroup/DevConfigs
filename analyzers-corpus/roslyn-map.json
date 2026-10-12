@@ -5,7 +5,15 @@
         "IDE0002"
       ],
       "scope": "own",
-      "reason": "IDE0002 also reports 3 sample(s) of other inspections (ArrangeStaticMemberQualifier, RedundantBaseQualifier, RedundantNameQualifier); only the inspection's own samples are compared."
+      "reason": "IDE0002 also reports 3 sample(s) of other inspections (ArrangeStaticMemberQualifier, RedundantBaseQualifier, RedundantNameQualifier); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: ArrangeStaticMemberQualifier",
+          "StyleA.cs: RedundantNameQualifier",
+          "StyleB.cs: RedundantBaseQualifier"
+        ],
+        "missing": []
+      }
     },
     "AnnotationRedundancyAtValueType": {
       "roslyn": []
@@ -15,14 +23,28 @@
         "IDE0034"
       ],
       "scope": "own",
-      "reason": "IDE0034 also reports 2 sample(s) of other inspections (ArrangeDefaultValueWhenTypeNotEvident); only the inspection's own samples are compared."
+      "reason": "IDE0034 also reports 2 sample(s) of other inspections (ArrangeDefaultValueWhenTypeNotEvident #1, ArrangeDefaultValueWhenTypeNotEvident #2); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #1",
+          "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #2"
+        ],
+        "missing": []
+      }
     },
     "ArrangeDefaultValueWhenTypeNotEvident": {
       "roslyn": [
         "IDE0034"
       ],
       "scope": "own",
-      "reason": "IDE0034 also reports 2 sample(s) of other inspections (ArrangeDefaultValueWhenTypeEvident); only the inspection's own samples are compared."
+      "reason": "IDE0034 also reports 2 sample(s) of other inspections (ArrangeDefaultValueWhenTypeEvident); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: ArrangeDefaultValueWhenTypeEvident",
+          "StyleB.cs: ArrangeDefaultValueWhenTypeEvident"
+        ],
+        "missing": []
+      }
     },
     "ArrangeModifiersOrder": {
       "roslyn": [
@@ -39,7 +61,15 @@
         "IDE0002"
       ],
       "scope": "own",
-      "reason": "IDE0002 also reports 3 sample(s) of other inspections (AccessToStaticMemberViaDerivedType, RedundantBaseQualifier, RedundantNameQualifier); only the inspection's own samples are compared."
+      "reason": "IDE0002 also reports 3 sample(s) of other inspections (AccessToStaticMemberViaDerivedType, RedundantBaseQualifier, RedundantNameQualifier); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: AccessToStaticMemberViaDerivedType",
+          "StyleA.cs: RedundantNameQualifier",
+          "StyleB.cs: RedundantBaseQualifier"
+        ],
+        "missing": []
+      }
     },
     "ArrangeThisQualifier": {
       "roslyn": [
@@ -51,14 +81,26 @@
         "IDE0040"
       ],
       "scope": "own",
-      "reason": "IDE0040 also reports 1 sample(s) of other inspections (ArrangeTypeModifiers); only the inspection's own samples are compared."
+      "reason": "IDE0040 also reports 1 sample(s) of other inspections (ArrangeTypeModifiers); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: ArrangeTypeModifiers"
+        ],
+        "missing": []
+      }
     },
     "ArrangeTypeModifiers": {
       "roslyn": [
         "IDE0040"
       ],
       "scope": "own",
-      "reason": "IDE0040 also reports 1 sample(s) of other inspections (ArrangeTypeMemberModifiers); only the inspection's own samples are compared."
+      "reason": "IDE0040 also reports 1 sample(s) of other inspections (ArrangeTypeMemberModifiers); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: ArrangeTypeMemberModifiers"
+        ],
+        "missing": []
+      }
     },
     "BaseMemberHasParams": {
       "roslyn": [
@@ -70,14 +112,26 @@
         "IDE0049"
       ],
       "scope": "own",
-      "reason": "IDE0049 also reports 1 sample(s) of other inspections (BuiltInTypeReferenceStyleForMemberAccess); only the inspection's own samples are compared."
+      "reason": "IDE0049 also reports 1 sample(s) of other inspections (BuiltInTypeReferenceStyleForMemberAccess); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: BuiltInTypeReferenceStyleForMemberAccess"
+        ],
+        "missing": []
+      }
     },
     "BuiltInTypeReferenceStyleForMemberAccess": {
       "roslyn": [
         "IDE0049"
       ],
       "scope": "own",
-      "reason": "IDE0049 also reports 1 sample(s) of other inspections (BuiltInTypeReferenceStyle); only the inspection's own samples are compared."
+      "reason": "IDE0049 also reports 1 sample(s) of other inspections (BuiltInTypeReferenceStyle); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: BuiltInTypeReferenceStyle"
+        ],
+        "missing": []
+      }
     },
     "CSharpWarnings::CS0108,CS0114": {
       "roslyn": [
@@ -156,35 +210,166 @@
       ]
     },
     "EnforceDoWhileStatementBraces": {
-      "roslyn": []
+      "roslyn": [
+        "IDE0011"
+      ]
     },
     "EnforceFixedStatementBraces": {
-      "roslyn": []
+      "roslyn": [
+        "IDE0011"
+      ]
     },
     "EnforceForStatementBraces": {
-      "roslyn": []
+      "roslyn": [
+        "IDE0011"
+      ]
     },
     "EnforceForeachStatementBraces": {
-      "roslyn": []
+      "roslyn": [
+        "IDE0011"
+      ]
     },
     "EnforceIfStatementBraces": {
-      "roslyn": []
+      "roslyn": [
+        "IDE0011"
+      ]
     },
     "EnforceLockStatementBraces": {
-      "roslyn": []
+      "roslyn": [
+        "IDE0011"
+      ]
     },
     "EnforceUsingStatementBraces": {
-      "roslyn": []
+      "roslyn": [
+        "IDE0011"
+      ]
     },
     "EnforceWhileStatementBraces": {
-      "roslyn": []
+      "roslyn": [
+        "IDE0011"
+      ]
     },
     "InconsistentNaming": {
       "roslyn": [
         "IDE1006"
       ],
       "scope": "own",
-      "reason": "ReSharper reports naming on 117 samples of other inspections as collateral; only the inspection's own samples are compared."
+      "reason": "ReSharper also reports 110 sample(s) of other inspections that Roslyn does not (AccessToStaticMemberViaDerivedType, AnnotationRedundancyAtValueType, ArrangeDefaultValueWhenTypeEvident, ArrangeDefaultValueWhenTypeNotEvident #1 and 106 more); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [],
+        "missing": [
+          "StyleA.cs: AccessToStaticMemberViaDerivedType",
+          "StyleA.cs: BaseMemberHasParams",
+          "StyleA.cs: CSharpWarnings::CS0108,CS0114 #1",
+          "StyleA.cs: CSharpWarnings::CS0108,CS0114 #2",
+          "StyleA.cs: CSharpWarnings::CS0628",
+          "StyleA.cs: CSharpWarnings::CS0672",
+          "StyleA.cs: ComplexObjectDestructuringProblem",
+          "StyleA.cs: LocalVariableHidesMember",
+          "StyleA.cs: OptionalParameterHierarchyMismatch",
+          "StyleA.cs: RedundantBaseConstructorCall",
+          "StyleA.cs: RedundantEmptyFinallyBlock",
+          "StyleA.cs: RedundantEmptyObjectCreationArgumentList",
+          "StyleA.cs: UnusedMemberHierarchy.Local",
+          "StyleB.cs: AnnotationRedundancyAtValueType",
+          "StyleB.cs: ArrangeDefaultValueWhenTypeEvident",
+          "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #1",
+          "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #2",
+          "StyleB.cs: ArrangeDefaultValueWhenTypeNotEvident #3",
+          "StyleB.cs: ArrayWithDefaultValuesInitialization #1",
+          "StyleB.cs: ArrayWithDefaultValuesInitialization #2",
+          "StyleB.cs: ArrayWithDefaultValuesInitialization #3",
+          "StyleB.cs: CatchClauseWithoutVariable #1",
+          "StyleB.cs: CatchClauseWithoutVariable #2",
+          "StyleB.cs: CatchClauseWithoutVariable #3",
+          "StyleB.cs: ComplexObjectDestructuringProblem #1",
+          "StyleB.cs: ComplexObjectDestructuringProblem #2",
+          "StyleB.cs: ComplexObjectDestructuringProblem #3",
+          "StyleB.cs: ComplexObjectDestructuringProblem #4",
+          "StyleB.cs: ComplexObjectDestructuringProblem #5",
+          "StyleB.cs: ComplexObjectDestructuringProblem #6",
+          "StyleB.cs: ComplexObjectInContextDestructuringProblem #1",
+          "StyleB.cs: ComplexObjectInContextDestructuringProblem #2",
+          "StyleB.cs: ComplexObjectInContextDestructuringProblem #3",
+          "StyleB.cs: ConvertToConstant.Global #1",
+          "StyleB.cs: ConvertToConstant.Global #2",
+          "StyleB.cs: ConvertToConstant.Global #3",
+          "StyleB.cs: ConvertToConstant.Global #4",
+          "StyleB.cs: EmptyEmbeddedStatement #1",
+          "StyleB.cs: EmptyEmbeddedStatement #2",
+          "StyleB.cs: EmptyEmbeddedStatement #3",
+          "StyleB.cs: EmptyEmbeddedStatement #4",
+          "StyleB.cs: EnforceDoWhileStatementBraces",
+          "StyleB.cs: EnforceFixedStatementBraces",
+          "StyleB.cs: EnforceForStatementBraces",
+          "StyleB.cs: EnforceForeachStatementBraces",
+          "StyleB.cs: EnforceIfStatementBraces",
+          "StyleB.cs: EnforceLockStatementBraces",
+          "StyleB.cs: EnforceUsingStatementBraces",
+          "StyleB.cs: EnforceWhileStatementBraces",
+          "StyleB.cs: InvokeAsExtensionMember #1",
+          "StyleB.cs: InvokeAsExtensionMember #2",
+          "StyleB.cs: NotifyPropertyChangedInvocatorFromConstructor #1",
+          "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Global #1",
+          "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Global #2",
+          "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Local #1",
+          "StyleB.cs: ParameterOnlyUsedForPreconditionCheck.Local #2",
+          "StyleB.cs: RedundantAssertionStatement #1",
+          "StyleB.cs: RedundantAssertionStatement #2",
+          "StyleB.cs: RedundantAssertionStatement #3",
+          "StyleB.cs: RedundantAssertionStatement #4",
+          "StyleB.cs: RedundantAwait #1",
+          "StyleB.cs: RedundantAwait #2",
+          "StyleB.cs: RedundantAwait #3",
+          "StyleB.cs: RedundantBaseQualifier",
+          "StyleB.cs: RedundantCast.0 #1",
+          "StyleB.cs: RedundantCast.0 #2",
+          "StyleB.cs: RedundantCast.0 #3",
+          "StyleB.cs: RedundantCast.0 #4",
+          "StyleB.cs: RedundantCast.0 #5",
+          "StyleB.cs: RedundantDeclarationSemicolon #2",
+          "StyleB.cs: RedundantDeclarationSemicolon #3",
+          "StyleB.cs: RedundantDefaultMemberInitializer #1",
+          "StyleB.cs: RedundantDefaultMemberInitializer #2",
+          "StyleB.cs: RedundantDefaultMemberInitializer #3",
+          "StyleB.cs: RedundantDelegateInvoke #1",
+          "StyleB.cs: RedundantDelegateInvoke #2",
+          "StyleB.cs: RedundantDiscardedPattern #1",
+          "StyleB.cs: RedundantDiscardedPattern #2",
+          "StyleB.cs: RedundantDiscardedPattern #3",
+          "StyleB.cs: RedundantDiscardedPattern #4",
+          "StyleB.cs: RedundantDiscardedPattern #5",
+          "StyleB.cs: RedundantFixedPointerDeclaration #2",
+          "StyleB.cs: RedundantFixedPointerDeclaration #3",
+          "StyleB.cs: RedundantInlineAssertion #1",
+          "StyleB.cs: RedundantInlineAssertion #2",
+          "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #1",
+          "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #2",
+          "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #3",
+          "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #4",
+          "StyleB.cs: RedundantOverflowCheckingContext #1",
+          "StyleB.cs: RedundantOverflowCheckingContext #2",
+          "StyleB.cs: RedundantOverflowCheckingContext #3",
+          "StyleB.cs: RedundantOverflowCheckingContext #4",
+          "StyleB.cs: RedundantOverriddenMember",
+          "StyleB.cs: RemoveRedundantOrStatement.False #1",
+          "StyleB.cs: RemoveRedundantOrStatement.False #2",
+          "StyleB.cs: RemoveRedundantOrStatement.False #3",
+          "StyleB.cs: RemoveRedundantOrStatement.True #1",
+          "StyleB.cs: RemoveRedundantOrStatement.True #2",
+          "StyleB.cs: UnusedLocalFunctionParameter #1",
+          "StyleB.cs: UnusedLocalFunctionParameter #2",
+          "StyleB.cs: UnusedLocalFunctionParameter #3",
+          "StyleB.cs: UnusedMemberHierarchy.Local #1",
+          "StyleB.cs: UnusedMemberHierarchy.Local #2",
+          "StyleB.cs: UnusedMemberHierarchy.Local #3",
+          "StyleB.cs: UseNameofExpressionForPartOfTheString #1",
+          "StyleB.cs: UseNameofExpressionForPartOfTheString #2",
+          "StyleB.cs: UseNameofExpressionForPartOfTheString #3",
+          "StyleB.cs: UseNameofExpressionForPartOfTheString #4",
+          "W7023.cs: CSharpWarnings::CS7023"
+        ]
+      }
     },
     "InvokeAsExtensionMember": {
       "roslyn": []
@@ -207,9 +392,7 @@
     "MethodHasAsyncOverload": {
       "roslyn": [
         "VSTHRD103"
-      ],
-      "scope": "own",
-      "reason": "VSTHRD103 also reports the MethodHasAsyncOverloadWithCancellation sample (at warning, like this one); only the inspection's own samples are compared."
+      ]
     },
     "MethodHasAsyncOverloadWithCancellation": {
       "roslyn": [
@@ -277,7 +460,13 @@
         "IDE0037"
       ],
       "scope": "own",
-      "reason": "IDE0037 also reports 1 sample(s) of other inspections (RedundantExplicitTupleComponentName); only the inspection's own samples are compared."
+      "reason": "IDE0037 also reports 1 sample(s) of other inspections (RedundantExplicitTupleComponentName); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: RedundantExplicitTupleComponentName"
+        ],
+        "missing": []
+      }
     },
     "RedundantArgumentDefaultValue": {
       "roslyn": [
@@ -289,7 +478,13 @@
         "IDE0059"
       ],
       "scope": "own",
-      "reason": "IDE0059 also reports 1 sample(s) of other inspections (EmptyEmbeddedStatement); only the inspection's own samples are compared."
+      "reason": "IDE0059 also reports 1 sample(s) of other inspections (EmptyEmbeddedStatement #2); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: EmptyEmbeddedStatement #2"
+        ],
+        "missing": []
+      }
     },
     "RedundantAttributeParentheses": {
       "roslyn": [
@@ -306,7 +501,15 @@
         "IDE0002"
       ],
       "scope": "own",
-      "reason": "IDE0002 also reports 3 sample(s) of other inspections (AccessToStaticMemberViaDerivedType, ArrangeStaticMemberQualifier, RedundantNameQualifier); only the inspection's own samples are compared."
+      "reason": "IDE0002 also reports 3 sample(s) of other inspections (AccessToStaticMemberViaDerivedType, ArrangeStaticMemberQualifier, RedundantNameQualifier); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: AccessToStaticMemberViaDerivedType",
+          "StyleA.cs: ArrangeStaticMemberQualifier",
+          "StyleA.cs: RedundantNameQualifier"
+        ],
+        "missing": []
+      }
     },
     "RedundantBoolCompare": {
       "roslyn": [
@@ -375,10 +578,14 @@
       ]
     },
     "RedundantExplicitArrayCreation": {
-      "roslyn": []
+      "roslyn": [
+        "IDE0300"
+      ]
     },
     "RedundantExplicitArraySize": {
-      "roslyn": []
+      "roslyn": [
+        "IDE0300"
+      ]
     },
     "RedundantExplicitNullableCreation": {
       "roslyn": [
@@ -386,14 +593,22 @@
       ]
     },
     "RedundantExplicitParamsArrayCreation": {
-      "roslyn": []
+      "roslyn": [
+        "IDE0300"
+      ]
     },
     "RedundantExplicitTupleComponentName": {
       "roslyn": [
         "IDE0037"
       ],
       "scope": "own",
-      "reason": "IDE0037 also reports 1 sample(s) of other inspections (RedundantAnonymousTypePropertyName); only the inspection's own samples are compared."
+      "reason": "IDE0037 also reports 1 sample(s) of other inspections (RedundantAnonymousTypePropertyName); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: RedundantAnonymousTypePropertyName"
+        ],
+        "missing": []
+      }
     },
     "RedundantIfElseBlock": {
       "roslyn": [
@@ -426,7 +641,16 @@
         "IDE0002"
       ],
       "scope": "own",
-      "reason": "IDE0001 and IDE0002 also report 4 sample(s) of other inspections (AccessToStaticMemberViaDerivedType, ArrangeStaticMemberQualifier, RedundantBaseQualifier, RedundantTypeArgumentsOfMethod); only the inspection's own samples are compared."
+      "reason": "IDE0001 and IDE0002 also report 4 sample(s) of other inspections (AccessToStaticMemberViaDerivedType, ArrangeStaticMemberQualifier, RedundantBaseQualifier, RedundantTypeArgumentsOfMethod); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: AccessToStaticMemberViaDerivedType",
+          "StyleA.cs: ArrangeStaticMemberQualifier",
+          "StyleA.cs: RedundantTypeArgumentsOfMethod",
+          "StyleB.cs: RedundantBaseQualifier"
+        ],
+        "missing": []
+      }
     },
     "RedundantNullnessAttributeWithNullableReferenceTypes": {
       "roslyn": []
@@ -496,7 +720,13 @@
         "IDE0001"
       ],
       "scope": "own",
-      "reason": "IDE0001 also reports the bare file Stubs.cs, which holds no marker of this inspection; only the inspection's own samples are compared."
+      "reason": "IDE0001 also reports 1 sample(s) of other inspections (Stubs.cs); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "Stubs.cs"
+        ],
+        "missing": []
+      }
     },
     "RedundantUnsafeContext": {
       "roslyn": [
@@ -528,21 +758,78 @@
         "IDE0007"
       ],
       "scope": "own",
-      "reason": "IDE0007 also reports 2 sample(s) of other inspections (SuggestVarOrType_Elsewhere, SuggestVarOrType_SimpleTypes); only the inspection's own samples are compared."
+      "reason": "IDE0007 also reports 2 sample(s) of other inspections (SuggestVarOrType_Elsewhere #1, SuggestVarOrType_SimpleTypes #1); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: SuggestVarOrType_Elsewhere #1",
+          "StyleA.cs: SuggestVarOrType_SimpleTypes #1"
+        ],
+        "missing": []
+      }
     },
     "SuggestVarOrType_Elsewhere": {
       "roslyn": [
         "IDE0007"
       ],
       "scope": "own",
-      "reason": "IDE0007 also reports 20 sample(s) of other inspections (ArrangeDefaultValueWhenTypeEvident, ArrangeRedundantParentheses, ConvertToConstant.Local, EmptyEmbeddedStatement and 13 more); only the inspection's own samples are compared."
+      "reason": "IDE0007 also reports 20 sample(s) of other inspections (ArrangeDefaultValueWhenTypeEvident, ArrangeRedundantParentheses, ConvertToConstant.Local #2, EmptyEmbeddedStatement #2 and 14 more); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: ArrangeDefaultValueWhenTypeEvident",
+          "StyleA.cs: ArrangeRedundantParentheses",
+          "StyleA.cs: ConvertToConstant.Local #2",
+          "StyleA.cs: EmptyForStatement",
+          "StyleA.cs: EnforceForStatementBraces",
+          "StyleA.cs: EnforceForeachStatementBraces",
+          "StyleA.cs: LocalVariableHidesMember",
+          "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #1",
+          "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #2",
+          "StyleA.cs: RedundantAssignment",
+          "StyleA.cs: RedundantStringToCharArrayCall",
+          "StyleA.cs: RedundantVerbatimPrefix",
+          "StyleA.cs: SuggestVarOrType_BuiltInTypes #1",
+          "StyleA.cs: SuggestVarOrType_SimpleTypes #1",
+          "StyleA.cs: UseCancellationTokenForIAsyncEnumerable",
+          "StyleA.cs: VariableHidesOuterVariable",
+          "StyleB.cs: EmptyEmbeddedStatement #2",
+          "StyleB.cs: EnforceForStatementBraces",
+          "StyleB.cs: EnforceForeachStatementBraces",
+          "StyleB.cs: RedundantCast.0 #5"
+        ],
+        "missing": []
+      }
     },
     "SuggestVarOrType_SimpleTypes": {
       "roslyn": [
         "IDE0007"
       ],
       "scope": "own",
-      "reason": "IDE0007 also reports 20 sample(s) of other inspections (ArrangeDefaultValueWhenTypeEvident, ArrangeRedundantParentheses, ConvertToConstant.Local, EmptyEmbeddedStatement and 13 more); only the inspection's own samples are compared."
+      "reason": "IDE0007 also reports 20 sample(s) of other inspections (ArrangeDefaultValueWhenTypeEvident, ArrangeRedundantParentheses, ConvertToConstant.Local #2, EmptyEmbeddedStatement #2 and 14 more); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: ArrangeDefaultValueWhenTypeEvident",
+          "StyleA.cs: ArrangeRedundantParentheses",
+          "StyleA.cs: ConvertToConstant.Local #2",
+          "StyleA.cs: EmptyForStatement",
+          "StyleA.cs: EnforceForStatementBraces",
+          "StyleA.cs: EnforceForeachStatementBraces",
+          "StyleA.cs: LocalVariableHidesMember",
+          "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #1",
+          "StyleA.cs: LoopVariableIsNeverChangedInsideLoop #2",
+          "StyleA.cs: RedundantAssignment",
+          "StyleA.cs: RedundantStringToCharArrayCall",
+          "StyleA.cs: RedundantVerbatimPrefix",
+          "StyleA.cs: SuggestVarOrType_BuiltInTypes #1",
+          "StyleA.cs: SuggestVarOrType_Elsewhere #1",
+          "StyleA.cs: UseCancellationTokenForIAsyncEnumerable",
+          "StyleA.cs: VariableHidesOuterVariable",
+          "StyleB.cs: EmptyEmbeddedStatement #2",
+          "StyleB.cs: EnforceForStatementBraces",
+          "StyleB.cs: EnforceForeachStatementBraces",
+          "StyleB.cs: RedundantCast.0 #5"
+        ],
+        "missing": []
+      }
     },
     "ThreadStaticAtInstanceField": {
       "roslyn": [
@@ -559,14 +846,32 @@
         "CS0649"
       ],
       "scope": "own",
-      "reason": "CS0649 also reports 2 sample(s) of other inspections (UnassignedReadonlyField, UnassignedReadonlyField.Compiler); only the inspection's own samples are compared."
+      "reason": "CS0649 also reports 2 sample(s) of other inspections (UnassignedReadonlyField, UnassignedReadonlyField.Compiler); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: UnassignedReadonlyField",
+          "StyleA.cs: UnassignedReadonlyField.Compiler"
+        ],
+        "missing": []
+      }
     },
     "UnassignedReadonlyField.Compiler": {
       "roslyn": [
         "CS0649"
       ],
       "scope": "own",
-      "reason": "CS0649 also reports 6 sample(s) of other inspections (ArrangeTypeMemberModifiers, InconsistentNaming, LocalVariableHidesMember, ParameterHidesMember and 2 more); only the inspection's own samples are compared."
+      "reason": "CS0649 also reports 6 sample(s) of other inspections (ArrangeTypeMemberModifiers, InconsistentNaming #2, LocalVariableHidesMember, ParameterHidesMember and 2 more); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: ArrangeTypeMemberModifiers",
+          "StyleA.cs: LocalVariableHidesMember",
+          "StyleA.cs: ParameterHidesMember",
+          "StyleA.cs: UnassignedField.Compiler",
+          "StyleA.cs: ValueParameterNotUsed",
+          "StyleB.cs: InconsistentNaming #2"
+        ],
+        "missing": []
+      }
     },
     "UnusedField.Compiler": {
       "roslyn": [
@@ -578,7 +883,15 @@
         "IDE0051"
       ],
       "scope": "own",
-      "reason": "IDE0051 also reports 1 sample(s) of other inspections (UnusedField.Compiler); ReSharper also reports it in 1 sample(s) of other inspections (CSharpWarnings::CS0628); only the inspection's own samples are compared."
+      "reason": "IDE0051 also reports 1 sample(s) of other inspections (UnusedField.Compiler); ReSharper also reports 1 sample(s) of other inspections that Roslyn does not (CSharpWarnings::CS0628); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: UnusedField.Compiler"
+        ],
+        "missing": [
+          "StyleA.cs: CSharpWarnings::CS0628"
+        ]
+      }
     },
     "UnusedMethodReturnValue.Local": {
       "roslyn": [
@@ -590,7 +903,16 @@
         "IDE0060"
       ],
       "scope": "own",
-      "reason": "ReSharper reports unused parameters on samples of other inspections as collateral; only the inspection's own samples are compared."
+      "reason": "ReSharper also reports 4 sample(s) of other inspections that Roslyn does not (UnusedLocalFunctionParameter, UnusedLocalFunctionParameter #1, UnusedLocalFunctionParameter #2, UnusedLocalFunctionParameter #3); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [],
+        "missing": [
+          "StyleA.cs: UnusedLocalFunctionParameter",
+          "StyleB.cs: UnusedLocalFunctionParameter #1",
+          "StyleB.cs: UnusedLocalFunctionParameter #2",
+          "StyleB.cs: UnusedLocalFunctionParameter #3"
+        ]
+      }
     },
     "UnusedParameterInPartialMethod": {
       "roslyn": [
@@ -612,7 +934,13 @@
         "CA1829"
       ],
       "scope": "own",
-      "reason": "CA1829 also reports 1 sample(s) of other inspections (InvokeAsExtensionMember); only the inspection's own samples are compared."
+      "reason": "CA1829 also reports 1 sample(s) of other inspections (InvokeAsExtensionMember #2); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: InvokeAsExtensionMember #2"
+        ],
+        "missing": []
+      }
     },
     "UseNameOfInsteadOfTypeOf": {
       "roslyn": [
@@ -636,27 +964,163 @@
     }
   },
   "gaps": {
-    "AnnotationRedundancyAtValueType": "No Roslyn rule reports a redundant annotation. RS0030 reports the sample at warning, but it bans the JetBrains nullness attributes outright (BannedSymbols.txt), which is a different rule.",
-    "EnforceDoWhileStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline. FEX0002 and IDE0007 fire on the sample for unrelated reasons.",
-    "EnforceFixedStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline.",
-    "EnforceForStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline. FEX0002 and IDE0007 fire on the sample for unrelated reasons.",
-    "EnforceForeachStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline. FEX0002 and IDE0007 fire on the sample for unrelated reasons.",
-    "EnforceIfStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline.",
-    "EnforceLockStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline.",
-    "EnforceUsingStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline.",
-    "EnforceWhileStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline. FEX0002 and IDE0007 fire on the sample for unrelated reasons.",
-    "InconsistentNaming": "The shared .editorconfig carries naming rules for fields only (constants, private static readonly, private fields), so IDE1006 reports the private-field sample (#2) and not the lowercase public method (#1). A rule for public members closes this gap.",
-    "InvokeAsExtensionMember": "No Roslyn rule reports a static call of an extension method written in its static form. CA1829 fires on Enumerable.Count(l) (StyleB #2), but it asks for the Count property, not the extension form.",
-    "MethodHasAsyncOverload": "VSTHRD103 reports the sample at warning only; the shared configuration does not raise it. Raising it to error closes this gap.",
-    "ParameterOnlyUsedForPreconditionCheck.Global": "No Roslyn rule reports a parameter that only a precondition check reads.",
-    "ParameterOnlyUsedForPreconditionCheck.Local": "No Roslyn rule reports a parameter that only a precondition check reads.",
-    "RedundantEmptyObjectCreationArgumentList": "No Roslyn rule reports the empty argument list of new T() { ... }. IDE0090 fires on the sample, but because the expression could be target-typed new(), so it would stay silent on var x = new T() { ... }, which ReSharper reports.",
-    "RedundantEmptyObjectOrCollectionInitializer": "No Roslyn rule reports an empty initializer in new T { }. IDE0090 fires on the sample, but because the expression could be target-typed new(), so it would stay silent on var x = new T { }, which ReSharper reports.",
-    "RedundantExplicitArrayCreation": "No Roslyn rule reports it: the collection-expression rules (IDE0300 family) are not raised in the shared .editorconfig, and IDE0028 reports other samples at note.",
-    "RedundantExplicitArraySize": "No Roslyn rule reports an explicit array size that the initializer already fixes.",
-    "RedundantExplicitParamsArrayCreation": "No Roslyn rule reports an explicit array passed to a params parameter (CA1861 reports the sample at note, for a constant array argument, which is a different rule).",
-    "RedundantNullnessAttributeWithNullableReferenceTypes": "No Roslyn rule reports a nullness attribute that nullable reference types make redundant. RS0030 reports the samples at warning, but it bans the JetBrains attributes outright (BannedSymbols.txt), which is a different rule.",
-    "UnusedParameter.Local": "IDE0060 reports the sample at note only: the shared .editorconfig sets dotnet_code_quality_unused_parameters but raises no IDE0060 severity. Raising it to error closes this gap."
+    "AnnotationRedundancyAtValueType": {
+      "reason": "No Roslyn rule reports a redundant annotation. RS0030 reports the sample at warning, but it bans the JetBrains nullness attributes outright (BannedSymbols.txt), which is a different rule.",
+      "extra": [],
+      "missing": [
+        "StyleB.cs: AnnotationRedundancyAtValueType"
+      ]
+    },
+    "EnforceDoWhileStatementBraces": {
+      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
+      "extra": [],
+      "missing": [
+        "StyleB.cs: EnforceDoWhileStatementBraces"
+      ]
+    },
+    "EnforceFixedStatementBraces": {
+      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
+      "extra": [],
+      "missing": [
+        "StyleB.cs: EnforceFixedStatementBraces"
+      ]
+    },
+    "EnforceForStatementBraces": {
+      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
+      "extra": [],
+      "missing": [
+        "StyleB.cs: EnforceForStatementBraces"
+      ]
+    },
+    "EnforceForeachStatementBraces": {
+      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
+      "extra": [],
+      "missing": [
+        "StyleB.cs: EnforceForeachStatementBraces"
+      ]
+    },
+    "EnforceIfStatementBraces": {
+      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
+      "extra": [],
+      "missing": [
+        "StyleB.cs: EnforceIfStatementBraces"
+      ]
+    },
+    "EnforceLockStatementBraces": {
+      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
+      "extra": [],
+      "missing": [
+        "StyleB.cs: EnforceLockStatementBraces"
+      ]
+    },
+    "EnforceUsingStatementBraces": {
+      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
+      "extra": [],
+      "missing": [
+        "StyleB.cs: EnforceUsingStatementBraces"
+      ]
+    },
+    "EnforceWhileStatementBraces": {
+      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
+      "extra": [],
+      "missing": [
+        "StyleB.cs: EnforceWhileStatementBraces"
+      ]
+    },
+    "InconsistentNaming": {
+      "reason": "The shared .editorconfig carries naming rules for fields only (constants, private static readonly, private fields), so IDE1006 reports the private-field sample (#2) and not the lowercase public method (#1). A rule for public members closes this gap.",
+      "extra": [],
+      "missing": [
+        "StyleB.cs: InconsistentNaming #1"
+      ]
+    },
+    "InvokeAsExtensionMember": {
+      "reason": "No Roslyn rule reports a static call of an extension method written in its static form. CA1829 fires on Enumerable.Count(l) (StyleB #2), but it asks for the Count property, not the extension form.",
+      "extra": [],
+      "missing": [
+        "StyleA.cs: InvokeAsExtensionMember",
+        "StyleB.cs: InvokeAsExtensionMember #1",
+        "StyleB.cs: InvokeAsExtensionMember #2"
+      ]
+    },
+    "MethodHasAsyncOverload": {
+      "reason": "VSTHRD103 reports the sample at warning only; the shared configuration does not raise it. Raising it to error closes this gap.",
+      "extra": [],
+      "missing": [
+        "StyleA.cs: MethodHasAsyncOverload"
+      ]
+    },
+    "ParameterOnlyUsedForPreconditionCheck.Global": {
+      "reason": "No Roslyn rule reports a parameter that only a precondition check reads.",
+      "extra": [],
+      "missing": [
+        "StyleA.cs: ParameterOnlyUsedForPreconditionCheck.Global"
+      ]
+    },
+    "ParameterOnlyUsedForPreconditionCheck.Local": {
+      "reason": "No Roslyn rule reports a parameter that only a precondition check reads.",
+      "extra": [],
+      "missing": [
+        "StyleA.cs: ParameterOnlyUsedForPreconditionCheck.Local"
+      ]
+    },
+    "RedundantEmptyObjectCreationArgumentList": {
+      "reason": "No Roslyn rule reports the empty argument list of new T() { ... }. IDE0090 fires on the sample, but because the expression could be target-typed new(), so it would stay silent on var x = new T() { ... }, which ReSharper reports.",
+      "extra": [],
+      "missing": [
+        "StyleA.cs: RedundantEmptyObjectCreationArgumentList"
+      ]
+    },
+    "RedundantEmptyObjectOrCollectionInitializer": {
+      "reason": "No Roslyn rule reports an empty initializer in new T { }. IDE0090 fires on the sample, but because the expression could be target-typed new(), so it would stay silent on var x = new T { }, which ReSharper reports.",
+      "extra": [],
+      "missing": [
+        "StyleA.cs: RedundantEmptyObjectOrCollectionInitializer"
+      ]
+    },
+    "RedundantExplicitArrayCreation": {
+      "reason": "IDE0300 (use a collection expression for an array) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error it reports every ReSharper sample of this inspection, but also 3 of the neighbouring array samples, so raising it turns this gap into a waiver of those extras, not into a match.",
+      "extra": [],
+      "missing": [
+        "StyleA.cs: RedundantExplicitArrayCreation",
+        "StyleA.cs: RedundantExplicitParamsArrayCreation",
+        "StyleB.cs: ArrayWithDefaultValuesInitialization #1",
+        "StyleB.cs: ArrayWithDefaultValuesInitialization #2"
+      ]
+    },
+    "RedundantExplicitArraySize": {
+      "reason": "IDE0300 (use a collection expression for an array) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error it reports every ReSharper sample of this inspection, but also 5 of the neighbouring array samples, so raising it turns this gap into a waiver of those extras, not into a match.",
+      "extra": [],
+      "missing": [
+        "StyleA.cs: ArrayWithDefaultValuesInitialization",
+        "StyleA.cs: RedundantExplicitArraySize"
+      ]
+    },
+    "RedundantExplicitParamsArrayCreation": {
+      "reason": "IDE0300 (use a collection expression for an array) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error it reports every ReSharper sample of this inspection, but also 6 of the neighbouring array samples, so raising it turns this gap into a waiver of those extras, not into a match.",
+      "extra": [],
+      "missing": [
+        "StyleA.cs: RedundantExplicitParamsArrayCreation"
+      ]
+    },
+    "RedundantNullnessAttributeWithNullableReferenceTypes": {
+      "reason": "No Roslyn rule reports a nullness attribute that nullable reference types make redundant. RS0030 reports the samples at warning, but it bans the JetBrains attributes outright (BannedSymbols.txt), which is a different rule.",
+      "extra": [],
+      "missing": [
+        "StyleA.cs: RedundantNullnessAttributeWithNullableReferenceTypes",
+        "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #1",
+        "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #2",
+        "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #3",
+        "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #4"
+      ]
+    },
+    "UnusedParameter.Local": {
+      "reason": "IDE0060 reports the sample at note only: the shared .editorconfig sets dotnet_code_quality_unused_parameters but raises no IDE0060 severity. Raising it to error closes this gap.",
+      "extra": [],
+      "missing": [
+        "StyleA.cs: UnusedParameter.Local"
+      ]
+    }
   },
   "waivers": {
     "ArrangeDefaultValueWhenTypeEvident": {
