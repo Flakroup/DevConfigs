@@ -1,0 +1,669 @@
+{
+  "inspections": {
+    "AccessToStaticMemberViaDerivedType": {
+      "roslyn": [
+        "IDE0002"
+      ],
+      "scope": "own",
+      "reason": "IDE0002 also reports 3 sample(s) of other inspections (ArrangeStaticMemberQualifier, RedundantBaseQualifier, RedundantNameQualifier); only the inspection's own samples are compared."
+    },
+    "AnnotationRedundancyAtValueType": {
+      "roslyn": []
+    },
+    "ArrangeDefaultValueWhenTypeEvident": {
+      "roslyn": [
+        "IDE0034"
+      ],
+      "scope": "own",
+      "reason": "IDE0034 also reports 2 sample(s) of other inspections (ArrangeDefaultValueWhenTypeNotEvident); only the inspection's own samples are compared."
+    },
+    "ArrangeDefaultValueWhenTypeNotEvident": {
+      "roslyn": [
+        "IDE0034"
+      ],
+      "scope": "own",
+      "reason": "IDE0034 also reports 2 sample(s) of other inspections (ArrangeDefaultValueWhenTypeEvident); only the inspection's own samples are compared."
+    },
+    "ArrangeModifiersOrder": {
+      "roslyn": [
+        "IDE0036"
+      ]
+    },
+    "ArrangeRedundantParentheses": {
+      "roslyn": [
+        "IDE0047"
+      ]
+    },
+    "ArrangeStaticMemberQualifier": {
+      "roslyn": [
+        "IDE0002"
+      ],
+      "scope": "own",
+      "reason": "IDE0002 also reports 3 sample(s) of other inspections (AccessToStaticMemberViaDerivedType, RedundantBaseQualifier, RedundantNameQualifier); only the inspection's own samples are compared."
+    },
+    "ArrangeThisQualifier": {
+      "roslyn": [
+        "IDE0003"
+      ]
+    },
+    "ArrangeTypeMemberModifiers": {
+      "roslyn": [
+        "IDE0040"
+      ],
+      "scope": "own",
+      "reason": "IDE0040 also reports 1 sample(s) of other inspections (ArrangeTypeModifiers); only the inspection's own samples are compared."
+    },
+    "ArrangeTypeModifiers": {
+      "roslyn": [
+        "IDE0040"
+      ],
+      "scope": "own",
+      "reason": "IDE0040 also reports 1 sample(s) of other inspections (ArrangeTypeMemberModifiers); only the inspection's own samples are compared."
+    },
+    "BaseMemberHasParams": {
+      "roslyn": [
+        "FEX0005"
+      ]
+    },
+    "BuiltInTypeReferenceStyle": {
+      "roslyn": [
+        "IDE0049"
+      ],
+      "scope": "own",
+      "reason": "IDE0049 also reports 1 sample(s) of other inspections (BuiltInTypeReferenceStyleForMemberAccess); only the inspection's own samples are compared."
+    },
+    "BuiltInTypeReferenceStyleForMemberAccess": {
+      "roslyn": [
+        "IDE0049"
+      ],
+      "scope": "own",
+      "reason": "IDE0049 also reports 1 sample(s) of other inspections (BuiltInTypeReferenceStyle); only the inspection's own samples are compared."
+    },
+    "CSharpWarnings::CS0108,CS0114": {
+      "roslyn": [
+        "CS0108",
+        "CS0114"
+      ]
+    },
+    "CSharpWarnings::CS0109": {
+      "roslyn": [
+        "CS0109"
+      ]
+    },
+    "CSharpWarnings::CS0184": {
+      "roslyn": [
+        "CS0184"
+      ]
+    },
+    "CSharpWarnings::CS0420": {
+      "roslyn": [
+        "CS0420"
+      ]
+    },
+    "CSharpWarnings::CS0628": {
+      "roslyn": [
+        "CS0628"
+      ]
+    },
+    "CSharpWarnings::CS0659": {
+      "roslyn": [
+        "CS0659"
+      ]
+    },
+    "CSharpWarnings::CS0672": {
+      "roslyn": [
+        "CS0672"
+      ]
+    },
+    "CSharpWarnings::CS4014": {
+      "roslyn": [
+        "CS4014"
+      ]
+    },
+    "CSharpWarnings::CS7023": {
+      "roslyn": [
+        "CS7023"
+      ]
+    },
+    "CheckNamespace": {
+      "roslyn": [
+        "IDE0130"
+      ]
+    },
+    "ConvertClosureToMethodGroup": {
+      "roslyn": [
+        "IDE0200"
+      ]
+    },
+    "ConvertToConstant.Local": {
+      "roslyn": [
+        "FEX0051"
+      ]
+    },
+    "EmptyForStatement": {
+      "roslyn": [
+        "FEX0012"
+      ]
+    },
+    "EmptyNamespace": {
+      "roslyn": [
+        "FEX0013"
+      ]
+    },
+    "EmptyStatement": {
+      "roslyn": [
+        "FEX0011"
+      ]
+    },
+    "EnforceDoWhileStatementBraces": {
+      "roslyn": []
+    },
+    "EnforceFixedStatementBraces": {
+      "roslyn": []
+    },
+    "EnforceForStatementBraces": {
+      "roslyn": []
+    },
+    "EnforceForeachStatementBraces": {
+      "roslyn": []
+    },
+    "EnforceIfStatementBraces": {
+      "roslyn": []
+    },
+    "EnforceLockStatementBraces": {
+      "roslyn": []
+    },
+    "EnforceUsingStatementBraces": {
+      "roslyn": []
+    },
+    "EnforceWhileStatementBraces": {
+      "roslyn": []
+    },
+    "InconsistentNaming": {
+      "roslyn": [
+        "IDE1006"
+      ],
+      "scope": "own",
+      "reason": "ReSharper reports naming on 117 samples of other inspections as collateral; only the inspection's own samples are compared."
+    },
+    "InvokeAsExtensionMember": {
+      "roslyn": []
+    },
+    "LocalVariableHidesMember": {
+      "roslyn": [
+        "FEX0038"
+      ]
+    },
+    "LoopVariableIsNeverChangedInsideLoop": {
+      "roslyn": [
+        "FEX0002"
+      ]
+    },
+    "MemberHidesStaticFromOuterClass": {
+      "roslyn": [
+        "FEX0004"
+      ]
+    },
+    "MethodHasAsyncOverload": {
+      "roslyn": [
+        "VSTHRD103"
+      ],
+      "scope": "own",
+      "reason": "VSTHRD103 also reports the MethodHasAsyncOverloadWithCancellation sample (at warning, like this one); only the inspection's own samples are compared."
+    },
+    "MethodHasAsyncOverloadWithCancellation": {
+      "roslyn": [
+        "FEX0052"
+      ]
+    },
+    "MethodOverloadWithOptionalParameter": {
+      "roslyn": [
+        "FEX0041"
+      ]
+    },
+    "MethodSupportsCancellation": {
+      "roslyn": [
+        "CA2016"
+      ]
+    },
+    "NonAtomicCompoundOperator": {
+      "roslyn": [
+        "FEX0001"
+      ]
+    },
+    "ObjectCreationAsStatement": {
+      "roslyn": [
+        "CA1806"
+      ]
+    },
+    "OptionalParameterHierarchyMismatch": {
+      "roslyn": [
+        "FEX0042"
+      ]
+    },
+    "OptionalParameterRefOut": {
+      "roslyn": [
+        "FEX0043"
+      ]
+    },
+    "ParameterHidesMember": {
+      "roslyn": [
+        "FEX0037"
+      ]
+    },
+    "ParameterOnlyUsedForPreconditionCheck.Global": {
+      "roslyn": []
+    },
+    "ParameterOnlyUsedForPreconditionCheck.Local": {
+      "roslyn": []
+    },
+    "PartialMethodParameterNameMismatch": {
+      "roslyn": [
+        "CS8826"
+      ]
+    },
+    "PartialMethodWithSinglePart": {
+      "roslyn": [
+        "FEX0044"
+      ]
+    },
+    "PartialTypeWithSinglePart": {
+      "roslyn": [
+        "FEX0045"
+      ]
+    },
+    "RedundantAnonymousTypePropertyName": {
+      "roslyn": [
+        "IDE0037"
+      ],
+      "scope": "own",
+      "reason": "IDE0037 also reports 1 sample(s) of other inspections (RedundantExplicitTupleComponentName); only the inspection's own samples are compared."
+    },
+    "RedundantArgumentDefaultValue": {
+      "roslyn": [
+        "FEX0029"
+      ]
+    },
+    "RedundantAssignment": {
+      "roslyn": [
+        "IDE0059"
+      ],
+      "scope": "own",
+      "reason": "IDE0059 also reports 1 sample(s) of other inspections (EmptyEmbeddedStatement); only the inspection's own samples are compared."
+    },
+    "RedundantAttributeParentheses": {
+      "roslyn": [
+        "FEX0009"
+      ]
+    },
+    "RedundantBaseConstructorCall": {
+      "roslyn": [
+        "FEX0036"
+      ]
+    },
+    "RedundantBaseQualifier": {
+      "roslyn": [
+        "IDE0002"
+      ],
+      "scope": "own",
+      "reason": "IDE0002 also reports 3 sample(s) of other inspections (AccessToStaticMemberViaDerivedType, ArrangeStaticMemberQualifier, RedundantNameQualifier); only the inspection's own samples are compared."
+    },
+    "RedundantBoolCompare": {
+      "roslyn": [
+        "IDE0100"
+      ]
+    },
+    "RedundantCaseLabel": {
+      "roslyn": [
+        "FEX0018"
+      ]
+    },
+    "RedundantCast": {
+      "roslyn": [
+        "IDE0004"
+      ]
+    },
+    "RedundantCatchClause": {
+      "roslyn": [
+        "FEX0035"
+      ]
+    },
+    "RedundantCheckBeforeAssignment": {
+      "roslyn": [
+        "FEX0034"
+      ]
+    },
+    "RedundantCollectionInitializerElementBraces": {
+      "roslyn": [
+        "FEX0014"
+      ]
+    },
+    "RedundantDeclarationSemicolon": {
+      "roslyn": [
+        "FEX0010"
+      ]
+    },
+    "RedundantDelegateCreation": {
+      "roslyn": [
+        "FEX0028"
+      ]
+    },
+    "RedundantDiscardDesignation": {
+      "roslyn": [
+        "IDE0110"
+      ]
+    },
+    "RedundantEmptyFinallyBlock": {
+      "roslyn": [
+        "FEX0016"
+      ]
+    },
+    "RedundantEmptyObjectCreationArgumentList": {
+      "roslyn": []
+    },
+    "RedundantEmptyObjectOrCollectionInitializer": {
+      "roslyn": []
+    },
+    "RedundantEmptySwitchSection": {
+      "roslyn": [
+        "FEX0017"
+      ]
+    },
+    "RedundantEnumerableCastCall": {
+      "roslyn": [
+        "FEX0027"
+      ]
+    },
+    "RedundantExplicitArrayCreation": {
+      "roslyn": []
+    },
+    "RedundantExplicitArraySize": {
+      "roslyn": []
+    },
+    "RedundantExplicitNullableCreation": {
+      "roslyn": [
+        "FEX0030"
+      ]
+    },
+    "RedundantExplicitParamsArrayCreation": {
+      "roslyn": []
+    },
+    "RedundantExplicitTupleComponentName": {
+      "roslyn": [
+        "IDE0037"
+      ],
+      "scope": "own",
+      "reason": "IDE0037 also reports 1 sample(s) of other inspections (RedundantAnonymousTypePropertyName); only the inspection's own samples are compared."
+    },
+    "RedundantIfElseBlock": {
+      "roslyn": [
+        "FEX0020"
+      ]
+    },
+    "RedundantJumpStatement": {
+      "roslyn": [
+        "FEX0019"
+      ]
+    },
+    "RedundantLambdaParameterType": {
+      "roslyn": [
+        "IDE0350"
+      ]
+    },
+    "RedundantLambdaSignatureParentheses": {
+      "roslyn": [
+        "FEX0008"
+      ]
+    },
+    "RedundantLogicalConditionalExpressionOperand": {
+      "roslyn": [
+        "FEX0032"
+      ]
+    },
+    "RedundantNameQualifier": {
+      "roslyn": [
+        "IDE0001",
+        "IDE0002"
+      ],
+      "scope": "own",
+      "reason": "IDE0001 and IDE0002 also report 4 sample(s) of other inspections (AccessToStaticMemberViaDerivedType, ArrangeStaticMemberQualifier, RedundantBaseQualifier, RedundantTypeArgumentsOfMethod); only the inspection's own samples are compared."
+    },
+    "RedundantNullnessAttributeWithNullableReferenceTypes": {
+      "roslyn": []
+    },
+    "RedundantOverload.Global": {
+      "roslyn": [
+        "FEX0039"
+      ]
+    },
+    "RedundantOverload.Local": {
+      "roslyn": [
+        "FEX0040"
+      ]
+    },
+    "RedundantOverriddenMember": {
+      "roslyn": [
+        "FEX0047"
+      ]
+    },
+    "RedundantPropertyPatternClause": {
+      "roslyn": [
+        "FEX0031"
+      ]
+    },
+    "RedundantQueryOrderByAscendingKeyword": {
+      "roslyn": [
+        "FEX0015"
+      ]
+    },
+    "RedundantRangeBound": {
+      "roslyn": [
+        "FEX0021"
+      ]
+    },
+    "RedundantStringFormatCall": {
+      "roslyn": [
+        "FEX0024"
+      ]
+    },
+    "RedundantStringInterpolation": {
+      "roslyn": [
+        "FEX0025"
+      ]
+    },
+    "RedundantStringToCharArrayCall": {
+      "roslyn": [
+        "FEX0026"
+      ]
+    },
+    "RedundantTernaryExpression": {
+      "roslyn": [
+        "IDE0075"
+      ]
+    },
+    "RedundantToStringCall": {
+      "roslyn": [
+        "FEX0022"
+      ]
+    },
+    "RedundantToStringCallForValueType": {
+      "roslyn": [
+        "FEX0023"
+      ]
+    },
+    "RedundantTypeArgumentsOfMethod": {
+      "roslyn": [
+        "IDE0001"
+      ],
+      "scope": "own",
+      "reason": "IDE0001 also reports the bare file Stubs.cs, which holds no marker of this inspection; only the inspection's own samples are compared."
+    },
+    "RedundantUnsafeContext": {
+      "roslyn": [
+        "IDE0380"
+      ]
+    },
+    "RedundantUsingDirective": {
+      "roslyn": [
+        "IDE0005"
+      ]
+    },
+    "RedundantVerbatimPrefix": {
+      "roslyn": [
+        "FEX0006"
+      ]
+    },
+    "RedundantVerbatimStringPrefix": {
+      "roslyn": [
+        "FEX0007"
+      ]
+    },
+    "RemoveRedundantOrStatement.False": {
+      "roslyn": [
+        "FEX0033"
+      ]
+    },
+    "SuggestVarOrType_BuiltInTypes": {
+      "roslyn": [
+        "IDE0007"
+      ],
+      "scope": "own",
+      "reason": "IDE0007 also reports 2 sample(s) of other inspections (SuggestVarOrType_Elsewhere, SuggestVarOrType_SimpleTypes); only the inspection's own samples are compared."
+    },
+    "SuggestVarOrType_Elsewhere": {
+      "roslyn": [
+        "IDE0007"
+      ],
+      "scope": "own",
+      "reason": "IDE0007 also reports 20 sample(s) of other inspections (ArrangeDefaultValueWhenTypeEvident, ArrangeRedundantParentheses, ConvertToConstant.Local, EmptyEmbeddedStatement and 13 more); only the inspection's own samples are compared."
+    },
+    "SuggestVarOrType_SimpleTypes": {
+      "roslyn": [
+        "IDE0007"
+      ],
+      "scope": "own",
+      "reason": "IDE0007 also reports 20 sample(s) of other inspections (ArrangeDefaultValueWhenTypeEvident, ArrangeRedundantParentheses, ConvertToConstant.Local, EmptyEmbeddedStatement and 13 more); only the inspection's own samples are compared."
+    },
+    "ThreadStaticAtInstanceField": {
+      "roslyn": [
+        "CA2259"
+      ]
+    },
+    "ThreadStaticFieldHasInitializer": {
+      "roslyn": [
+        "CA2019"
+      ]
+    },
+    "UnassignedField.Compiler": {
+      "roslyn": [
+        "CS0649"
+      ],
+      "scope": "own",
+      "reason": "CS0649 also reports 2 sample(s) of other inspections (UnassignedReadonlyField, UnassignedReadonlyField.Compiler); only the inspection's own samples are compared."
+    },
+    "UnassignedReadonlyField.Compiler": {
+      "roslyn": [
+        "CS0649"
+      ],
+      "scope": "own",
+      "reason": "CS0649 also reports 6 sample(s) of other inspections (ArrangeTypeMemberModifiers, InconsistentNaming, LocalVariableHidesMember, ParameterHidesMember and 2 more); only the inspection's own samples are compared."
+    },
+    "UnusedField.Compiler": {
+      "roslyn": [
+        "CS0169"
+      ]
+    },
+    "UnusedMember.Local": {
+      "roslyn": [
+        "IDE0051"
+      ],
+      "scope": "own",
+      "reason": "IDE0051 also reports 1 sample(s) of other inspections (UnusedField.Compiler); ReSharper also reports it in 1 sample(s) of other inspections (CSharpWarnings::CS0628); only the inspection's own samples are compared."
+    },
+    "UnusedMethodReturnValue.Local": {
+      "roslyn": [
+        "FEX0049"
+      ]
+    },
+    "UnusedParameter.Local": {
+      "roslyn": [
+        "IDE0060"
+      ],
+      "scope": "own",
+      "reason": "ReSharper reports unused parameters on samples of other inspections as collateral; only the inspection's own samples are compared."
+    },
+    "UnusedParameterInPartialMethod": {
+      "roslyn": [
+        "FEX0046"
+      ]
+    },
+    "UnusedTypeParameter": {
+      "roslyn": [
+        "FEX0048"
+      ]
+    },
+    "UseCancellationTokenForIAsyncEnumerable": {
+      "roslyn": [
+        "FEX0053"
+      ]
+    },
+    "UseCollectionCountProperty": {
+      "roslyn": [
+        "CA1829"
+      ],
+      "scope": "own",
+      "reason": "CA1829 also reports 1 sample(s) of other inspections (InvokeAsExtensionMember); only the inspection's own samples are compared."
+    },
+    "UseNameOfInsteadOfTypeOf": {
+      "roslyn": [
+        "IDE0082"
+      ]
+    },
+    "UseNameofExpression": {
+      "roslyn": [
+        "CA1507"
+      ]
+    },
+    "ValueParameterNotUsed": {
+      "roslyn": [
+        "FEX0050"
+      ]
+    },
+    "VariableHidesOuterVariable": {
+      "roslyn": [
+        "FEX0003"
+      ]
+    }
+  },
+  "gaps": {
+    "AnnotationRedundancyAtValueType": "No Roslyn rule reports a redundant annotation. RS0030 reports the sample at warning, but it bans the JetBrains nullness attributes outright (BannedSymbols.txt), which is a different rule.",
+    "EnforceDoWhileStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline. FEX0002 and IDE0007 fire on the sample for unrelated reasons.",
+    "EnforceFixedStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline.",
+    "EnforceForStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline. FEX0002 and IDE0007 fire on the sample for unrelated reasons.",
+    "EnforceForeachStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline. FEX0002 and IDE0007 fire on the sample for unrelated reasons.",
+    "EnforceIfStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline.",
+    "EnforceLockStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline.",
+    "EnforceUsingStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline.",
+    "EnforceWhileStatementBraces": "No Roslyn rule reports it: IDE0011 (add braces) is not raised, and the shared .editorconfig sets csharp_prefer_braces = when_multiline. FEX0002 and IDE0007 fire on the sample for unrelated reasons.",
+    "InconsistentNaming": "The shared .editorconfig carries naming rules for fields only (constants, private static readonly, private fields), so IDE1006 reports the private-field sample (#2) and not the lowercase public method (#1). A rule for public members closes this gap.",
+    "InvokeAsExtensionMember": "No Roslyn rule reports a static call of an extension method written in its static form. CA1829 fires on Enumerable.Count(l) (StyleB #2), but it asks for the Count property, not the extension form.",
+    "MethodHasAsyncOverload": "VSTHRD103 reports the sample at warning only; the shared configuration does not raise it. Raising it to error closes this gap.",
+    "ParameterOnlyUsedForPreconditionCheck.Global": "No Roslyn rule reports a parameter that only a precondition check reads.",
+    "ParameterOnlyUsedForPreconditionCheck.Local": "No Roslyn rule reports a parameter that only a precondition check reads.",
+    "RedundantEmptyObjectCreationArgumentList": "No Roslyn rule reports the empty argument list of new T() { ... }. IDE0090 fires on the sample, but because the expression could be target-typed new(), so it would stay silent on var x = new T() { ... }, which ReSharper reports.",
+    "RedundantEmptyObjectOrCollectionInitializer": "No Roslyn rule reports an empty initializer in new T { }. IDE0090 fires on the sample, but because the expression could be target-typed new(), so it would stay silent on var x = new T { }, which ReSharper reports.",
+    "RedundantExplicitArrayCreation": "No Roslyn rule reports it: the collection-expression rules (IDE0300 family) are not raised in the shared .editorconfig, and IDE0028 reports other samples at note.",
+    "RedundantExplicitArraySize": "No Roslyn rule reports an explicit array size that the initializer already fixes.",
+    "RedundantExplicitParamsArrayCreation": "No Roslyn rule reports an explicit array passed to a params parameter (CA1861 reports the sample at note, for a constant array argument, which is a different rule).",
+    "RedundantNullnessAttributeWithNullableReferenceTypes": "No Roslyn rule reports a nullness attribute that nullable reference types make redundant. RS0030 reports the samples at warning, but it bans the JetBrains attributes outright (BannedSymbols.txt), which is a different rule.",
+    "UnusedParameter.Local": "IDE0060 reports the sample at note only: the shared .editorconfig sets dotnet_code_quality_unused_parameters but raises no IDE0060 severity. Raising it to error closes this gap."
+  },
+  "waivers": {
+    "ArrangeDefaultValueWhenTypeEvident": {
+      "extra": [
+        "StyleA.cs: ArrangeDefaultValueWhenTypeEvident"
+      ],
+      "reason": "IDE0034 simplifies default(T) wherever the type can be inferred, so it reports the StyleA local 'int d = default(int);' where ReSharper does not (the README notes this); the StyleB field form is matched."
+    }
+  }
+}

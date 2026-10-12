@@ -21,6 +21,7 @@ Shared build and editor configuration for Flakroup .NET repositories. Consumed a
 | `tools/validate_build_props.py` | Guard for the NuGet audit policy in `Directory.Build.props`/`.targets` - see [The NuGet audit pin](#the-nuget-audit-pin). |
 | `tools/validate_workflows.py` | Guard for the CI workflows: a read-only token, `persist-credentials: false` on every checkout, every action pinned to the commit its commented tag points at, and `docker://` images by digest. See [The workflow guard](#the-workflow-guard). |
 | `analyzers-corpus/` | Labelled violations of the ERROR inspections of `FEx.sln.DotSettings`, and `expected.json` - what ReSharper reported in each sample, and why an inspection has none - guarded by `tools/validate_analyzers_corpus.py`; see [The analyzers corpus](#the-analyzers-corpus). |
+| `analyzers-corpus/roslyn-map.json` | The bridge from ReSharper inspection ids to Roslyn rule ids, with the gaps and waivers that are known - guarded by `tools/validate_roslyn_parity.py` and `tools/test_validate_roslyn_parity.py`; see [Roslyn parity](#roslyn-parity). |
 
 ## Usage
 
@@ -206,6 +207,56 @@ reason goes:
 ```bash
 python tools/validate_analyzers_corpus.py --record
 ```
+
+## Roslyn parity
+
+`tools/validate_roslyn_parity.py` holds the Roslyn analyzers to `analyzers-corpus/expected.json`. It copies
+the corpus into a throwaway consumer of this repository (the shared files under `DevConfigs/`, the
+`.editorconfig` mirror on, `FEx.Analyzers` at the pinned version), so the compiler, the SDK analyzers, FEx.Analyzers
+and the shared configuration apply exactly as in a consumer. Two engines supply the verdicts:
+`dotnet build` (a SARIF log, errors only) and `dotnet format style --report` for IDE0001, IDE0002, IDE0003 and
+IDE0049, which Roslyn never raises in a build. It needs the .NET 10 SDK and network access for restore, and
+takes under a minute:
+
+```bash
+python tools/validate_roslyn_parity.py --summary
+```
+
+**The denominator** is the inspections that have a ReSharper verdict on a sample of their own. The `silent` and
+`unsampled` ones have none, so there is nothing to match: they are excluded and counted with the reason. The
+headline is computed from the data, never typed in:
+
+```text
+Roslyn parity: X/N exact (+W waived, G gaps); E excluded; T accounted
+```
+
+It goes to stdout and to the job summary, and the full per-inspection result is the `roslyn-parity` artifact of
+the CI run.
+
+**The map**, `analyzers-corpus/roslyn-map.json`, is the only place the two id spaces meet:
+
+- `inspections` - ReSharper id to `{"roslyn": [rule ids]}`. `"scope": "own"` (with a `reason`) compares only the
+  inspection's own samples, for an inspection whose ReSharper verdict also lists samples of other rules that
+  Roslyn has no reason to repeat.
+- `gaps` - ReSharper id to the reason Roslyn does not match yet. A gap is tolerated.
+- `waivers` - ReSharper id to `{"extra": [...], "missing": [...], "reason": ...}`: a deliberate, exactly named
+  difference (`extra` is reported by Roslyn and not by ReSharper, `missing` the other way). A waiver is tolerated.
+
+**The ratchet** keeps those lists shrinking. These fail the build: a new mismatch; an inspection with no entry in
+the map; a gap that now matches (remove it); a waiver that no longer describes the difference exactly; a FEX
+rule reported below error (the shared configuration is not reaching the compiler); AD0001 (an analyzer crashed);
+and a canary - an engine that did not run would otherwise look like a wall of honest gaps.
+
+To start a map entry, `--propose` prints a draft from the overlap of the two verdicts. Every entry in it needs a
+person to read the difference and write the reason; a reason that starts with `TODO` is rejected.
+
+```bash
+python tools/validate_roslyn_parity.py --propose
+```
+
+`--json PATH` writes the full result, `--work DIR` keeps the throwaway consumer in `DIR` and `--reuse` reads the
+engines' output already there instead of building again. After a change to the corpus, `expected.json` or the
+shared configuration, run the gate; to change `expected.json`, record the verdicts as described above first.
 
 ## The workflow guard
 

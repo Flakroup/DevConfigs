@@ -120,6 +120,36 @@ jobs:
       - name: Check analyzers-corpus/expected.json against the corpus and the ERROR inspections
         run: python tools/validate_analyzers_corpus.py
 
+  roslyn-parity:
+    name: Hold the Roslyn analyzers to the ReSharper verdicts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Self-test the gate
+        run: python tools/test_validate_roslyn_parity.py
+
+      - name: Compare the Roslyn verdicts on the corpus with analyzers-corpus/expected.json
+        run: python tools/validate_roslyn_parity.py --json "$RUNNER_TEMP/roslyn-parity.json"
+
+      - name: Keep the verdict of every inspection
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: roslyn-parity
+          path: ${{ runner.temp }}/roslyn-parity.json
+          if-no-files-found: ignore
+
   workflows:
     name: Check that every workflow is hardened
     runs-on: ubuntu-latest

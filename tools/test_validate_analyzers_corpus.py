@@ -277,6 +277,8 @@ CASES = [
      lambda: hashed(editorconfig=EDITORCONFIG.replace("true\n", "false\n")) != hashed()),
     ("the digest ignores build output and the record itself",
      lambda: hashed(extra={"bin/Corpus.dll": b"x", "obj/Other.cs": b"x", "expected.json": b"[]"}) == hashed()),
+    ("the digest ignores the Roslyn map, which is no input of a recording",
+     lambda: hashed(extra={"roslyn-map.json": b"{}"}) == hashed()),
     ("a recording inspects a copy with the shared layer and the editorconfig, without the record or build output",
      lambda: {key: value for key, value in recorded("2026.2")[1].items() if key != "digest"}
      == {"layer": LAYER, "editorconfig": EDITORCONFIG,
