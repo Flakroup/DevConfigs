@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import validate_roslyn_parity as module  # noqa: E402
 from validate_analyzers_corpus import corpus_markers  # noqa: E402
 from validate_roslyn_parity import (  # noqa: E402
+    SDK_VERSION,
     analyzer_crashes,
     claim_work,
     engine_problems,
@@ -36,6 +37,7 @@ from validate_roslyn_parity import (  # noqa: E402
     propose,
     reasoned,
     relative_path,
+    reused_sdk,
     rule_levels,
     run_engines,
     sarif_findings,
@@ -129,13 +131,16 @@ def patched(**attributes):
 
 
 def run_main(arguments, expected=EXPECTED, map_=None, errors=None, engine=None, summary=None, measuring=None,
-             summary_before="", sdk=SDK):
+             summary_before="", sdk=SDK, actions=False, stops=False):
     """Run main() on in-memory data; returns (exit code, stdout, stderr, files, folders) left in the scratch dir."""
     def go(folder: Path):
         expected_path, map_path = folder / "expected.json", folder / "roslyn-map.json"
         expected_path.write_text(json.dumps(expected), encoding="utf-8")
         map_path.write_text(json.dumps(map_ or mapping()), encoding="utf-8")
         saved = os.environ.pop("GITHUB_STEP_SUMMARY", None)
+        saved_actions = os.environ.pop("GITHUB_ACTIONS", None)
+        if actions:
+            os.environ["GITHUB_ACTIONS"] = "true"
         if summary:
             os.environ["GITHUB_STEP_SUMMARY"] = str(folder / "step.md")
             (folder / "step.md").write_text(summary_before, encoding="utf-8")
@@ -143,11 +148,19 @@ def run_main(arguments, expected=EXPECTED, map_=None, errors=None, engine=None, 
         fixed = lambda work, reuse: (FOUND if errors is None else errors, engine or [])  # noqa: E731
         try:
             with patched(EXPECTED=expected_path, MAP=map_path, measure=measuring or fixed,
-                         sdk_version=lambda work: sdk):
+                         sdk_version=lambda: sdk):
                 with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-                    code = main(arguments(folder) if callable(arguments) else arguments)
+                    try:
+                        code = main(arguments(folder) if callable(arguments) else arguments)
+                    except SystemExit as stop:
+                        if not stops:
+                            raise
+                        code = stop.code
         finally:
             os.environ.pop("GITHUB_STEP_SUMMARY", None)
+            os.environ.pop("GITHUB_ACTIONS", None)
+            if saved_actions is not None:
+                os.environ["GITHUB_ACTIONS"] = saved_actions
             if saved is not None:
                 os.environ["GITHUB_STEP_SUMMARY"] = saved
         files = {path.name: path.read_text(encoding="utf-8") for path in folder.iterdir() if path.is_file()}
@@ -205,6 +218,23 @@ def sdk_run(stdout="10.0.401\n", returncode=0, stderr=""):
         run.seen = (command, options)
         return SimpleNamespace(returncode=returncode, stdout=stdout, stderr=stderr)
     return run
+
+
+def stopping(message="engines stopped"):
+    """A measure() that dies the way run_engines does when dotnet writes no log."""
+    def measure_stops(work, reuse):
+        raise SystemExit(message)
+    return measure_stops
+
+
+def in_work(files: dict[str, str], extra=(), **options):
+    """run_main() with --work pointing at the scratch folder itself, holding ``files`` already; sdk.txt shows up in
+    the files it returns."""
+    def arguments(folder: Path):
+        for name, text in files.items():
+            (folder / name).write_text(text, encoding="utf-8")
+        return ["--work", str(folder), *extra]
+    return run_main(arguments, **options)
 
 
 def engines_in_scratch(run):
@@ -819,15 +849,41 @@ CASES = [
         lambda seen: seen[0].exists() is False)(spied([], make=True)[3])),
 
     # --- the SDK the map was measured with
-    ("sdk_version asks dotnet --version in the work directory and returns the version", lambda: (
-        lambda run: sdk_version(Path("work"), run) == "10.0.401" and run.seen[0] == ["dotnet", "--version"]
-        and run.seen[1]["cwd"] == Path("work"))(sdk_run())),
+    ("sdk_version asks plain dotnet --version and passes no cwd, so it resolves where the engines run", lambda: (
+        lambda run: sdk_version(run) == "10.0.401" and run.seen[0] == ["dotnet", "--version"]
+        and "cwd" not in run.seen[1])(sdk_run())),
     ("sdk_version takes the last line when dotnet prints a banner first", lambda: sdk_version(
-        Path("w"), sdk_run(stdout="Welcome\n10.0.402\n")) == "10.0.402"),
-    ("sdk_version stops the gate when dotnet fails", lambda: "dotnet --version failed (exit 1)" in str(
-        exit_code(lambda: sdk_version(Path("w"), sdk_run(stdout="", returncode=1, stderr="no sdk"))))),
+        sdk_run(stdout="Welcome\n10.0.402\n")) == "10.0.402"),
+    ("sdk_version takes the last line that is a version, not a trailing warning", lambda: sdk_version(
+        sdk_run(stdout="10.0.401\nwarning: something trailing\n")) == "10.0.401"),
+    ("sdk_version accepts a preview", lambda: sdk_version(sdk_run(stdout="10.0.100-rc.1.25451.107\n")) ==
+     "10.0.100-rc.1.25451.107"),
+    ("sdk_version stops the gate when dotnet fails", lambda: "dotnet --version failed" in str(
+        exit_code(lambda: sdk_version(sdk_run(stdout="", returncode=1, stderr="no sdk")))) and "(exit 1)" in str(
+        exit_code(lambda: sdk_version(sdk_run(stdout="", returncode=1, stderr="no sdk"))))),
     ("sdk_version stops the gate when dotnet prints nothing", lambda: exit_code(
-        lambda: sdk_version(Path("w"), sdk_run(stdout=""))) is not None),
+        lambda: sdk_version(sdk_run(stdout=""))) is not None),
+    ("sdk_version stops the gate when dotnet prints a global.json mismatch instead of a version (exit 155)", lambda: (
+        lambda stop: stop is not None and "(exit 155)" in str(stop))(
+        exit_code(lambda: sdk_version(sdk_run(stdout="10.0.401 [C:\\x]\n", returncode=155))))),
+    ("sdk_version does not record a version that came with a non-zero exit", lambda: (
+        lambda stop: stop is not None and "(exit 155)" in str(stop))(
+        exit_code(lambda: sdk_version(sdk_run(stdout="10.0.401\n", returncode=155))))),
+    ("sdk_version stops the gate when no line is a version", lambda: exit_code(
+        lambda: sdk_version(sdk_run(stdout="10.0.401 [C:\\x]\nwarning\n"))) is not None),
+    ("SDK_VERSION takes major.minor.patch with an optional preview suffix and nothing else", lambda: (
+        all(SDK_VERSION.fullmatch(v) for v in ("10.0.401", "10.0.100-rc.1.25451.107", "9.0.0-preview.1"))
+        and not any(SDK_VERSION.fullmatch(v) for v in (
+            "", " 10.0.401", "10.0.401 ", "10.0.401\n", "10.0", "10.0.x", "v10.0.401", "10.0.401 [C:\\x]")))),
+    ("reused_sdk reads the SDK kept beside the log", lambda: in_corpus(lambda folder: (
+        (folder / "sdk.txt").write_text("10.0.300\n", encoding="utf-8"),
+        reused_sdk(folder, "10.0.502"))[1] == ("10.0.300", None))),
+    ("reused_sdk falls back to the installed SDK with a stale warning when sdk.txt is missing", lambda: in_corpus(
+        lambda folder: (lambda sdk, warning: sdk == "10.0.502" and "stale" in warning and "sdk.txt" in warning)(
+            *reused_sdk(folder, "10.0.502")))),
+    ("reused_sdk treats an unreadable sdk.txt as stale too", lambda: in_corpus(lambda folder: (
+        (folder / "sdk.txt").write_text("banana\n", encoding="utf-8"),
+        reused_sdk(folder, "10.0.502"))[1][0] == "10.0.502")),
     ("sdk_status red and the SDK differs: the note says the SDK changed and to re-measure", lambda: (
         lambda s: s["note"] == "SDK changed: map measured with 10.0.401, this run used 10.0.502 - re-measure the map "
         "before reading the differences below as a regression." and (s["run"], s["recorded"]) == ("10.0.502", SDK))(
@@ -843,7 +899,12 @@ CASES = [
     ("map_problems: a map with no sdk is a map problem", lambda: any(
         "sdk: the map must name" in p for p in problems_of(without_sdk()))),
     ("map_problems: an empty or non-text sdk is a map problem too", lambda: all(
-        any("sdk: the map must name" in p for p in problems_of(mapping(sdk=value))) for value in ("", "  ", 10, None))),
+        any("sdk: the map must name" in p for p in problems_of(mapping(sdk=value)))
+        for value in ("", "  ", 10, None, " 10.0.401 ", "10.0.401 ", "10.0.401\n", "10.0", "v10.0.401"))),
+    ("map_problems: a plain version or a preview is a sound sdk", lambda: not any(
+        "sdk:" in p for value in ("10.0.401", "10.0.100-rc.1.25451.107") for p in problems_of(mapping(sdk=value)))),
+    ("sdk_status takes a padded recorded sdk as no sdk, never as a match", lambda: sdk_status(
+        mapping(sdk=" 10.0.401 "), "10.0.401", red=True) == {"run": "10.0.401", "recorded": None, "note": None}),
     ("evaluate: a map with no sdk fails the gate", lambda: has(verdict(map_=without_sdk()), "sdk: the map must name")),
     ("main red and the SDK differs: stderr leads with the SDK line, before every problem", lambda: (
         lambda out: out[0] == 1 and out[2].splitlines()[0] == "SDK changed: map measured with 10.0.401, this run "
@@ -879,8 +940,46 @@ CASES = [
             verdict() | {"sdk": sdk_status(mapping(), "10.0.502", red=True)}, mapping(), 1.0))),
     ("markdown without an SDK result is unchanged", lambda: "SDK" not in markdown(verdict(), mapping(), 1.0)),
     ("the committed map records an SDK version", lambda: (
-        lambda sdk: isinstance(sdk, str) and sdk.count(".") == 2 and sdk.replace(".", "").isdigit())(
+        lambda sdk: isinstance(sdk, str) and bool(SDK_VERSION.fullmatch(sdk)))(
         json.loads(module.MAP.read_text(encoding="utf-8")).get("sdk"))),
+
+    # --- a run that stops, the annotation, and --reuse
+    ("main stops inside an engine: stderr leads with the SDK change, then names the SDK, then the engine's message",
+     lambda: (lambda out: out[0] == "engines stopped" and out[1] == "" and out[2].splitlines() == [
+         "SDK changed: map measured with 10.0.401, this run used 10.0.502 - re-measure the map before reading the "
+         "differences below as a regression.", "SDK: 10.0.502"])(
+         run_main([], measuring=stopping(), sdk="10.0.502", stops=True))),
+    ("main stops inside an engine on the recorded SDK: it names the SDK and claims no change", lambda: (
+        lambda out: out[0] == "engines stopped" and out[2].splitlines() == ["SDK: 10.0.401"])(
+        run_main([], measuring=stopping(), stops=True))),
+    ("main stops inside an engine with no readable map: it still names the SDK", lambda: (
+        lambda out: out[2].splitlines() == ["SDK: 10.0.502"])(
+        run_main([], measuring=stopping(), sdk="10.0.502", stops=True, map_={"sdk": 1}))),
+    ("main emits a ::notice annotation for the green SDK notice under GitHub Actions", lambda: (
+        lambda out: out[0] == 0 and "::notice title=Roslyn parity SDK::SDK notice: map measured with 10.0.401, this "
+        "run used 10.0.502" in out[1])(run_main([], sdk="10.0.502", actions=True))),
+    ("main emits no ::notice annotation outside GitHub Actions", lambda: (
+        lambda out: out[0] == 0 and "SDK notice: map measured" in out[1] and "::notice" not in out[1])(
+        run_main([], sdk="10.0.502"))),
+    ("main emits no ::notice annotation when the SDK is the same", lambda: "::notice" not in run_main(
+        [], actions=True)[1]),
+    ("main emits no ::notice annotation on a red run, which leads with SDK changed instead", lambda: (
+        lambda out: out[0] == 1 and "::notice" not in out[1] + out[2] and out[2].startswith("SDK changed"))(
+        run_main([], sdk="10.0.502", actions=True, errors={"R1": set(), "R2": FOUND["R2"]}))),
+    ("main --work keeps the SDK of a fresh run in sdk.txt", lambda: in_work({}, sdk="10.0.502")[3]["sdk.txt"] ==
+     "10.0.502\n"),
+    ("main --reuse reports the SDK kept beside the log, not the installed one", lambda: (
+        lambda out: out[0] == 0 and "SDK: 10.0.300" in out[1] and "this run used 10.0.300" in out[1]
+        and out[3]["sdk.txt"] == "10.0.300\n" and "stale" not in out[2])(
+        in_work({"roslyn.sarif": "{}", "sdk.txt": "10.0.300\n"}, extra=["--reuse"], sdk="10.0.502"))),
+    ("main --reuse of a directory with no sdk.txt says it is stale and falls back to the installed SDK", lambda: (
+        lambda out: out[0] == 0 and "SDK: 10.0.502" in out[1] and "stale" in out[2] and "10.0.502" in out[2]
+        and "sdk.txt" not in out[3])(
+        in_work({"roslyn.sarif": "{}"}, extra=["--reuse"], sdk="10.0.502"))),
+    ("main --reuse with no log to reuse measures again and keeps the installed SDK", lambda: (
+        lambda out: out[0] == 0 and "SDK: 10.0.502" in out[1] and "stale" not in out[2]
+        and out[3]["sdk.txt"] == "10.0.502\n")(
+        in_work({"sdk.txt": "10.0.300\n"}, extra=["--reuse"], sdk="10.0.502"))),
 
     # --- the committed files
     ("the committed map covers every inspection ReSharper has a verdict on, with real reasons",
