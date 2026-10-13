@@ -17,7 +17,21 @@
       }
     },
     "AnnotationRedundancyAtValueType": {
-      "roslyn": []
+      "roslyn": [
+        "RS0030"
+      ],
+      "scope": "own",
+      "reason": "RS0030 bans every JetBrains nullness attribute outright (BannedSymbols.txt), which is stricter than this inspection, so it also reports 5 sample(s) of other inspections (RedundantNullnessAttributeWithNullableReferenceTypes, RedundantNullnessAttributeWithNullableReferenceTypes #1, RedundantNullnessAttributeWithNullableReferenceTypes #2, RedundantNullnessAttributeWithNullableReferenceTypes #3, RedundantNullnessAttributeWithNullableReferenceTypes #4); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: RedundantNullnessAttributeWithNullableReferenceTypes",
+          "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #1",
+          "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #2",
+          "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #3",
+          "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #4"
+        ],
+        "missing": []
+      }
     },
     "ArrangeDefaultValueWhenTypeEvident": {
       "roslyn": [
@@ -701,12 +715,34 @@
     "RedundantExplicitArrayCreation": {
       "roslyn": [
         "IDE0300"
-      ]
+      ],
+      "scope": "own",
+      "reason": "IDE0300 also reports 3 sample(s) of other inspections (ArrayWithDefaultValuesInitialization, RedundantExplicitArraySize, ArrayWithDefaultValuesInitialization #3); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: ArrayWithDefaultValuesInitialization",
+          "StyleA.cs: RedundantExplicitArraySize",
+          "StyleB.cs: ArrayWithDefaultValuesInitialization #3"
+        ],
+        "missing": []
+      }
     },
     "RedundantExplicitArraySize": {
       "roslyn": [
         "IDE0300"
-      ]
+      ],
+      "scope": "own",
+      "reason": "IDE0300 also reports 5 sample(s) of other inspections (RedundantExplicitArrayCreation, RedundantExplicitParamsArrayCreation, ArrayWithDefaultValuesInitialization #1, ArrayWithDefaultValuesInitialization #2, ArrayWithDefaultValuesInitialization #3); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: RedundantExplicitArrayCreation",
+          "StyleA.cs: RedundantExplicitParamsArrayCreation",
+          "StyleB.cs: ArrayWithDefaultValuesInitialization #1",
+          "StyleB.cs: ArrayWithDefaultValuesInitialization #2",
+          "StyleB.cs: ArrayWithDefaultValuesInitialization #3"
+        ],
+        "missing": []
+      }
     },
     "RedundantExplicitNullableCreation": {
       "roslyn": [
@@ -716,7 +752,20 @@
     "RedundantExplicitParamsArrayCreation": {
       "roslyn": [
         "IDE0300"
-      ]
+      ],
+      "scope": "own",
+      "reason": "IDE0300 also reports 6 sample(s) of other inspections (ArrayWithDefaultValuesInitialization, RedundantExplicitArrayCreation, RedundantExplicitArraySize, ArrayWithDefaultValuesInitialization #1, ArrayWithDefaultValuesInitialization #2, ArrayWithDefaultValuesInitialization #3); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: ArrayWithDefaultValuesInitialization",
+          "StyleA.cs: RedundantExplicitArrayCreation",
+          "StyleA.cs: RedundantExplicitArraySize",
+          "StyleB.cs: ArrayWithDefaultValuesInitialization #1",
+          "StyleB.cs: ArrayWithDefaultValuesInitialization #2",
+          "StyleB.cs: ArrayWithDefaultValuesInitialization #3"
+        ],
+        "missing": []
+      }
     },
     "RedundantExplicitTupleComponentName": {
       "roslyn": [
@@ -774,7 +823,17 @@
       }
     },
     "RedundantNullnessAttributeWithNullableReferenceTypes": {
-      "roslyn": []
+      "roslyn": [
+        "RS0030"
+      ],
+      "scope": "own",
+      "reason": "RS0030 bans every JetBrains nullness attribute outright (BannedSymbols.txt), which is stricter than this inspection, so it also reports 1 sample(s) of other inspections (AnnotationRedundancyAtValueType); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: AnnotationRedundancyAtValueType"
+        ],
+        "missing": []
+      }
     },
     "RedundantOverload.Global": {
       "roslyn": [
@@ -1085,13 +1144,6 @@
     }
   },
   "gaps": {
-    "AnnotationRedundancyAtValueType": {
-      "reason": "No Roslyn rule reports a redundant annotation. RS0030 reports the sample at warning, but it bans the JetBrains nullness attributes outright (BannedSymbols.txt), which is a different rule.",
-      "extra": [],
-      "missing": [
-        "StyleB.cs: AnnotationRedundancyAtValueType"
-      ]
-    },
     "InvokeAsExtensionMember": {
       "reason": "No Roslyn rule reports a static call of an extension method written in its static form. CA1829 fires on Enumerable.Count(l) (StyleB #2), but it asks for the Count property, not the extension form.",
       "extra": [],
@@ -1127,42 +1179,6 @@
       "extra": [],
       "missing": [
         "StyleA.cs: RedundantEmptyObjectOrCollectionInitializer"
-      ]
-    },
-    "RedundantExplicitArrayCreation": {
-      "reason": "IDE0300 (use a collection expression for an array) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error it reports every ReSharper sample of this inspection, but also 3 of the neighbouring array samples, so raising it turns this gap into a waiver of those extras, not into a match.",
-      "extra": [],
-      "missing": [
-        "StyleA.cs: RedundantExplicitArrayCreation",
-        "StyleA.cs: RedundantExplicitParamsArrayCreation",
-        "StyleB.cs: ArrayWithDefaultValuesInitialization #1",
-        "StyleB.cs: ArrayWithDefaultValuesInitialization #2"
-      ]
-    },
-    "RedundantExplicitArraySize": {
-      "reason": "IDE0300 (use a collection expression for an array) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error it reports every ReSharper sample of this inspection, but also 5 of the neighbouring array samples, so raising it turns this gap into a waiver of those extras, not into a match.",
-      "extra": [],
-      "missing": [
-        "StyleA.cs: ArrayWithDefaultValuesInitialization",
-        "StyleA.cs: RedundantExplicitArraySize"
-      ]
-    },
-    "RedundantExplicitParamsArrayCreation": {
-      "reason": "IDE0300 (use a collection expression for an array) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error it reports every ReSharper sample of this inspection, but also 6 of the neighbouring array samples, so raising it turns this gap into a waiver of those extras, not into a match.",
-      "extra": [],
-      "missing": [
-        "StyleA.cs: RedundantExplicitParamsArrayCreation"
-      ]
-    },
-    "RedundantNullnessAttributeWithNullableReferenceTypes": {
-      "reason": "No Roslyn rule reports a nullness attribute that nullable reference types make redundant. RS0030 reports the samples at warning, but it bans the JetBrains attributes outright (BannedSymbols.txt), which is a different rule.",
-      "extra": [],
-      "missing": [
-        "StyleA.cs: RedundantNullnessAttributeWithNullableReferenceTypes",
-        "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #1",
-        "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #2",
-        "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #3",
-        "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #4"
       ]
     }
   },

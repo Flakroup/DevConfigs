@@ -34,6 +34,8 @@ dotnet_style_predefined_type_for_locals_parameters_members = true
 dotnet_style_predefined_type_for_member_access = true
 dotnet_style_require_accessibility_modifiers = for_non_interface_members
 csharp_prefer_braces = when_multiline
+# Roslyn's own default, spelled out: "true" would mean when_types_exactly_match, narrowing IDE0300 and IDE0305
+dotnet_style_prefer_collection_expression = when_types_loosely_match
 csharp_style_namespace_declarations = file_scoped
 dotnet_style_allow_multiple_blank_lines_experimental = false
 dotnet_style_allow_statement_immediately_after_block_experimental = false
@@ -103,6 +105,8 @@ dotnet_diagnostic.IDE0100.severity = error
 dotnet_diagnostic.IDE0110.severity = error
 dotnet_diagnostic.IDE0130.severity = error
 dotnet_diagnostic.IDE0200.severity = error
+# IDE0300: Use a collection expression for an array (scope set by dotnet_style_prefer_collection_expression above)
+dotnet_diagnostic.IDE0300.severity = error
 dotnet_diagnostic.IDE0350.severity = error
 dotnet_diagnostic.IDE0380.severity = error
 dotnet_diagnostic.IDE1006.severity = error
@@ -126,6 +130,8 @@ dotnet_diagnostic.CS0672.severity = error
 dotnet_diagnostic.CS4014.severity = error
 dotnet_diagnostic.CS7023.severity = error
 dotnet_diagnostic.CS8826.severity = error
+# RS0030: a use of a symbol BannedSymbols.txt lists (the JetBrains nullness attributes); the gate reads only errors
+dotnet_diagnostic.RS0030.severity = error
 dotnet_diagnostic.VSTHRD103.severity = error
 # IDE0005 above runs in a build only where XML docs are generated; see build.globalconfig.
 dotnet_diagnostic.IDE0055.severity = warning
