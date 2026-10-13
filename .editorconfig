@@ -103,6 +103,8 @@ dotnet_diagnostic.IDE0100.severity = error
 dotnet_diagnostic.IDE0110.severity = error
 dotnet_diagnostic.IDE0130.severity = error
 dotnet_diagnostic.IDE0200.severity = error
+# IDE0300: Use a collection expression for an array (dotnet_style_prefer_collection_expression is left at its default, true)
+dotnet_diagnostic.IDE0300.severity = error
 dotnet_diagnostic.IDE0350.severity = error
 dotnet_diagnostic.IDE0380.severity = error
 dotnet_diagnostic.IDE1006.severity = error
@@ -126,6 +128,8 @@ dotnet_diagnostic.CS0672.severity = error
 dotnet_diagnostic.CS4014.severity = error
 dotnet_diagnostic.CS7023.severity = error
 dotnet_diagnostic.CS8826.severity = error
+# RS0030: a use of a symbol BannedSymbols.txt lists (the JetBrains nullness attributes); the gate reads only errors
+dotnet_diagnostic.RS0030.severity = error
 dotnet_diagnostic.VSTHRD103.severity = error
 # IDE0005 above runs in a build only where XML docs are generated; see build.globalconfig.
 dotnet_diagnostic.IDE0055.severity = warning
