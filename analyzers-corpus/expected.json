@@ -1,6 +1,6 @@
 {
   "resharper": "2026.2.3.1",
-  "digest": "ecfa2dd20dc1ca5eb5b624b505899769dd41f9208dafcc8a0b535ff8e4bff81d",
+  "digest": "47f01dacd1c43828b0a22c2ae8090390dabf34d59b80e37639ede2187c51ed29",
   "unsampled": {
     "CSharpWarnings::CS1957": "compiler warning CS1957 (an override that binds to several runtime candidates) needs ref/out overloads in a generic base that differ only at runtime; no sample written",
     "CSharpWarnings::WME006": "a Windows Runtime metadata export (WME) warning; the corpus is no Windows Runtime component",
