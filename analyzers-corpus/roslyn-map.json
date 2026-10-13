@@ -212,42 +212,154 @@
     "EnforceDoWhileStatementBraces": {
       "roslyn": [
         "IDE0011"
-      ]
+      ],
+      "scope": "own",
+      "reason": "IDE0011 also reports 7 sample(s) of other inspections (EnforceFixedStatementBraces, EnforceForStatementBraces, EnforceForeachStatementBraces, EnforceIfStatementBraces, EnforceLockStatementBraces, EnforceUsingStatementBraces, EnforceWhileStatementBraces); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: EnforceFixedStatementBraces",
+          "StyleB.cs: EnforceForStatementBraces",
+          "StyleB.cs: EnforceForeachStatementBraces",
+          "StyleB.cs: EnforceIfStatementBraces",
+          "StyleB.cs: EnforceLockStatementBraces",
+          "StyleB.cs: EnforceUsingStatementBraces",
+          "StyleB.cs: EnforceWhileStatementBraces"
+        ],
+        "missing": []
+      }
     },
     "EnforceFixedStatementBraces": {
       "roslyn": [
         "IDE0011"
-      ]
+      ],
+      "scope": "own",
+      "reason": "IDE0011 also reports 7 sample(s) of other inspections (EnforceDoWhileStatementBraces, EnforceForStatementBraces, EnforceForeachStatementBraces, EnforceIfStatementBraces, EnforceLockStatementBraces, EnforceUsingStatementBraces, EnforceWhileStatementBraces); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: EnforceDoWhileStatementBraces",
+          "StyleB.cs: EnforceForStatementBraces",
+          "StyleB.cs: EnforceForeachStatementBraces",
+          "StyleB.cs: EnforceIfStatementBraces",
+          "StyleB.cs: EnforceLockStatementBraces",
+          "StyleB.cs: EnforceUsingStatementBraces",
+          "StyleB.cs: EnforceWhileStatementBraces"
+        ],
+        "missing": []
+      }
     },
     "EnforceForStatementBraces": {
       "roslyn": [
         "IDE0011"
-      ]
+      ],
+      "scope": "own",
+      "reason": "IDE0011 also reports 7 sample(s) of other inspections (EnforceDoWhileStatementBraces, EnforceFixedStatementBraces, EnforceForeachStatementBraces, EnforceIfStatementBraces, EnforceLockStatementBraces, EnforceUsingStatementBraces, EnforceWhileStatementBraces); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: EnforceDoWhileStatementBraces",
+          "StyleB.cs: EnforceFixedStatementBraces",
+          "StyleB.cs: EnforceForeachStatementBraces",
+          "StyleB.cs: EnforceIfStatementBraces",
+          "StyleB.cs: EnforceLockStatementBraces",
+          "StyleB.cs: EnforceUsingStatementBraces",
+          "StyleB.cs: EnforceWhileStatementBraces"
+        ],
+        "missing": []
+      }
     },
     "EnforceForeachStatementBraces": {
       "roslyn": [
         "IDE0011"
-      ]
+      ],
+      "scope": "own",
+      "reason": "IDE0011 also reports 7 sample(s) of other inspections (EnforceDoWhileStatementBraces, EnforceFixedStatementBraces, EnforceForStatementBraces, EnforceIfStatementBraces, EnforceLockStatementBraces, EnforceUsingStatementBraces, EnforceWhileStatementBraces); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: EnforceDoWhileStatementBraces",
+          "StyleB.cs: EnforceFixedStatementBraces",
+          "StyleB.cs: EnforceForStatementBraces",
+          "StyleB.cs: EnforceIfStatementBraces",
+          "StyleB.cs: EnforceLockStatementBraces",
+          "StyleB.cs: EnforceUsingStatementBraces",
+          "StyleB.cs: EnforceWhileStatementBraces"
+        ],
+        "missing": []
+      }
     },
     "EnforceIfStatementBraces": {
       "roslyn": [
         "IDE0011"
-      ]
+      ],
+      "scope": "own",
+      "reason": "IDE0011 also reports 7 sample(s) of other inspections (EnforceDoWhileStatementBraces, EnforceFixedStatementBraces, EnforceForStatementBraces, EnforceForeachStatementBraces, EnforceLockStatementBraces, EnforceUsingStatementBraces, EnforceWhileStatementBraces); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: EnforceDoWhileStatementBraces",
+          "StyleB.cs: EnforceFixedStatementBraces",
+          "StyleB.cs: EnforceForStatementBraces",
+          "StyleB.cs: EnforceForeachStatementBraces",
+          "StyleB.cs: EnforceLockStatementBraces",
+          "StyleB.cs: EnforceUsingStatementBraces",
+          "StyleB.cs: EnforceWhileStatementBraces"
+        ],
+        "missing": []
+      }
     },
     "EnforceLockStatementBraces": {
       "roslyn": [
         "IDE0011"
-      ]
+      ],
+      "scope": "own",
+      "reason": "IDE0011 also reports 7 sample(s) of other inspections (EnforceDoWhileStatementBraces, EnforceFixedStatementBraces, EnforceForStatementBraces, EnforceForeachStatementBraces, EnforceIfStatementBraces, EnforceUsingStatementBraces, EnforceWhileStatementBraces); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: EnforceDoWhileStatementBraces",
+          "StyleB.cs: EnforceFixedStatementBraces",
+          "StyleB.cs: EnforceForStatementBraces",
+          "StyleB.cs: EnforceForeachStatementBraces",
+          "StyleB.cs: EnforceIfStatementBraces",
+          "StyleB.cs: EnforceUsingStatementBraces",
+          "StyleB.cs: EnforceWhileStatementBraces"
+        ],
+        "missing": []
+      }
     },
     "EnforceUsingStatementBraces": {
       "roslyn": [
         "IDE0011"
-      ]
+      ],
+      "scope": "own",
+      "reason": "IDE0011 also reports 7 sample(s) of other inspections (EnforceDoWhileStatementBraces, EnforceFixedStatementBraces, EnforceForStatementBraces, EnforceForeachStatementBraces, EnforceIfStatementBraces, EnforceLockStatementBraces, EnforceWhileStatementBraces); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: EnforceDoWhileStatementBraces",
+          "StyleB.cs: EnforceFixedStatementBraces",
+          "StyleB.cs: EnforceForStatementBraces",
+          "StyleB.cs: EnforceForeachStatementBraces",
+          "StyleB.cs: EnforceIfStatementBraces",
+          "StyleB.cs: EnforceLockStatementBraces",
+          "StyleB.cs: EnforceWhileStatementBraces"
+        ],
+        "missing": []
+      }
     },
     "EnforceWhileStatementBraces": {
       "roslyn": [
         "IDE0011"
-      ]
+      ],
+      "scope": "own",
+      "reason": "IDE0011 also reports 7 sample(s) of other inspections (EnforceDoWhileStatementBraces, EnforceFixedStatementBraces, EnforceForStatementBraces, EnforceForeachStatementBraces, EnforceIfStatementBraces, EnforceLockStatementBraces, EnforceUsingStatementBraces); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleB.cs: EnforceDoWhileStatementBraces",
+          "StyleB.cs: EnforceFixedStatementBraces",
+          "StyleB.cs: EnforceForStatementBraces",
+          "StyleB.cs: EnforceForeachStatementBraces",
+          "StyleB.cs: EnforceIfStatementBraces",
+          "StyleB.cs: EnforceLockStatementBraces",
+          "StyleB.cs: EnforceUsingStatementBraces"
+        ],
+        "missing": []
+      }
     },
     "InconsistentNaming": {
       "roslyn": [
@@ -392,7 +504,15 @@
     "MethodHasAsyncOverload": {
       "roslyn": [
         "VSTHRD103"
-      ]
+      ],
+      "scope": "own",
+      "reason": "VSTHRD103 also reports 1 sample(s) of other inspections (MethodHasAsyncOverloadWithCancellation); only the inspection's own samples are compared, and these two sets are pinned under outside.",
+      "outside": {
+        "extra": [
+          "StyleA.cs: MethodHasAsyncOverloadWithCancellation"
+        ],
+        "missing": []
+      }
     },
     "MethodHasAsyncOverloadWithCancellation": {
       "roslyn": [
@@ -971,69 +1091,6 @@
         "StyleB.cs: AnnotationRedundancyAtValueType"
       ]
     },
-    "EnforceDoWhileStatementBraces": {
-      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
-      "extra": [],
-      "missing": [
-        "StyleB.cs: EnforceDoWhileStatementBraces"
-      ]
-    },
-    "EnforceFixedStatementBraces": {
-      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
-      "extra": [],
-      "missing": [
-        "StyleB.cs: EnforceFixedStatementBraces"
-      ]
-    },
-    "EnforceForStatementBraces": {
-      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
-      "extra": [],
-      "missing": [
-        "StyleB.cs: EnforceForStatementBraces"
-      ]
-    },
-    "EnforceForeachStatementBraces": {
-      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
-      "extra": [],
-      "missing": [
-        "StyleB.cs: EnforceForeachStatementBraces"
-      ]
-    },
-    "EnforceIfStatementBraces": {
-      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
-      "extra": [],
-      "missing": [
-        "StyleB.cs: EnforceIfStatementBraces"
-      ]
-    },
-    "EnforceLockStatementBraces": {
-      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
-      "extra": [],
-      "missing": [
-        "StyleB.cs: EnforceLockStatementBraces"
-      ]
-    },
-    "EnforceUsingStatementBraces": {
-      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
-      "extra": [],
-      "missing": [
-        "StyleB.cs: EnforceUsingStatementBraces"
-      ]
-    },
-    "EnforceWhileStatementBraces": {
-      "reason": "IDE0011 (add braces) has no severity in the shared .editorconfig, so a build reports nothing. Raised to error, under the shared csharp_prefer_braces = when_multiline, it reports exactly this StyleB sample and every other brace sample of its kind, so raising it closes these 8 gaps.",
-      "extra": [],
-      "missing": [
-        "StyleB.cs: EnforceWhileStatementBraces"
-      ]
-    },
-    "InconsistentNaming": {
-      "reason": "The shared .editorconfig carries naming rules for fields only (constants, private static readonly, private fields), so IDE1006 reports the private-field sample (#2) and not the lowercase public method (#1). A rule for public members closes this gap.",
-      "extra": [],
-      "missing": [
-        "StyleB.cs: InconsistentNaming #1"
-      ]
-    },
     "InvokeAsExtensionMember": {
       "reason": "No Roslyn rule reports a static call of an extension method written in its static form. CA1829 fires on Enumerable.Count(l) (StyleB #2), but it asks for the Count property, not the extension form.",
       "extra": [],
@@ -1041,13 +1098,6 @@
         "StyleA.cs: InvokeAsExtensionMember",
         "StyleB.cs: InvokeAsExtensionMember #1",
         "StyleB.cs: InvokeAsExtensionMember #2"
-      ]
-    },
-    "MethodHasAsyncOverload": {
-      "reason": "VSTHRD103 reports the sample at warning only; the shared configuration does not raise it. Raising it to error closes this gap.",
-      "extra": [],
-      "missing": [
-        "StyleA.cs: MethodHasAsyncOverload"
       ]
     },
     "ParameterOnlyUsedForPreconditionCheck.Global": {
@@ -1113,13 +1163,6 @@
         "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #3",
         "StyleB.cs: RedundantNullnessAttributeWithNullableReferenceTypes #4"
       ]
-    },
-    "UnusedParameter.Local": {
-      "reason": "IDE0060 reports the sample at note only: the shared .editorconfig sets dotnet_code_quality_unused_parameters but raises no IDE0060 severity. Raising it to error closes this gap.",
-      "extra": [],
-      "missing": [
-        "StyleA.cs: UnusedParameter.Local"
-      ]
     }
   },
   "waivers": {
@@ -1128,6 +1171,12 @@
         "StyleA.cs: ArrangeDefaultValueWhenTypeEvident"
       ],
       "reason": "IDE0034 simplifies default(T) wherever the type can be inferred, so it reports the StyleA local 'int d = default(int);' where ReSharper does not (the README notes this); the StyleB field form is matched."
+    },
+    "InconsistentNaming": {
+      "extra": [
+        "StyleA.cs: InconsistentNaming"
+      ],
+      "reason": "IDE1006 reports the StyleA method 'bad_name' under the PascalCase rule for methods, properties and events, where ReSharper reports the StyleB naming samples but not this one; the stricter Roslyn verdict is kept."
     }
   }
 }

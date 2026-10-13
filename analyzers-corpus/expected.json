@@ -1,6 +1,6 @@
 {
   "resharper": "2026.2.3.1",
-  "digest": "85fbcc4c1e2955d77b08b27c5f25bcc0586dfb2a2cdf81b25856cd2b9ea16c35",
+  "digest": "93e2d54aa48b28b36414ffe604aa3197126ee36644bf5f4e5315fe1b6bab8783",
   "unsampled": {
     "CSharpWarnings::CS1957": "compiler warning CS1957 (an override that binds to several runtime candidates) needs ref/out overloads in a generic base that differ only at runtime; no sample written",
     "CSharpWarnings::WME006": "a Windows Runtime metadata export (WME) warning; the corpus is no Windows Runtime component",
@@ -226,6 +226,9 @@
       "StyleB.cs: EnforceWhileStatementBraces",
       "StyleB.cs: InconsistentNaming #1",
       "StyleB.cs: InconsistentNaming #2",
+      "StyleB.cs: InconsistentNaming #3",
+      "StyleB.cs: InconsistentNaming #4",
+      "StyleB.cs: InconsistentNaming #5",
       "StyleB.cs: InvokeAsExtensionMember #1",
       "StyleB.cs: InvokeAsExtensionMember #2",
       "StyleB.cs: NotifyPropertyChangedInvocatorFromConstructor #1",

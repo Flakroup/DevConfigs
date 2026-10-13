@@ -47,8 +47,9 @@ dotnet_style_namespace_match_folder = true
 dotnet_code_quality_unused_parameters = non_public
 csharp_prefer_simple_default_expression = true
 
-# Naming: the three ReSharper naming rules the code base follows (constants and private static readonly fields
-# PascalCase, other private fields _camelCase). Rules are matched in order, so the specific ones come first.
+# Naming: the four ReSharper naming rules the code base follows (constants and private static readonly fields
+# PascalCase, other private fields _camelCase, methods, local functions, properties and events PascalCase). The
+# compiler orders naming rules by how specific their symbols are, so their order in this file does not matter.
 dotnet_naming_rule.a_constants.symbols = constants
 dotnet_naming_rule.a_constants.style = pascal_case
 dotnet_naming_rule.a_constants.severity = error
@@ -65,6 +66,10 @@ dotnet_naming_rule.c_private_fields.style = underscore_camel_case
 dotnet_naming_rule.c_private_fields.severity = error
 dotnet_naming_symbols.private_fields.applicable_kinds = field
 dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_rule.d_non_field_members.symbols = non_field_members
+dotnet_naming_rule.d_non_field_members.style = pascal_case
+dotnet_naming_rule.d_non_field_members.severity = error
+dotnet_naming_symbols.non_field_members.applicable_kinds = method, local_function, property, event
 dotnet_naming_style.pascal_case.capitalization = pascal_case
 dotnet_naming_style.underscore_camel_case.required_prefix = _
 dotnet_naming_style.underscore_camel_case.capitalization = camel_case
@@ -82,6 +87,7 @@ dotnet_diagnostic.IDE0003.severity = error
 dotnet_diagnostic.IDE0004.severity = error
 dotnet_diagnostic.IDE0005.severity = error
 dotnet_diagnostic.IDE0007.severity = error
+dotnet_diagnostic.IDE0011.severity = error
 dotnet_diagnostic.IDE0034.severity = error
 dotnet_diagnostic.IDE0036.severity = error
 dotnet_diagnostic.IDE0037.severity = error
@@ -89,6 +95,7 @@ dotnet_diagnostic.IDE0040.severity = error
 dotnet_diagnostic.IDE0047.severity = error
 dotnet_diagnostic.IDE0049.severity = error
 dotnet_diagnostic.IDE0051.severity = error
+dotnet_diagnostic.IDE0060.severity = error
 dotnet_diagnostic.IDE0075.severity = error
 dotnet_diagnostic.IDE0082.severity = error
 dotnet_diagnostic.IDE0090.severity = error
@@ -119,6 +126,7 @@ dotnet_diagnostic.CS0672.severity = error
 dotnet_diagnostic.CS4014.severity = error
 dotnet_diagnostic.CS7023.severity = error
 dotnet_diagnostic.CS8826.severity = error
+dotnet_diagnostic.VSTHRD103.severity = error
 # IDE0005 above runs in a build only where XML docs are generated; see build.globalconfig.
 dotnet_diagnostic.IDE0055.severity = warning
 dotnet_diagnostic.IDE0161.severity = warning

@@ -108,6 +108,12 @@ public class B_Ewh { public void M(bool b) { while (b)
 public class B_Icn1 { public void badName() { } }
 //# InconsistentNaming #2
 public class B_Icn2 { private int Field; public int G() => Field; }
+//# InconsistentNaming #3
+public class B_Icn3 { public int M() { return local(); static int local() => 1; } }
+//# InconsistentNaming #4
+public class B_Icn4 { public int bad_prop { get; set; } }
+//# InconsistentNaming #5
+public class B_Icn5 { public event EventHandler? bad_evt; public void F() => bad_evt?.Invoke(this, EventArgs.Empty); }
 
 //# InvokeAsExtensionMember #1
 public static class B_IaeExt { public static int Twice(this int x) => x * 2; }
