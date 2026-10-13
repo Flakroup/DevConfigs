@@ -235,6 +235,19 @@ the CI run.
 
 **The map**, `analyzers-corpus/roslyn-map.json`, is the only place the two id spaces meet:
 
+- `sdk` - the .NET SDK version (`dotnet --version`) the map was measured with. The compiler and the SDK analyzers
+  (the CAxxxx and IDExxxx rules) ship inside the SDK and the job takes a floating `10.0.x`, so a new band can move a
+  verdict with no change in this repository. The gate prints the SDK it ran with (`SDK: 10.0.401`, also in the job
+  summary and the `roslyn-parity` artifact). A **red** run on a different SDK leads with one line, `SDK changed: map
+  measured with X, this run used Y - re-measure the map before reading the differences below as a regression.`; a
+  **green** run on a different SDK only prints a notice (and, under GitHub Actions, a `::notice` annotation) to set
+  `sdk` to the new version. A map whose `sdk` is missing or not a plain version (`10.0.401`, a preview suffix is
+  allowed) fails. A run that stops inside an engine still names the SDK. `dotnet --version` runs where the engines
+  do, so a `global.json` applies to both; `--work` keeps the SDK in `sdk.txt` beside the engines' output and
+  `--reuse` reports that one (a directory without it is stale, which the gate says before falling back to the
+  installed SDK).
+  After a band change, re-measure (`--propose` writes the SDK it ran with), check the differences, and update `sdk`
+  together with the pins.
 - `inspections` - ReSharper id to `{"roslyn": [rule ids]}`. `"scope": "own"` (with a `reason`) compares the
   inspection's own samples, and lets the samples of other inspections differ - but only by the exact set named
   in `"outside": {"extra": [...], "missing": [...]}`, so the scope cannot hide a change in either direction. A scope

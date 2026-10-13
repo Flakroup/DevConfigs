@@ -1,4 +1,5 @@
 {
+  "sdk": "10.0.401",
   "inspections": {
     "AccessToStaticMemberViaDerivedType": {
       "roslyn": [

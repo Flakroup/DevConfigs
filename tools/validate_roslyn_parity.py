@@ -33,6 +33,15 @@ run would otherwise look like a wall of gaps). A suppressed result counts as not
 Two engines: ``dotnet build`` writes a SARIF log, and ``dotnet format style --report`` supplies IDE0001, IDE0002,
 IDE0003 and IDE0049, which Roslyn marks ``EnforceOnBuild.Never`` and so never reports in a build.
 
+The SDK is part of the measurement: the compiler and the SDK analyzers (CAxxxx, IDExxxx) ship inside it, so a new
+band can move a verdict with no change in this repository. ``roslyn-map.json`` records the SDK version it was measured
+with (``"sdk"``), and the gate prints the one it ran with - the one ``dotnet`` resolves from the directory the gate
+runs in, which is where the engines run. A red run on a different SDK leads with that fact, so the differences below
+it are not read as a regression before the map is re-measured; a green run on a different SDK is only a notice to
+update the recorded version (also a ``::notice`` annotation under GitHub Actions). A map whose ``sdk`` is not a plain
+version is a map problem. A run that stops inside an engine still names the SDK. ``--work`` keeps the SDK beside the
+engines' output (``sdk.txt``), and ``--reuse`` reports that one, not the SDK installed today.
+
 Modes: default runs the gate; ``--summary`` also prints one line per inspection; ``--propose`` prints a draft
 ``roslyn-map.json`` from the overlap between the two verdicts, for a person to check entry by entry.
 ``--json PATH`` writes the full result; with ``GITHUB_STEP_SUMMARY`` set the headline goes there too, red or green.
@@ -47,6 +56,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -81,9 +91,12 @@ TARGETS = ('<Project>\n  <Import Project="$(MSBuildThisFileDirectory)DevConfigs/
            '</Project>\n')
 GITMODULES = '[submodule "DevConfigs"]\n\tpath = DevConfigs\n'
 PLACEHOLDER = "TODO"
+# What `dotnet --version` prints and what the map's "sdk" must be: major.minor.patch, a preview suffix allowed.
+SDK_VERSION = re.compile(r"\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?")
+SDK_FILE = "sdk.txt"
 WORK_MARKER = ".roslyn-parity-work"
 # What the tool writes into a work directory, and so the only things it ever deletes there.
-WORK_FILES = ("DevConfigs", "Corpus", "format", "roslyn.sarif", ".editorconfig", ".gitmodules",
+WORK_FILES = ("DevConfigs", "Corpus", "format", "roslyn.sarif", SDK_FILE, ".editorconfig", ".gitmodules",
               "Directory.Build.props", "Directory.Build.targets", WORK_MARKER)
 
 
@@ -246,6 +259,9 @@ def list_problems(inspection: str, kind: str, entry: object) -> list[str]:
 def map_problems(mapping: dict, compared: list[str]) -> list[str]:
     """Problems with the shape of ``roslyn-map.json``, before any verdict is looked at."""
     problems = []
+    if recorded_sdk(mapping) is None:
+        problems.append("sdk: the map must name the .NET SDK version it was measured with, as plain "
+                        "major.minor.patch, e.g. \"sdk\": \"10.0.401\"")
     inspections, gaps, waivers = (mapping.get(key, {}) for key in ("inspections", "gaps", "waivers"))
     for inspection, entry in sorted(inspections.items()):
         ids = entry.get("roslyn")
@@ -383,15 +399,16 @@ def headline(exact: int, compared: int, waived: int, gaps: int, excluded: int, a
             f"{excluded} excluded; {accounted} accounted")
 
 
-def propose(expected: dict, errors: dict[str, set[str]]) -> dict:
+def propose(expected: dict, errors: dict[str, set[str]], sdk: str | None = None) -> dict:
     """A draft ``roslyn-map.json``: per inspection the Roslyn rules whose reports overlap ReSharper's best.
 
     Greedy over the rules that fire in at least one own sample of the inspection, by Jaccard overlap with the
     ReSharper verdict; a rule joins the set while it raises the overlap. What is not exact becomes a waiver
     (Roslyn reports something comparable) or a gap (no rule fires there), with a placeholder reason: the draft
-    is a start, and every entry needs a person to read the difference. The differences are pinned as measured."""
+    is a start, and every entry needs a person to read the difference. The differences are pinned as measured,
+    and ``sdk`` (when given) is the SDK they were measured with."""
     recorded = expected["inspections"]
-    draft: dict = {"inspections": {}, "gaps": {}, "waivers": {}}
+    draft: dict = ({"sdk": sdk} if sdk else {}) | {"inspections": {}, "gaps": {}, "waivers": {}}
 
     def overlap(wanted: set[str], found: set[str]) -> float:
         return len(wanted & found) / len(wanted | found) if wanted | found else 0.0
@@ -424,6 +441,71 @@ def propose(expected: dict, errors: dict[str, set[str]]) -> dict:
             draft[kind][inspection] = {"reason": f"{PLACEHOLDER}: {note}", "extra": sorted(extra),
                                        "missing": sorted(missing)}
     return draft
+
+
+def recorded_sdk(mapping: dict) -> str | None:
+    """The SDK version a map records, or None when it is absent or not a plain version (no whitespace is forgiven)."""
+    sdk = mapping.get("sdk")
+    return sdk if isinstance(sdk, str) and SDK_VERSION.fullmatch(sdk) else None
+
+
+def sdk_version(run=subprocess.run) -> str:
+    """The .NET SDK ``dotnet`` resolves for this run: ``dotnet --version`` in the directory the engines run in.
+
+    No ``cwd`` is passed on purpose: the engines run in the process directory, so a ``global.json`` pinning another
+    SDK there applies to both. The version is the last stdout line that is one (a banner or a warning around it is
+    ignored); a non-zero exit is a failure even when a version was printed, because ``dotnet`` then did not resolve
+    an SDK the engines can use."""
+    environment = os.environ | {"DOTNET_CLI_UI_LANGUAGE": "en", "DOTNET_NOLOGO": "1"}
+    asked = run(["dotnet", "--version"], capture_output=True, text=True, encoding="utf-8", errors="replace",
+                env=environment)
+    versions = [line.strip() for line in (asked.stdout or "").splitlines() if SDK_VERSION.fullmatch(line.strip())]
+    if asked.returncode != 0 or not versions:
+        raise SystemExit(f"dotnet --version failed to name an SDK (exit {asked.returncode}):\n"
+                         + ((asked.stdout or "") + (asked.stderr or ""))[-3000:])
+    return versions[-1]
+
+
+def reused_sdk(work: Path, installed: str) -> tuple[str, str | None]:
+    """``(sdk, warning)`` for ``--reuse``: the SDK that produced the SARIF log in ``work``, not the installed one.
+
+    The SDK is kept beside the log (``SDK_FILE``). Without it the reused directory predates this record or was
+    edited by hand, so it is stale: the installed SDK is reported, with a warning saying it may not be the right one."""
+    kept = work / SDK_FILE
+    text = kept.read_text(encoding="utf-8").strip() if kept.is_file() else ""
+    if SDK_VERSION.fullmatch(text):
+        return text, None
+    return installed, (f"warning: {work} holds no readable {SDK_FILE} next to roslyn.sarif, so the reused output is "
+                       f"stale and the SDK named below is the installed one ({installed}), not necessarily the one "
+                       "that produced it - run without --reuse to measure again.")
+
+
+def stopped_on(sdk: str) -> None:
+    """Name the SDK on stderr when a run stops before there is a verdict (an engine failed): the SDK is the first
+    suspect then, and the map's own verdicts are not available to lead with."""
+    try:
+        mapping = json.loads(MAP.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        mapping = {}
+    note = sdk_status(mapping if isinstance(mapping, dict) else {}, sdk, red=True)["note"]
+    if note:
+        print(note, file=sys.stderr)
+    print(f"SDK: {sdk}", file=sys.stderr)
+
+
+def sdk_status(mapping: dict, sdk: str, red: bool) -> dict:
+    """The SDK this run used, the one the map records, and the line to show when they differ.
+
+    ``note`` is None when they match, or when the map records none (that is a map problem of its own). On a red run
+    it says to re-measure before reading the differences as a regression; on a green one it only suggests updating."""
+    recorded = recorded_sdk(mapping)
+    note = None
+    if recorded is not None and recorded != sdk:
+        note = (f"SDK changed: map measured with {recorded}, this run used {sdk} - re-measure the map before "
+                "reading the differences below as a regression." if red else
+                f"SDK notice: map measured with {recorded}, this run used {sdk}, and the verdicts still match - "
+                f"set \"sdk\" in roslyn-map.json to {sdk}.")
+    return {"run": sdk, "recorded": recorded, "note": note}
 
 
 def claim_work(work: Path) -> None:
@@ -511,6 +593,11 @@ def markdown(result: dict, mapping: dict, seconds: float) -> str:
     out = [f"### {result['headline']}", "",
            f"Excluded: {result['excludedBy']['silent']} silent, {result['excludedBy']['unsampled']} unsampled "
            f"(ReSharper has no verdict on a sample of their own). Measured in {seconds:.0f} s.", ""]
+    sdk = result.get("sdk")
+    if sdk:
+        out += [f"SDK: {sdk['run']}", ""]
+        if sdk["note"]:
+            out += [f"**{sdk['note']}**", ""]
     if result["problems"]:
         out += [f"**{len(result['problems'])} problem(s):**", ""] + [f"- {problem}" for problem in result["problems"]] + [""]
     if mapping.get("gaps"):
@@ -536,27 +623,46 @@ def main(arguments: list[str]) -> int:
 
     started = time.monotonic()
     expected = json.loads(EXPECTED.read_text(encoding="utf-8"))
+    sdk = sdk_version()  # before the engines: a run that stops inside them must still name the SDK
     own_work = options.work is None
     work = Path(tempfile.mkdtemp(prefix="devconfigs-roslyn-")) if own_work else Path(options.work)
+    reused = options.reuse and (work / "roslyn.sarif").exists()
+    if reused:
+        sdk, stale = reused_sdk(work, sdk)
+        if stale:
+            print(stale, file=sys.stderr)
     try:
         errors, engine = measure(work, options.reuse)
+        if not reused and work.is_dir():
+            (work / SDK_FILE).write_text(sdk + "\n", encoding="utf-8", newline="\n")
+    except SystemExit:
+        stopped_on(sdk)
+        raise
     finally:
         if own_work:
             shutil.rmtree(work, ignore_errors=True)
     if options.propose:
-        print(json.dumps(propose(expected, errors), indent=2, ensure_ascii=False))
+        print(json.dumps(propose(expected, errors, sdk), indent=2, ensure_ascii=False))
         return 0
 
     mapping = json.loads(MAP.read_text(encoding="utf-8"))
     result = evaluate(expected, mapping, errors)
     result["problems"] += engine
+    result["sdk"] = sdk_status(mapping, sdk, red=bool(result["problems"]))
     seconds = time.monotonic() - started
     result["seconds"] = round(seconds, 1)
     if options.summary:
         print("\n".join(summary_lines(result)))
+    if result["sdk"]["note"] and result["problems"]:
+        print(result["sdk"]["note"], file=sys.stderr)
     for problem in result["problems"]:
         print(problem, file=sys.stderr)
     print(result["headline"])
+    print(f"SDK: {sdk}")
+    if result["sdk"]["note"] and not result["problems"]:
+        print(result["sdk"]["note"])
+        if os.environ.get("GITHUB_ACTIONS"):  # an annotation on the run page: the stdout line is easy to miss
+            print(f"::notice title=Roslyn parity SDK::{result['sdk']['note']}")
     if options.json:
         Path(options.json).write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8",
                                       newline="\n")
