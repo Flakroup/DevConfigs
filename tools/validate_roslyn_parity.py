@@ -33,6 +33,12 @@ run would otherwise look like a wall of gaps). A suppressed result counts as not
 Two engines: ``dotnet build`` writes a SARIF log, and ``dotnet format style --report`` supplies IDE0001, IDE0002,
 IDE0003 and IDE0049, which Roslyn marks ``EnforceOnBuild.Never`` and so never reports in a build.
 
+The SDK is part of the measurement: the compiler and the SDK analyzers (CAxxxx, IDExxxx) ship inside it, so a new
+band can move a verdict with no change in this repository. ``roslyn-map.json`` records the SDK version it was measured
+with (``"sdk"``), and the gate prints the one it ran with. A red run on a different SDK leads with that fact, so the
+differences below it are not read as a regression before the map is re-measured; a green run on a different SDK is
+only a notice to update the recorded version. A map with no ``sdk`` is a map problem.
+
 Modes: default runs the gate; ``--summary`` also prints one line per inspection; ``--propose`` prints a draft
 ``roslyn-map.json`` from the overlap between the two verdicts, for a person to check entry by entry.
 ``--json PATH`` writes the full result; with ``GITHUB_STEP_SUMMARY`` set the headline goes there too, red or green.
@@ -246,6 +252,8 @@ def list_problems(inspection: str, kind: str, entry: object) -> list[str]:
 def map_problems(mapping: dict, compared: list[str]) -> list[str]:
     """Problems with the shape of ``roslyn-map.json``, before any verdict is looked at."""
     problems = []
+    if not isinstance(mapping.get("sdk"), str) or not mapping["sdk"].strip():
+        problems.append("sdk: the map must name the .NET SDK version it was measured with, e.g. \"sdk\": \"10.0.401\"")
     inspections, gaps, waivers = (mapping.get(key, {}) for key in ("inspections", "gaps", "waivers"))
     for inspection, entry in sorted(inspections.items()):
         ids = entry.get("roslyn")
@@ -383,15 +391,16 @@ def headline(exact: int, compared: int, waived: int, gaps: int, excluded: int, a
             f"{excluded} excluded; {accounted} accounted")
 
 
-def propose(expected: dict, errors: dict[str, set[str]]) -> dict:
+def propose(expected: dict, errors: dict[str, set[str]], sdk: str | None = None) -> dict:
     """A draft ``roslyn-map.json``: per inspection the Roslyn rules whose reports overlap ReSharper's best.
 
     Greedy over the rules that fire in at least one own sample of the inspection, by Jaccard overlap with the
     ReSharper verdict; a rule joins the set while it raises the overlap. What is not exact becomes a waiver
     (Roslyn reports something comparable) or a gap (no rule fires there), with a placeholder reason: the draft
-    is a start, and every entry needs a person to read the difference. The differences are pinned as measured."""
+    is a start, and every entry needs a person to read the difference. The differences are pinned as measured,
+    and ``sdk`` (when given) is the SDK they were measured with."""
     recorded = expected["inspections"]
-    draft: dict = {"inspections": {}, "gaps": {}, "waivers": {}}
+    draft: dict = ({"sdk": sdk} if sdk else {}) | {"inspections": {}, "gaps": {}, "waivers": {}}
 
     def overlap(wanted: set[str], found: set[str]) -> float:
         return len(wanted & found) / len(wanted | found) if wanted | found else 0.0
@@ -424,6 +433,33 @@ def propose(expected: dict, errors: dict[str, set[str]]) -> dict:
             draft[kind][inspection] = {"reason": f"{PLACEHOLDER}: {note}", "extra": sorted(extra),
                                        "missing": sorted(missing)}
     return draft
+
+
+def sdk_version(work: Path, run=subprocess.run) -> str:
+    """The .NET SDK ``dotnet`` resolves in the work directory, the way the engines run: ``dotnet --version``."""
+    environment = os.environ | {"DOTNET_CLI_UI_LANGUAGE": "en", "DOTNET_NOLOGO": "1"}
+    asked = run(["dotnet", "--version"], capture_output=True, text=True, encoding="utf-8", errors="replace",
+                env=environment, cwd=work)
+    version = (asked.stdout or "").strip().splitlines()
+    if asked.returncode != 0 or not version:
+        raise SystemExit(f"dotnet --version failed (exit {asked.returncode}):\n"
+                         + ((asked.stdout or "") + (asked.stderr or ""))[-3000:])
+    return version[-1].strip()
+
+
+def sdk_status(mapping: dict, sdk: str, red: bool) -> dict:
+    """The SDK this run used, the one the map records, and the line to show when they differ.
+
+    ``note`` is None when they match, or when the map records none (that is a map problem of its own). On a red run
+    it says to re-measure before reading the differences as a regression; on a green one it only suggests updating."""
+    recorded = mapping.get("sdk") if isinstance(mapping.get("sdk"), str) and mapping["sdk"].strip() else None
+    note = None
+    if recorded is not None and recorded != sdk:
+        note = (f"SDK changed: map measured with {recorded}, this run used {sdk} - re-measure the map before "
+                "reading the differences below as a regression." if red else
+                f"SDK notice: map measured with {recorded}, this run used {sdk}, and the verdicts still match - "
+                f"set \"sdk\" in roslyn-map.json to {sdk}.")
+    return {"run": sdk, "recorded": recorded, "note": note}
 
 
 def claim_work(work: Path) -> None:
@@ -511,6 +547,11 @@ def markdown(result: dict, mapping: dict, seconds: float) -> str:
     out = [f"### {result['headline']}", "",
            f"Excluded: {result['excludedBy']['silent']} silent, {result['excludedBy']['unsampled']} unsampled "
            f"(ReSharper has no verdict on a sample of their own). Measured in {seconds:.0f} s.", ""]
+    sdk = result.get("sdk")
+    if sdk:
+        out += [f"SDK: {sdk['run']}", ""]
+        if sdk["note"]:
+            out += [f"**{sdk['note']}**", ""]
     if result["problems"]:
         out += [f"**{len(result['problems'])} problem(s):**", ""] + [f"- {problem}" for problem in result["problems"]] + [""]
     if mapping.get("gaps"):
@@ -540,23 +581,30 @@ def main(arguments: list[str]) -> int:
     work = Path(tempfile.mkdtemp(prefix="devconfigs-roslyn-")) if own_work else Path(options.work)
     try:
         errors, engine = measure(work, options.reuse)
+        sdk = sdk_version(work)
     finally:
         if own_work:
             shutil.rmtree(work, ignore_errors=True)
     if options.propose:
-        print(json.dumps(propose(expected, errors), indent=2, ensure_ascii=False))
+        print(json.dumps(propose(expected, errors, sdk), indent=2, ensure_ascii=False))
         return 0
 
     mapping = json.loads(MAP.read_text(encoding="utf-8"))
     result = evaluate(expected, mapping, errors)
     result["problems"] += engine
+    result["sdk"] = sdk_status(mapping, sdk, red=bool(result["problems"]))
     seconds = time.monotonic() - started
     result["seconds"] = round(seconds, 1)
     if options.summary:
         print("\n".join(summary_lines(result)))
+    if result["sdk"]["note"] and result["problems"]:
+        print(result["sdk"]["note"], file=sys.stderr)
     for problem in result["problems"]:
         print(problem, file=sys.stderr)
     print(result["headline"])
+    print(f"SDK: {sdk}")
+    if result["sdk"]["note"] and not result["problems"]:
+        print(result["sdk"]["note"])
     if options.json:
         Path(options.json).write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8",
                                       newline="\n")

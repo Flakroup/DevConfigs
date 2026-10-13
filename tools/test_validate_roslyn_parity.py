@@ -39,6 +39,8 @@ from validate_roslyn_parity import (  # noqa: E402
     rule_levels,
     run_engines,
     sarif_findings,
+    sdk_status,
+    sdk_version,
     sides,
     summary_lines,
 )
@@ -65,8 +67,15 @@ FORMAT = {rule: {"A.cs: Alpha"} for rule in ("IDE0001", "IDE0002", "IDE0003", "I
 FORMAT_LEVELS = {rule: {"error"} for rule in FORMAT}
 
 
+SDK = "10.0.401"
+
+
 def mapping(**changes) -> dict:
-    return {"inspections": json.loads(json.dumps(EXACT)), "gaps": {}, "waivers": {}} | changes
+    return {"sdk": SDK, "inspections": json.loads(json.dumps(EXACT)), "gaps": {}, "waivers": {}} | changes
+
+
+def without_sdk() -> dict:
+    return {key: value for key, value in mapping().items() if key != "sdk"}
 
 
 def pin(*, extra=(), missing=(), reason="why") -> dict:
@@ -120,7 +129,7 @@ def patched(**attributes):
 
 
 def run_main(arguments, expected=EXPECTED, map_=None, errors=None, engine=None, summary=None, measuring=None,
-             summary_before=""):
+             summary_before="", sdk=SDK):
     """Run main() on in-memory data; returns (exit code, stdout, stderr, files, folders) left in the scratch dir."""
     def go(folder: Path):
         expected_path, map_path = folder / "expected.json", folder / "roslyn-map.json"
@@ -133,7 +142,8 @@ def run_main(arguments, expected=EXPECTED, map_=None, errors=None, engine=None, 
         out, err = io.StringIO(), io.StringIO()
         fixed = lambda work, reuse: (FOUND if errors is None else errors, engine or [])  # noqa: E731
         try:
-            with patched(EXPECTED=expected_path, MAP=map_path, measure=measuring or fixed):
+            with patched(EXPECTED=expected_path, MAP=map_path, measure=measuring or fixed,
+                         sdk_version=lambda work: sdk):
                 with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
                     code = main(arguments(folder) if callable(arguments) else arguments)
         finally:
@@ -186,6 +196,14 @@ def fake_run(sarif_text="{}", report=True, build_code=1):
             (folder / "format-report.json").write_text("[]", encoding="utf-8")
         return SimpleNamespace(returncode=2, stdout="", stderr="")
     run.calls = calls
+    return run
+
+
+def sdk_run(stdout="10.0.401\n", returncode=0, stderr=""):
+    """A stand-in for subprocess.run that answers ``dotnet --version``; it keeps the call it saw."""
+    def run(command, **options):
+        run.seen = (command, options)
+        return SimpleNamespace(returncode=returncode, stdout=stdout, stderr=stderr)
     return run
 
 
@@ -768,7 +786,8 @@ CASES = [
     # --- main
     ("main exits 0 and prints the headline when the gate is green", lambda: (
         lambda out: out[0] == 0 and out[1].splitlines() == [
-            "Roslyn parity: 2/2 exact (+0 waived, 0 gaps); 2 excluded; 4 accounted", "OK"])(run_main([]))),
+            "Roslyn parity: 2/2 exact (+0 waived, 0 gaps); 2 excluded; 4 accounted", f"SDK: {SDK}", "OK"])(
+        run_main([]))),
     ("main exits 1 and names the problem on a mismatch", lambda: (
         lambda out: out[0] == 1 and "Alpha: mismatch" in out[2] and "1 problem(s)" in out[1])(
         run_main([], errors={"R1": set(), "R2": FOUND["R2"]}))),
@@ -798,6 +817,70 @@ CASES = [
         spied(lambda folder: ["--work", str(folder / "kept")], make=True))),
     ("main removes the temporary work directory it made", lambda: (
         lambda seen: seen[0].exists() is False)(spied([], make=True)[3])),
+
+    # --- the SDK the map was measured with
+    ("sdk_version asks dotnet --version in the work directory and returns the version", lambda: (
+        lambda run: sdk_version(Path("work"), run) == "10.0.401" and run.seen[0] == ["dotnet", "--version"]
+        and run.seen[1]["cwd"] == Path("work"))(sdk_run())),
+    ("sdk_version takes the last line when dotnet prints a banner first", lambda: sdk_version(
+        Path("w"), sdk_run(stdout="Welcome\n10.0.402\n")) == "10.0.402"),
+    ("sdk_version stops the gate when dotnet fails", lambda: "dotnet --version failed (exit 1)" in str(
+        exit_code(lambda: sdk_version(Path("w"), sdk_run(stdout="", returncode=1, stderr="no sdk"))))),
+    ("sdk_version stops the gate when dotnet prints nothing", lambda: exit_code(
+        lambda: sdk_version(Path("w"), sdk_run(stdout=""))) is not None),
+    ("sdk_status red and the SDK differs: the note says the SDK changed and to re-measure", lambda: (
+        lambda s: s["note"] == "SDK changed: map measured with 10.0.401, this run used 10.0.502 - re-measure the map "
+        "before reading the differences below as a regression." and (s["run"], s["recorded"]) == ("10.0.502", SDK))(
+        sdk_status(mapping(), "10.0.502", red=True))),
+    ("sdk_status red and the SDK is the same: no note", lambda: sdk_status(mapping(), SDK, red=True)["note"] is None),
+    ("sdk_status green and the SDK differs: a notice that suggests the new version, not a failure", lambda: (
+        lambda s: s["note"].startswith("SDK notice: map measured with 10.0.401, this run used 10.0.502")
+        and 'set "sdk" in roslyn-map.json to 10.0.502' in s["note"] and "changed" not in s["note"])(
+        sdk_status(mapping(), "10.0.502", red=False))),
+    ("sdk_status green and the SDK is the same: no note", lambda: sdk_status(mapping(), SDK, red=False)["note"] is None),
+    ("sdk_status with no recorded SDK has nothing to compare", lambda: sdk_status(
+        {"inspections": {}}, "10.0.502", red=True) == {"run": "10.0.502", "recorded": None, "note": None}),
+    ("map_problems: a map with no sdk is a map problem", lambda: any(
+        "sdk: the map must name" in p for p in problems_of(without_sdk()))),
+    ("map_problems: an empty or non-text sdk is a map problem too", lambda: all(
+        any("sdk: the map must name" in p for p in problems_of(mapping(sdk=value))) for value in ("", "  ", 10, None))),
+    ("evaluate: a map with no sdk fails the gate", lambda: has(verdict(map_=without_sdk()), "sdk: the map must name")),
+    ("main red and the SDK differs: stderr leads with the SDK line, before every problem", lambda: (
+        lambda out: out[0] == 1 and out[2].splitlines()[0] == "SDK changed: map measured with 10.0.401, this run "
+        "used 10.0.502 - re-measure the map before reading the differences below as a regression."
+        and "Alpha: mismatch" in out[2].splitlines()[1] and "SDK: 10.0.502" in out[1])(
+        run_main([], errors={"R1": set(), "R2": FOUND["R2"]}, sdk="10.0.502"))),
+    ("main red and the SDK is the same: no SDK line, the problem leads", lambda: (
+        lambda out: out[0] == 1 and out[2].splitlines()[0].startswith("Alpha: mismatch") and "SDK changed" not in out[2])(
+        run_main([], errors={"R1": set(), "R2": FOUND["R2"]}))),
+    ("main green and the SDK differs: exit 0 with a notice on stdout, nothing on stderr", lambda: (
+        lambda out: out[0] == 0 and out[2] == "" and "SDK notice: map measured with 10.0.401, this run used 10.0.502"
+        in out[1] and out[1].splitlines()[-1] == "OK")(run_main([], sdk="10.0.502"))),
+    ("main green and the SDK is the same: no notice", lambda: (
+        lambda out: out[0] == 0 and "notice" not in out[1] and "changed" not in out[1])(run_main([]))),
+    ("main with no sdk in the map fails and names it", lambda: (
+        lambda out: out[0] == 1 and "sdk: the map must name" in out[2] and "SDK changed" not in out[2])(
+        run_main([], map_=without_sdk()))),
+    ("main puts the SDK line and note in the step summary", lambda: (
+        lambda red, same: "SDK: 10.0.502" in red[3]["step.md"] and "**SDK changed: map measured with 10.0.401"
+        in red[3]["step.md"] and "SDK: 10.0.401" in same[3]["step.md"] and "SDK changed" not in same[3]["step.md"])(
+        run_main([], summary=True, errors={"R1": set(), "R2": FOUND["R2"]}, sdk="10.0.502"),
+        run_main([], summary=True))),
+    ("main --json records the SDK the run used and the one the map names", lambda: (
+        lambda sdk: (sdk["run"], sdk["recorded"]) == ("10.0.502", SDK) and bool(sdk["note"]))(
+        json.loads(run_main(lambda folder: ["--json", str(folder / "result.json")], sdk="10.0.502")[3]["result.json"])[
+            "sdk"])),
+    ("main --propose writes the SDK it ran with into the draft, first", lambda: (
+        lambda out: list(json.loads(out[1]))[0] == "sdk" and json.loads(out[1])["sdk"] == "10.0.502")(
+        run_main(["--propose"], sdk="10.0.502"))),
+    ("propose writes no sdk when none is given", lambda: "sdk" not in propose(EXPECTED, FOUND)),
+    ("markdown shows the SDK and its note", lambda: (
+        lambda text: "SDK: 10.0.502" in text and "**SDK changed: map" in text)(markdown(
+            verdict() | {"sdk": sdk_status(mapping(), "10.0.502", red=True)}, mapping(), 1.0))),
+    ("markdown without an SDK result is unchanged", lambda: "SDK" not in markdown(verdict(), mapping(), 1.0)),
+    ("the committed map records an SDK version", lambda: (
+        lambda sdk: isinstance(sdk, str) and sdk.count(".") == 2 and sdk.replace(".", "").isdigit())(
+        json.loads(module.MAP.read_text(encoding="utf-8")).get("sdk"))),
 
     # --- the committed files
     ("the committed map covers every inspection ReSharper has a verdict on, with real reasons",
