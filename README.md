@@ -11,7 +11,7 @@ Shared build and editor configuration for Flakroup .NET repositories. Consumed a
 | `Directory.Build.targets` | Opt-in packaging defaults for library repositories (XML docs, `snupkg` symbols, embedded sources, SourceLink, deterministic paths, MIT license) - see [Packaging defaults](#packaging-defaults) - the pinned SourceLink package reference, and the shared analyzer set (IDisposableAnalyzers, VS Threading, ReflectionAnalyzers, PolySharp, BannedApiAnalyzers, and FEx.Analyzers - see [FEx.Analyzers](#fexanalyzers)). |
 | `.editorconfig` | Formatting and code-style rules, linked into every project. A repository that sets `DevConfigsMirrorEditorConfig=true` (before the props import) also gets a copy at its root on every restore and build, so the compiler and `dotnet format` apply it; list `/.editorconfig` in its `.gitignore`. A root file that is not a mirrored copy is left alone with a warning (`DEVCFG001`), a copy that cannot be written fails the build (`DEVCFG002`), and a `--no-restore` build with the copy missing compiles without it once. Without the switch it is only displayed by the IDE. The file only raises severities - a demotion would switch off, in every opted-in build, a rule that build enforced before. |
 | `build.globalconfig` | The one severity a build needs that `.editorconfig` cannot carry: it silences `EnableGenerateDocumentationFile`, the location-less diagnostic the compiler reports in place of IDE0005 when XML docs are off (dotnet/roslyn#41640). There unused usings stay with `dotnet format`; a build that generates XML docs runs IDE0005 itself. |
-| `FEx.Analyzers.globalconfig` | Every FEx.Analyzers rule (`FEX0001` to `FEX0053`) at `error`, one line per ID, wired through `GlobalAnalyzerConfigFiles` in `Directory.Build.props`. Always applied: `DevConfigsFExAnalyzers=false` removes the package reference and not these severities - see [FEx.Analyzers](#fexanalyzers). |
+| `FEx.Analyzers.globalconfig` | Every FEx.Analyzers rule (`FEX0001` to `FEX0058`) at `error`, one line per ID, wired through `GlobalAnalyzerConfigFiles` in `Directory.Build.props`. Always applied: `DevConfigsFExAnalyzers=false` removes the package reference and not these severities - see [FEx.Analyzers](#fexanalyzers). |
 | `BannedSymbols.txt` | The APIs RS0030 (BannedApiAnalyzers) reports - at error wherever the `.editorconfig` applies - each with the reason: today the JetBrains nullness attributes, which nullable reference types replace. It applies to every consumer, mirror or not. |
 | `FEx.sln.DotSettings` | ReSharper settings, including the inspection severities promoted to ERROR that gate commits. |
 | `Settings.XamlStyler` | XAML Styler configuration. |
@@ -116,7 +116,7 @@ hide the warning they assert on.
 
 [FEx.Analyzers](https://www.nuget.org/packages/FEx.Analyzers) is the Roslyn analyzer package meant to replace the ReSharper inspections
 (see [The analyzers corpus](#the-analyzers-corpus)). `Directory.Build.targets` references it in every project, with
-`PrivateAssets=all`, and `FEx.Analyzers.globalconfig` holds each of its rules (`FEX0001` to `FEX0053`) at `error`, so a hit fails the
+`PrivateAssets=all`, and `FEx.Analyzers.globalconfig` holds each of its rules (`FEX0001` to `FEX0058`) at `error`, so a hit fails the
 build whether or not the consumer sets `TreatWarningsAsErrors`. The severities are per ID and not per category: a rule a later
 package version adds stays at its default until a line for it is added to the file.
 

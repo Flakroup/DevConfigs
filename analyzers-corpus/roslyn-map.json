@@ -499,7 +499,9 @@
       }
     },
     "InvokeAsExtensionMember": {
-      "roslyn": []
+      "roslyn": [
+        "FEX0056"
+      ]
     },
     "LocalVariableHidesMember": {
       "roslyn": [
@@ -570,10 +572,14 @@
       ]
     },
     "ParameterOnlyUsedForPreconditionCheck.Global": {
-      "roslyn": []
+      "roslyn": [
+        "FEX0057"
+      ]
     },
     "ParameterOnlyUsedForPreconditionCheck.Local": {
-      "roslyn": []
+      "roslyn": [
+        "FEX0058"
+      ]
     },
     "PartialMethodParameterNameMismatch": {
       "roslyn": [
@@ -697,10 +703,14 @@
       ]
     },
     "RedundantEmptyObjectCreationArgumentList": {
-      "roslyn": []
+      "roslyn": [
+        "FEX0054"
+      ]
     },
     "RedundantEmptyObjectOrCollectionInitializer": {
-      "roslyn": []
+      "roslyn": [
+        "FEX0055"
+      ]
     },
     "RedundantEmptySwitchSection": {
       "roslyn": [
@@ -1143,45 +1153,7 @@
       ]
     }
   },
-  "gaps": {
-    "InvokeAsExtensionMember": {
-      "reason": "No Roslyn rule reports a static call of an extension method written in its static form. CA1829 fires on Enumerable.Count(l) (StyleB #2), but it asks for the Count property, not the extension form.",
-      "extra": [],
-      "missing": [
-        "StyleA.cs: InvokeAsExtensionMember",
-        "StyleB.cs: InvokeAsExtensionMember #1",
-        "StyleB.cs: InvokeAsExtensionMember #2"
-      ]
-    },
-    "ParameterOnlyUsedForPreconditionCheck.Global": {
-      "reason": "No Roslyn rule reports a parameter that only a precondition check reads.",
-      "extra": [],
-      "missing": [
-        "StyleA.cs: ParameterOnlyUsedForPreconditionCheck.Global"
-      ]
-    },
-    "ParameterOnlyUsedForPreconditionCheck.Local": {
-      "reason": "No Roslyn rule reports a parameter that only a precondition check reads.",
-      "extra": [],
-      "missing": [
-        "StyleA.cs: ParameterOnlyUsedForPreconditionCheck.Local"
-      ]
-    },
-    "RedundantEmptyObjectCreationArgumentList": {
-      "reason": "No Roslyn rule reports the empty argument list of new T() { ... }. IDE0090 fires on the sample, but because the expression could be target-typed new(), so it would stay silent on var x = new T() { ... }, which ReSharper reports.",
-      "extra": [],
-      "missing": [
-        "StyleA.cs: RedundantEmptyObjectCreationArgumentList"
-      ]
-    },
-    "RedundantEmptyObjectOrCollectionInitializer": {
-      "reason": "No Roslyn rule reports an empty initializer in new T { }. IDE0090 fires on the sample, but because the expression could be target-typed new(), so it would stay silent on var x = new T { }, which ReSharper reports.",
-      "extra": [],
-      "missing": [
-        "StyleA.cs: RedundantEmptyObjectOrCollectionInitializer"
-      ]
-    }
-  },
+  "gaps": {},
   "waivers": {
     "ArrangeDefaultValueWhenTypeEvident": {
       "extra": [
