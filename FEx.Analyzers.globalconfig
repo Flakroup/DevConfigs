@@ -1,7 +1,7 @@
 is_global = true
 # FEx.Analyzers (the package Directory.Build.targets references) at error, one line per rule ID, so a new rule is a
-# deliberate line here and a rule a package version adds stays at its default until then. FEX0001-FEX0053 are the rules of
-# FEx.Analyzers 0.4.0-alpha.378. Wired through GlobalAnalyzerConfigFiles in Directory.Build.props.
+# deliberate line here and a rule a package version adds stays at its default until then. FEX0001-FEX0058 are the rules of
+# FEx.Analyzers 0.4.0-alpha.442. Wired through GlobalAnalyzerConfigFiles in Directory.Build.props.
 dotnet_diagnostic.FEX0001.severity = error
 dotnet_diagnostic.FEX0002.severity = error
 dotnet_diagnostic.FEX0003.severity = error
@@ -55,3 +55,8 @@ dotnet_diagnostic.FEX0050.severity = error
 dotnet_diagnostic.FEX0051.severity = error
 dotnet_diagnostic.FEX0052.severity = error
 dotnet_diagnostic.FEX0053.severity = error
+dotnet_diagnostic.FEX0054.severity = error
+dotnet_diagnostic.FEX0055.severity = error
+dotnet_diagnostic.FEX0056.severity = error
+dotnet_diagnostic.FEX0057.severity = error
+dotnet_diagnostic.FEX0058.severity = error
