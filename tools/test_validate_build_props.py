@@ -77,6 +77,16 @@ PROPS_CASES = [
         "both pins present and correct pass",
     ),
     (
+        wrap(f"{PINS}\n        <DotNetNugetsVersion>10.0.13</DotNetNugetsVersion>"),
+        None,
+        "the shared package version as a floor passes",
+    ),
+    (
+        wrap(f"{PINS}\n        <DotNetNugetsVersion>[10.0.13]</DotNetNugetsVersion>"),
+        "DotNetNugetsVersion is '[10.0.13]', which caps",
+        "the shared package version as an exact range is rejected",
+    ),
+    (
         wrap("        <Nullable>enable</Nullable>"),
         "NuGetAudit is not assigned",
         "a file without the pins is rejected",
@@ -311,6 +321,26 @@ TARGETS_CASES = [
         project(group("        <IsPackable>true</IsPackable>"), local=None),
         None,
         "the targets file needs no TreatAsLocalProperty of its own - the props file carries it",
+    ),
+    (
+        project(group("        <DotNetNugetsVersion>[10.0.13,)</DotNetNugetsVersion>")),
+        None,
+        "the targets file restating the floor as an open range passes",
+    ),
+    (
+        project(group("        <DotNetNugetsVersion> [10.0.13,10.0.14)</DotNetNugetsVersion>")),
+        "which caps",
+        "the targets file reassigning the shared package version to a capped range is rejected",
+    ),
+    (
+        project(group("        <DotNetNugetsVersion>(,10.0.14)</DotNetNugetsVersion>")),
+        "which caps",
+        "the targets file capping the shared package version with an exclusive range is rejected",
+    ),
+    (
+        project(group("        <SharedPin>[10.0.13]</SharedPin>\n        <DotNetNugetsVersion>$(SharedPin)</DotNetNugetsVersion>")),
+        "cannot see what the reference expands to",
+        "the targets file taking the shared package version from another property is rejected",
     ),
     (
         project(group("        <NoWarn>$(NoWarn);NU1902</NoWarn>")),
