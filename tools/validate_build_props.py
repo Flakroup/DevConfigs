@@ -36,6 +36,10 @@ What this validator covers, and why each part is here rather than assumed:
   guard cannot honestly speak for a file it has not read.
 * ``NoWarn`` or ``MSBuildWarningsAsMessages`` carrying NU1901-NU1904 is reported. Either silences
   the audit's entire output while both properties still read as policy-compliant.
+* ``DotNetNugetsVersion`` written as a range with an upper bound (``[x]`` included) is reported.
+  Every package reference at that property carries it into the consumer's nuspec, so the next
+  servicing release a consumer takes fails its restore with NU1608 under warnings-as-errors
+  (Flakroup/FEx#332). A floor - ``x`` or ``[x,)`` - is what it must be.
 * Values are compared verbatim rather than trimmed. MSBuild stores the whitespace around a property
   value, so a padded value is a real divergence between what this check reports and what the build
   holds.
@@ -70,6 +74,9 @@ AUDIT_WARNING_CODES = ("NU1901", "NU1902", "NU1903", "NU1904")
 # them carrying the codes above turns a High-severity advisory into no output at all, with both
 # pins still reading as policy-compliant.
 WARNING_SUPPRESSING_PROPERTIES = ("nowarn", "msbuildwarningsasmessages")
+
+# The shared package version every consumer packs into its nuspec dependencies. It must be a floor.
+SHARED_PACKAGE_VERSION_PROPERTY = "dotnetnugetsversion"
 
 # The attribute that demotes a global property to a local one, so the assignment above wins over
 # `-p:NuGetAudit=false`. MSBuild splits its value on semicolons and nothing else: a comma or a bare
@@ -193,6 +200,14 @@ def _local_property_problems(root: ElementTree.Element) -> list[str]:
     return []
 
 
+def _has_upper_bound(version: str) -> bool:
+    """Say whether a NuGet version range caps the version: ``[x]``, ``[x,y]`` or ``(,y)`` do; ``x``, ``[x,)`` do not."""
+    value = version.strip()
+    if not value.startswith(("[", "(")):
+        return False
+    return bool(value[1:-1].split(",")[-1].strip())
+
+
 def _blind_spots(root: ElementTree.Element) -> list[str]:
     """Report the constructs that would let a guarded file pass while the policy does not hold."""
     problems: list[str] = []
@@ -211,6 +226,11 @@ def _blind_spots(root: ElementTree.Element) -> list[str]:
                     f"{_local_name(element.tag)} suppresses {', '.join(suppressed)} - the audit "
                     "would run and report nothing"
                 )
+        elif name == SHARED_PACKAGE_VERSION_PROPERTY and _has_upper_bound(element.text or ""):
+            problems.append(
+                f"{_local_name(element.tag)} is {(element.text or '').strip()!r}, which caps the "
+                "version packed dependencies accept - use a floor such as '10.0.13'"
+            )
     return problems
 
 
