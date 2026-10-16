@@ -333,6 +333,16 @@ TARGETS_CASES = [
         "the targets file reassigning the shared package version to a capped range is rejected",
     ),
     (
+        project(group("        <DotNetNugetsVersion>(,10.0.14)</DotNetNugetsVersion>")),
+        "which caps",
+        "the targets file capping the shared package version with an exclusive range is rejected",
+    ),
+    (
+        project(group("        <SharedPin>[10.0.13]</SharedPin>\n        <DotNetNugetsVersion>$(SharedPin)</DotNetNugetsVersion>")),
+        "cannot see what the reference expands to",
+        "the targets file taking the shared package version from another property is rejected",
+    ),
+    (
         project(group("        <NoWarn>$(NoWarn);NU1902</NoWarn>")),
         "NoWarn suppresses NU1902",
         "the targets file suppressing an audit warning is rejected",

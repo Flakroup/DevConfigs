@@ -39,7 +39,8 @@ What this validator covers, and why each part is here rather than assumed:
 * ``DotNetNugetsVersion`` written as a range with an upper bound (``[x]`` included) is reported.
   Every package reference at that property carries it into the consumer's nuspec, so the next
   servicing release a consumer takes fails its restore with NU1608 under warnings-as-errors
-  (Flakroup/FEx#332). A floor - ``x`` or ``[x,)`` - is what it must be.
+  (Flakroup/FEx#332). A floor - ``x`` or ``[x,)`` - is what it must be. A value taken from another
+  property (``$(...)``) is reported too: this guard cannot see what it expands to.
 * Values are compared verbatim rather than trimmed. MSBuild stores the whitespace around a property
   value, so a padded value is a real divergence between what this check reports and what the build
   holds.
@@ -226,6 +227,11 @@ def _blind_spots(root: ElementTree.Element) -> list[str]:
                     f"{_local_name(element.tag)} suppresses {', '.join(suppressed)} - the audit "
                     "would run and report nothing"
                 )
+        elif name == SHARED_PACKAGE_VERSION_PROPERTY and "$(" in (element.text or ""):
+            problems.append(
+                f"{_local_name(element.tag)} is {(element.text or '').strip()!r} - this guard cannot "
+                "see what the reference expands to, so assign the floor as a literal"
+            )
         elif name == SHARED_PACKAGE_VERSION_PROPERTY and _has_upper_bound(element.text or ""):
             problems.append(
                 f"{_local_name(element.tag)} is {(element.text or '').strip()!r}, which caps the "
