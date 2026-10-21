@@ -102,6 +102,25 @@ jobs:
       - name: Build consumers with and without the opt-out and assert the rules at error and the pin
         run: python tools/test_fex_analyzers.py
 
+  nuget-audit:
+    name: Build a consumer with a vulnerable package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build consumers with a patched and a vulnerable package and assert the build fails on NU1903 and NU1904
+        run: python tools/test_nuget_audit.py
+
   analyzers-corpus:
     name: Check the analyzers corpus against the ERROR inspections
     runs-on: ubuntu-latest

@@ -23,8 +23,11 @@
         <RepositoryType>git</RepositoryType>
         <RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
         <WarningLevel>7</WarningLevel>
-        <WarningsAsErrors>$(WarningsAsErrors);CS0660;CA1068;SI2100</WarningsAsErrors>
+        <WarningsAsErrors>$(WarningsAsErrors);CS0660;CA1068;SI2100;NU1902;NU1903;NU1904</WarningsAsErrors>
         <!-- SI2100: No source for instance of Type used in optional parameter -->
+        <!-- NU1902-NU1904: a package with a known moderate, high or critical vulnerability fails the restore. A transitive one
+             (SqlClient pulling System.Security.Cryptography.Pkcs 9.0.18, GHSA-846f-f764-76mx) otherwise passes every build as a
+             warning nobody reads. NU1901 (low) stays a warning. -->
         <!-- CS1591 (missing XML comment) stays a warning even when a consumer sets TreatWarningsAsErrors=true.
              The other doc diagnostics (CS1572, CS1573, CS1574, CS1584, CS1658, ...) stay errors there on purpose. -->
         <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591</WarningsNotAsErrors>
