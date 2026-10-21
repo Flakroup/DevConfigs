@@ -17,7 +17,7 @@ Shared build and editor configuration for Flakroup .NET repositories. Consumed a
 | `Settings.XamlStyler` | XAML Styler configuration. |
 | `tools/validate_dotsettings.py` | Guard for the shared ReSharper layers - see [Editing the ReSharper layer](#editing-the-resharper-layer). |
 | `tools/test_fixtures.py` | Behavioural guard for the packaging defaults: builds and packs the projects in `tools/fixtures` in Release (needs the .NET 10 SDK) and asserts what comes out - see [Packaging defaults](#packaging-defaults). It also checks the TRX report name a `*.Tests` project passes to `dotnet test`. |
-| `tools/test_nuget_audit.py` | Behavioural guard for the audit severity: builds a throwaway consumer with a patched and one with a vulnerable package (needs the .NET 10 SDK and nuget.org) and asserts that the vulnerable one fails the build with NU1903 without `TreatWarningsAsErrors`. |
+| `tools/test_nuget_audit.py` | Behavioural guard for the audit severity: builds a throwaway consumer with a patched and one with a vulnerable package (needs the .NET 10 SDK and nuget.org) and asserts that the shared `WarningsAsErrors` lists NU1902-NU1904 and that vulnerable ones fail the build with NU1903 and NU1904 without `TreatWarningsAsErrors`. |
 | `tools/test_fex_analyzers.py` | Behavioural guard for the FEx.Analyzers wiring: builds throwaway consumers (needs the .NET 10 SDK and nuget.org) and asserts that a violation fails the build without `TreatWarningsAsErrors`, that `DevConfigsFExAnalyzers=false` builds it green, that a project named `FEx.Analyzers` references nothing, the `FExAnalyzersVersion` pin and its overrides, that the rule list matches the pinned package, and that a packed library does not depend on FEx.Analyzers. |
 | `tools/validate_build_props.py` | Guard for the NuGet audit policy in `Directory.Build.props`/`.targets` - see [The NuGet audit pin](#the-nuget-audit-pin). |
 | `tools/validate_workflows.py` | Guard for the CI workflows: a read-only token, `persist-credentials: false` on every checkout, every action pinned to the commit its commented tag points at, and `docker://` images by digest. See [The workflow guard](#the-workflow-guard). |
@@ -326,13 +326,18 @@ between two names lands inside one name and fails evaluation with `MSB5016`. Whi
 each name is trimmed, so wrapping the value across lines after a semicolon is fine.
 
 `WarningsAsErrors` carries `NU1902;NU1903;NU1904`, so a package with a moderate, high or critical
-advisory fails the build in every consumer, with or without `TreatWarningsAsErrors`. NU1901 (low)
-stays a warning. Under `RestoreUseStaticGraphEvaluation` the restore fails without naming the
+advisory that NuGet reads fails the build in every consumer, with or without `TreatWarningsAsErrors`.
+NU1901 (low) stays a warning. The gate fails open: when the vulnerability data cannot be fetched
+NuGet logs NU1900 (and NU1905 for an audit source that carries none) as warnings, and they stay
+warnings, so a restore without network access to the audit source builds a vulnerable package green
+(measured with an unreachable `auditSources` entry: exit 0). Promoting NU1900 would break every
+offline build and is left to the consumer. Under `RestoreUseStaticGraphEvaluation` the restore fails without naming the
 finding (NuGet logs "failed with exit code '1' but did not log an error"); restore the project with
 `-p:RestoreUseStaticGraphEvaluation=false` to see error NU1903. A consumer that must ship past an
 advisory it has reviewed adds a `NuGetAuditSuppress` item for that advisory, not a `NoWarn`.
-`tools/test_nuget_audit.py` (the `nuget-audit` job in `validate.yml`) builds a consumer with a
-patched and a vulnerable Newtonsoft.Json and asserts the second fails.
+`tools/test_nuget_audit.py` (the `nuget-audit` job in `validate.yml`) checks the three codes in the
+props file and builds consumers with a patched package, a high-severity one (NU1903) and a critical
+one (NU1904), asserting the last two fail.
 
 CI validates the policy on each push; run the same check locally before committing:
 

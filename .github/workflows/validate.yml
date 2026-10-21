@@ -118,7 +118,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Build consumers with a patched and a vulnerable package and assert the build fails on NU1903
+      - name: Build consumers with a patched and a vulnerable package and assert the build fails on NU1903 and NU1904
         run: python tools/test_nuget_audit.py
 
   analyzers-corpus:
