@@ -17,7 +17,7 @@ Shared build and editor configuration for Flakroup .NET repositories. Consumed a
 | `Settings.XamlStyler` | XAML Styler configuration. |
 | `tools/validate_dotsettings.py` | Guard for the shared ReSharper layers - see [Editing the ReSharper layer](#editing-the-resharper-layer). |
 | `tools/test_fixtures.py` | Behavioural guard for the packaging defaults: builds and packs the projects in `tools/fixtures` in Release (needs the .NET 10 SDK) and asserts what comes out - see [Packaging defaults](#packaging-defaults). It also checks the TRX report name a `*.Tests` project passes to `dotnet test`. |
-| `tools/test_nuget_audit.py` | Behavioural guard for the audit severity: builds a throwaway consumer with a patched and one with a vulnerable package (needs the .NET 10 SDK and nuget.org) and asserts that the shared `WarningsAsErrors` lists NU1902-NU1904 and that vulnerable ones fail the build with NU1903 and NU1904 without `TreatWarningsAsErrors`. |
+| `tools/test_nuget_audit.py` | Behavioural guard for the audit severity: checks that the shared `WarningsAsErrors` lists NU1902-NU1904, then builds throwaway consumers (needs the .NET 10 SDK and nuget.org) with a patched package, a moderate one, a high one and a critical one, and asserts that the patched one builds and the others fail with NU1902, NU1903 and NU1904 without `TreatWarningsAsErrors`. |
 | `tools/test_fex_analyzers.py` | Behavioural guard for the FEx.Analyzers wiring: builds throwaway consumers (needs the .NET 10 SDK and nuget.org) and asserts that a violation fails the build without `TreatWarningsAsErrors`, that `DevConfigsFExAnalyzers=false` builds it green, that a project named `FEx.Analyzers` references nothing, the `FExAnalyzersVersion` pin and its overrides, that the rule list matches the pinned package, and that a packed library does not depend on FEx.Analyzers. |
 | `tools/validate_build_props.py` | Guard for the NuGet audit policy in `Directory.Build.props`/`.targets` - see [The NuGet audit pin](#the-nuget-audit-pin). |
 | `tools/validate_workflows.py` | Guard for the CI workflows: a read-only token, `persist-credentials: false` on every checkout, every action pinned to the commit its commented tag points at, and `docker://` images by digest. See [The workflow guard](#the-workflow-guard). |
@@ -336,8 +336,8 @@ finding (NuGet logs "failed with exit code '1' but did not log an error"); resto
 `-p:RestoreUseStaticGraphEvaluation=false` to see error NU1903. A consumer that must ship past an
 advisory it has reviewed adds a `NuGetAuditSuppress` item for that advisory, not a `NoWarn`.
 `tools/test_nuget_audit.py` (the `nuget-audit` job in `validate.yml`) checks the three codes in the
-props file and builds consumers with a patched package, a high-severity one (NU1903) and a critical
-one (NU1904), asserting the last two fail.
+props file and builds consumers with a patched package, a moderate one (NU1902), a high-severity one
+(NU1903) and a critical one (NU1904), asserting the last three fail.
 
 CI validates the policy on each push; run the same check locally before committing:
 
@@ -365,7 +365,9 @@ What it cannot see, so do not read a green run as more than it is:
   turns findings into a single NU1905.
 - A consumer that never bumps its submodule pointer. It keeps whatever this file said when it was
   pinned, and nothing here can tell.
-- `dotnet restore` on its own: with `RestoreUseStaticGraphEvaluation` (set to `true` above) the
-  audit warnings do not reach the console summary. A subsequent build replays them from the assets
-  file, so a pipeline whose only audit signal is a standalone restore step reads zero.
+- `dotnet restore` on its own: with `RestoreUseStaticGraphEvaluation` (set to `true` above) a
+  finding of NU1902-NU1904 fails the restore (exit 1) without naming it, and the audit warnings that
+  stay warnings (NU1901) do not reach the console summary. A subsequent build replays those from the
+  assets file, so a pipeline whose only audit signal is a standalone restore step reads zero for
+  NU1901.
 - The workflow being edited away in the same commit.

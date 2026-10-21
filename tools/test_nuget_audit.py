@@ -6,9 +6,10 @@ each a throwaway repository root with a copy of the shared files in its own ``De
 ``TreatWarningsAsErrors``:
 
 * The shared ``WarningsAsErrors`` is read statically first: it keeps the leading ``$(WarningsAsErrors)`` (a consumer's own value
-  survives) and names NU1902, NU1903 and NU1904. The builds below exercise NU1903 and NU1904 only; no stable package with a
-  moderate advisory (NU1902) is worth pinning a test to, so that code is guarded here.
+  survives) and names NU1902, NU1903 and NU1904. The builds below then show each code failing a consumer, which also catches what a
+  static read cannot (a later override, a ``WarningsNotAsErrors`` entry).
 * ``audit-clean`` references a patched Newtonsoft.Json: it builds, so a failure elsewhere is the package's and not the fixture's.
+* ``audit-moderate`` references Microsoft.IdentityModel.JsonWebTokens 6.5.0, whose only finding is moderate: error NU1902.
 * ``audit-vulnerable`` references Newtonsoft.Json 12.0.3 (GHSA-5crp-9r3c-p9vr, high): the build fails rather than passing with
   a warning. The props file sets ``RestoreUseStaticGraphEvaluation``, and under it the restore fails without naming the
   finding (NuGet reports "failed with exit code '1' but did not log an error"), so the code itself is asserted on the same
@@ -114,6 +115,11 @@ def main() -> int:
     code, output = build(project, "-p:RestoreUseStaticGraphEvaluation=false")
     check(code != 0 and "error NU1903" in output,
           "audit-vulnerable: the failure is error NU1903 (restored without static graph evaluation, which names it)", output)
+
+    project = consumer(work / "audit-moderate", "6.5.0", "Microsoft.IdentityModel.JsonWebTokens")
+    code, output = build(project, "-p:RestoreUseStaticGraphEvaluation=false")
+    check(code != 0 and "error NU1902" in output and "NU1903" not in output and "NU1904" not in output,
+          "audit-moderate: a moderate advisory alone fails the build with error NU1902", output)
 
     project = consumer(work / "audit-critical", "4.5.0", "System.Text.Encodings.Web")
     code, output = build(project, "-p:RestoreUseStaticGraphEvaluation=false")
